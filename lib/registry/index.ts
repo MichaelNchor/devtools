@@ -1,6 +1,8 @@
 import { JsonCompare } from "@/components/tools/JsonCompare";
+import { JsonFormat } from "@/components/tools/JsonFormat";
 import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
-import { JSON_COMPARE_META } from "./metas";
+import { JSON_FORMAT_SAMPLE } from "@/lib/tools/json-format-sample";
+import { JSON_COMPARE_META, JSON_FORMAT_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -19,6 +21,7 @@ export { searchTools, groupTools } from "./search";
  */
 export const TOOLS: ToolEntry[] = [
   { meta: JSON_COMPARE_META, Component: JsonCompare, sample: JSON_COMPARE_SAMPLE },
+  { meta: JSON_FORMAT_META, Component: JsonFormat, sample: JSON_FORMAT_SAMPLE },
 ];
 
 export function allMetas(): ToolMeta[] {

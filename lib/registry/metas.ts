@@ -1,4 +1,4 @@
-import { GitCompare } from "lucide-react";
+import { Braces, GitCompare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -16,5 +16,15 @@ export const JSON_COMPARE_META: ToolMeta = {
   group: "data",
   icon: GitCompare,
   aliases: ["diff", "json diff", "compare", "delta"],
+  handlesSecrets: false,
+};
+
+export const JSON_FORMAT_META: ToolMeta = {
+  slug: "json-format",
+  name: "JSON Formatter",
+  blurb: "Beautify, minify, sort keys, and validate JSON with positional errors.",
+  group: "data",
+  icon: Braces,
+  aliases: ["format", "beautify", "prettify", "minify", "validate", "pretty print"],
   handlesSecrets: false,
 };
