@@ -14,6 +14,8 @@
   "license": "ISC",
   "private": true,
   "dependencies": {
+    "cron-parser": "^5.10.0",
+    "cronstrue": "^3.24.0",
     "diff": "^8.0.4",
     "hash-wasm": "^4.12.0",
     "js-yaml": "^5.4.1",

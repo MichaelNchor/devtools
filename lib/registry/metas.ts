@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, CalendarClock, Clock, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -159,5 +159,15 @@ export const HTTP_META: ToolMeta = {
   group: "network",
   icon: FileSearch,
   aliases: ["http", "request", "response", "headers", "inspect", "raw"],
+  handlesSecrets: false,
+};
+
+export const CRON_META: ToolMeta = {
+  slug: "cron",
+  name: "Cron Parser",
+  blurb: "Read a cron expression in plain words and see its next ten runs.",
+  group: "network",
+  icon: CalendarClock,
+  aliases: ["cron", "crontab", "schedule", "job", "timer"],
   handlesSecrets: false,
 };

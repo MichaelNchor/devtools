@@ -13,6 +13,7 @@ import { Jwt } from "@/components/tools/Jwt";
 import { IpCalculator } from "@/components/tools/IpCalculator";
 import { CurlConvert } from "@/components/tools/CurlConvert";
 import { HttpInspector } from "@/components/tools/HttpInspector";
+import { Cron } from "@/components/tools/Cron";
 import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
 import { JSON_FORMAT_SAMPLE } from "@/lib/tools/json-format-sample";
 import { BASE64_SAMPLE } from "@/lib/tools/base64-sample";
@@ -28,7 +29,8 @@ import { JWT_SAMPLE } from "@/lib/tools/jwt-sample";
 import { IP_SAMPLE } from "@/lib/tools/ip-sample";
 import { CURL_SAMPLE } from "@/lib/tools/curl-sample";
 import { HTTP_INSPECT_SAMPLE } from "@/lib/tools/http-inspect-sample";
-import { BASE64_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
+import { CRON_SAMPLE } from "@/lib/tools/cron-sample";
+import { BASE64_META, CRON_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -61,6 +63,7 @@ export const TOOLS: ToolEntry[] = [
   { meta: IP_META, Component: IpCalculator, sample: IP_SAMPLE },
   { meta: CURL_META, Component: CurlConvert, sample: CURL_SAMPLE },
   { meta: HTTP_META, Component: HttpInspector, sample: HTTP_INSPECT_SAMPLE },
+  { meta: CRON_META, Component: Cron, sample: CRON_SAMPLE },
 ];
 
 export function allMetas(): ToolMeta[] {
