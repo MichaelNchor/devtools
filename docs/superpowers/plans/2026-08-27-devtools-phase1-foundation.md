@@ -33,9 +33,9 @@ Copied verbatim from the spec. Every task's requirements implicitly include this
 ### Task 1: Project scaffold, token layer, and root shell
 
 **Files:**
-- Create: `package.json`, `tsconfig.json`, `next.config.mjs`, `postcss.config.mjs`, `tailwind.config.ts`, `vitest.config.ts`
+- Create: `package.json`, `tsconfig.json`, `next.config.mjs`, `postcss.config.mjs`, `tailwind.config.ts`, `vitest.config.mts`
 - Create: `app/globals.css`, `app/layout.tsx`, `app/page.tsx`
-- Create: `tests/setup/local-storage.ts`
+- Create: `types/css.d.ts`
 
 **Interfaces:**
 - Consumes: nothing.
@@ -99,14 +99,20 @@ export default { reactStrictMode: true };
 export default { plugins: { tailwindcss: {}, autoprefixer: {} } };
 ```
 
-`vitest.config.ts` — the `oxc` override is required because `tsconfig.json` sets `jsx: "preserve"` for Next's compiler, which otherwise stops the test runner stripping JSX:
+`vitest.config.mts` — two things are deliberate. The `oxc` override is required
+because `tsconfig.json` sets `jsx: "preserve"` for Next's compiler, which
+otherwise stops the test runner stripping JSX. And the extension is `.mts`, not
+`.ts`: the file uses ESM syntax, and under this package's CommonJS default
+Vitest warns about that on every single run, which breaks the pristine-output
+bar. `.mts` is unambiguously ESM, so `__dirname` does not exist there —
+`import.meta.dirname` (Node 20.11+) replaces it.
 
 ```ts
 import path from "node:path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  resolve: { alias: { "@": path.resolve(__dirname) } },
+  resolve: { alias: { "@": path.resolve(import.meta.dirname) } },
   oxc: { jsx: { runtime: "automatic" } },
   test: {
     environment: "node",
@@ -331,6 +337,19 @@ body {
     scroll-behavior: auto !important;
   }
 }
+```
+
+- [ ] **Step 5b: Declare CSS modules for TypeScript**
+
+Create `types/css.d.ts`. TypeScript 6 raises `TS2882` on a side-effect import of
+any module it has no declaration for, and Next 15 ships no declaration for CSS.
+Without this, `import "./globals.css"` in the next step fails `npm run typecheck`.
+
+```ts
+// Next handles CSS at build time; TypeScript only needs to know the import is
+// legal. Declaring the shape as `void` keeps anyone from importing a binding
+// out of a stylesheet by accident.
+declare module "*.css";
 ```
 
 - [ ] **Step 6: Write the root layout**
@@ -1021,6 +1040,9 @@ import { GROUP_LABELS, GROUP_ORDER, type ToolGroup, type ToolMeta } from "./type
  * prefix beats a word-start, and a scattered subsequence comes last so that
  * typing "de" surfaces "Debugger" above "delta".
  */
+/** Aliases must rank below a real name's word-start match (60). */
+const ALIAS_CAP = 50;
+
 function score(haystack: string, query: string): number {
   const h = haystack.toLowerCase();
   if (h === query) return 100;
@@ -1049,8 +1071,9 @@ export function searchTools(metas: ToolMeta[], query: string): ToolMeta[] {
         score(meta.name, q),
         score(meta.slug, q),
         // An alias is a weaker signal than the real name, so it is capped
-        // below a name prefix.
-        ...meta.aliases.map((a) => Math.min(score(a, q), 70)),
+        // BELOW the word-start tier (60). At 70 an alias would outrank a real
+        // name's word-start match, which is what "de" -> Debugger tests for.
+        ...meta.aliases.map((a) => Math.min(score(a, q), ALIAS_CAP)),
       );
       return { meta, best, index };
     })
@@ -1386,7 +1409,7 @@ git commit -m "feat: add favourites and recents with unknown-slug pruning"
 ### Task 7: UI primitives
 
 **Files:**
-- Create: `components/ui/Button.tsx`, `components/ui/Segmented.tsx`, `components/ui/Toggle.tsx`, `components/ui/Field.tsx`, `components/ui/Select.tsx`, `components/ui/CodeArea.tsx`
+- Create: `components/ui/Button.tsx`, `components/ui/Segmented.tsx`, `components/ui/Toggle.tsx`, `components/ui/Select.tsx`, `components/ui/CodeArea.tsx`
 - Create: `lib/cx.ts`
 - Test: none — these are presentational. Verified in the browser in Step 8.
 
@@ -1397,7 +1420,6 @@ git commit -m "feat: add favourites and recents with unknown-slug pruning"
   - `<Button variant="primary" | "ghost" | "danger" size="sm" | "md">` — extends `React.ButtonHTMLAttributes<HTMLButtonElement>`
   - `<Segmented<T> value={T} options={{ value: T; label: string }[]} onChange={(v: T) => void} label={string}>`
   - `<Toggle checked={boolean} onChange={(v: boolean) => void} label={string}>`
-  - `<Field label={string} hint?={string} htmlFor?={string}>` — wraps a control with a mono label
   - `<Select<T> value={T} options={{ value: T; label: string }[]} onChange={(v: T) => void}>`
   - `<CodeArea value={string} onChange?={(v: string) => void} placeholder?={string} readOnly?={boolean} ariaLabel={string}>`
 
@@ -1540,32 +1562,7 @@ export function Toggle({ checked, onChange, label }: Props) {
 }
 ```
 
-- [ ] **Step 4: Write Field and Select**
-
-Create `components/ui/Field.tsx`:
-
-```tsx
-import { cx } from "@/lib/cx";
-
-interface Props {
-  label: string;
-  hint?: string;
-  htmlFor?: string;
-  className?: string;
-  children: React.ReactNode;
-}
-
-export function Field({ label, hint, htmlFor, className, children }: Props) {
-  return (
-    <div className={cx("flex flex-col gap-1.5", className)}>
-      <label htmlFor={htmlFor} className="eyebrow">{label}</label>
-      {children}
-      {/* Hints are prose, so they take the body font, not the ui font. */}
-      {hint ? <p className="text-[12px] leading-snug text-fg-muted">{hint}</p> : null}
-    </div>
-  );
-}
-```
+- [ ] **Step 4: Write Select**
 
 Create `components/ui/Select.tsx`:
 
@@ -3688,7 +3685,7 @@ git commit -m "feat: add aligned row model for the JSON Compare panes"
 - Modify: `lib/registry/index.ts` — add the first `TOOLS` entry
 
 **Interfaces:**
-- Consumes: `compareJson`, `DEFAULT_COMPARE_OPTIONS`, `CompareOptions`, `DiffStats` (Task 14); `toRows`, `DiffRow` (Task 15); `ToolShell`, `useToolState`, `ErrorNote` (Task 8); `Button`, `Toggle`, `Segmented`, `Select`, `CodeArea`, `Field` (Task 7).
+- Consumes: `compareJson`, `DEFAULT_COMPARE_OPTIONS`, `CompareOptions`, `DiffStats` (Task 14); `toRows`, `DiffRow` (Task 15); `ToolShell`, `useToolState`, `ErrorNote` (Task 8); `Button`, `Toggle`, `Segmented`, `Select`, `CodeArea` (Task 7).
 - Produces: the registered tool at `/json-compare`; `SAMPLE_LEFT`, `SAMPLE_RIGHT`.
 
 - [ ] **Step 1: Write the sample payload**
