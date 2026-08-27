@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -130,4 +130,14 @@ export const JWT_META: ToolMeta = {
   aliases: ["jwt", "token", "jsonwebtoken", "bearer", "claims"],
   // Tokens and signing secrets must not outlive the tab that pasted them.
   handlesSecrets: true,
+};
+
+export const IP_META: ToolMeta = {
+  slug: "ip-calculator",
+  name: "IP Calculator",
+  blurb: "Subnet IPv4 and IPv6 — ranges, masks, host counts, and splits.",
+  group: "network",
+  icon: Network,
+  aliases: ["ip", "subnet", "cidr", "netmask", "ipv6", "vlsm"],
+  handlesSecrets: false,
 };
