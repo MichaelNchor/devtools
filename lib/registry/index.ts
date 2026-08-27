@@ -9,6 +9,7 @@ import { JsonToCode } from "@/components/tools/JsonToCode";
 import { Guid } from "@/components/tools/Guid";
 import { Password } from "@/components/tools/Password";
 import { Hash } from "@/components/tools/Hash";
+import { Jwt } from "@/components/tools/Jwt";
 import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
 import { JSON_FORMAT_SAMPLE } from "@/lib/tools/json-format-sample";
 import { BASE64_SAMPLE } from "@/lib/tools/base64-sample";
@@ -20,7 +21,8 @@ import { JSON_TO_CODE_SAMPLE } from "@/lib/tools/json-to-code-sample";
 import { GUID_SAMPLE } from "@/lib/tools/guid-sample";
 import { PASSWORD_SAMPLE } from "@/lib/tools/password-sample";
 import { HASH_SAMPLE } from "@/lib/tools/hash-sample";
-import { BASE64_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, JSON_TO_CODE_META, PASSWORD_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
+import { JWT_SAMPLE } from "@/lib/tools/jwt-sample";
+import { BASE64_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -49,6 +51,7 @@ export const TOOLS: ToolEntry[] = [
   { meta: GUID_META, Component: Guid, sample: GUID_SAMPLE },
   { meta: PASSWORD_META, Component: Password, sample: PASSWORD_SAMPLE },
   { meta: HASH_META, Component: Hash, sample: HASH_SAMPLE },
+  { meta: JWT_META, Component: Jwt, sample: JWT_SAMPLE },
 ];
 
 export function allMetas(): ToolMeta[] {

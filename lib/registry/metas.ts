@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Hash, KeyRound, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -118,5 +118,16 @@ export const HASH_META: ToolMeta = {
   icon: Hash,
   aliases: ["md5", "sha", "sha256", "checksum", "digest", "hmac"],
   // Input may be a secret and an HMAC key certainly is.
+  handlesSecrets: true,
+};
+
+export const JWT_META: ToolMeta = {
+  slug: "jwt",
+  name: "JWT Debugger",
+  blurb: "Decode a JSON Web Token, humanise its claims, and verify its signature.",
+  group: "security",
+  icon: KeySquare,
+  aliases: ["jwt", "token", "jsonwebtoken", "bearer", "claims"],
+  // Tokens and signing secrets must not outlive the tab that pasted them.
   handlesSecrets: true,
 };
