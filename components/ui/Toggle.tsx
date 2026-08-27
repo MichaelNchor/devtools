@@ -30,7 +30,9 @@ export function Toggle({ checked, onChange, label }: Props) {
           )}
         />
       </button>
-      <span className="font-ui text-[12px] text-fg-2">{label}</span>
+      {/* aria-label already names the switch; without this the same words
+          also sit in the tree as loose text and get announced twice. */}
+      <span aria-hidden="true" className="font-ui text-[12px] text-fg-2">{label}</span>
     </label>
   );
 }
