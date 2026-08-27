@@ -1,4 +1,4 @@
-import { Binary, Braces, Clock, GitCompare, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, GitCompare, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -56,5 +56,15 @@ export const REGEX_META: ToolMeta = {
   group: "data",
   icon: Regex,
   aliases: ["regexp", "pattern", "match", "regular expression"],
+  handlesSecrets: false,
+};
+
+export const YAML_JSON_META: ToolMeta = {
+  slug: "yaml-json",
+  name: "YAML ↔ JSON",
+  blurb: "Convert between YAML and JSON in both directions.",
+  group: "data",
+  icon: ArrowLeftRight,
+  aliases: ["yaml", "yml", "convert", "json to yaml", "yaml to json"],
   handlesSecrets: false,
 };

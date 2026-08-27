@@ -1,0 +1,137 @@
+"use client";
+
+import { useMemo } from "react";
+import { ArrowLeftRight, Eraser } from "lucide-react";
+import { YAML_JSON_META } from "@/lib/registry/metas";
+import { yamlToJson, jsonToYaml, hasCommentsOrAnchors } from "@/lib/tools/yaml-json";
+import { YAML_JSON_SAMPLE } from "@/lib/tools/yaml-json-sample";
+import { ToolShell } from "@/components/tool/ToolShell";
+import { useToolState } from "@/components/tool/useToolState";
+import { ErrorNote } from "@/components/tool/ErrorNote";
+import { CopyButton } from "@/components/tool/CopyButton";
+import { Button } from "@/components/ui/Button";
+import { Toggle } from "@/components/ui/Toggle";
+import { Select } from "@/components/ui/Select";
+import { Segmented } from "@/components/ui/Segmented";
+import { CodeArea } from "@/components/ui/CodeArea";
+
+interface State {
+  input: string;
+  direction: "yaml-to-json" | "json-to-yaml";
+  indent: number;
+  flowStyle: boolean;
+}
+
+const DEFAULTS: State = { input: "", direction: "yaml-to-json", indent: 2, flowStyle: false };
+
+function isState(value: unknown): value is State {
+  if (typeof value !== "object" || value === null) return false;
+  const c = value as State;
+  return typeof c.input === "string" && typeof c.flowStyle === "boolean"
+    && typeof c.indent === "number" && Number.isFinite(c.indent)
+    && ["yaml-to-json", "json-to-yaml"].includes(c.direction);
+}
+
+export function YamlJson() {
+  const meta = YAML_JSON_META;
+  const [state, update, reset] = useToolState<State>(meta, DEFAULTS, isState);
+
+  const result = useMemo(() => {
+    if (!state.input.trim()) return null;
+    return state.direction === "yaml-to-json"
+      ? yamlToJson(state.input, state.indent)
+      : jsonToYaml(state.input, { indent: state.indent, flowStyle: state.flowStyle });
+  }, [state.input, state.direction, state.indent, state.flowStyle]);
+
+  const willDropDetail = state.direction === "yaml-to-json" && hasCommentsOrAnchors(state.input);
+
+  return (
+    <ToolShell
+      meta={meta}
+      shareState={state}
+      actions={
+        <>
+          <Button size="sm" onClick={() => update(YAML_JSON_SAMPLE)}>
+            <ArrowLeftRight size={13} aria-hidden />
+            Load sample
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => update({
+              direction: state.direction === "yaml-to-json" ? "json-to-yaml" : "yaml-to-json",
+              input: result?.ok ? result.value : state.input,
+            })}
+          >
+            Swap
+          </Button>
+          <Button size="sm" onClick={reset}>
+            <Eraser size={13} aria-hidden />
+            Clear
+          </Button>
+          {result?.ok ? <CopyButton text={result.value} label="Copy output" /> : null}
+        </>
+      }
+      options={
+        <>
+          <Segmented
+            label="Direction"
+            value={state.direction}
+            onChange={(direction) => update({ direction })}
+            options={[
+              { value: "yaml-to-json", label: "YAML → JSON" },
+              { value: "json-to-yaml", label: "JSON → YAML" },
+            ]}
+          />
+          <label className="flex items-center gap-2">
+            <span className="eyebrow">Indent</span>
+            <Select
+              value={String(state.indent)}
+              ariaLabel="Indent width"
+              onChange={(indent) => update({ indent: Number(indent) })}
+              options={[
+                { value: "2", label: "2 spaces" },
+                { value: "4", label: "4 spaces" },
+              ]}
+            />
+          </label>
+          {state.direction === "json-to-yaml" ? (
+            <Toggle
+              checked={state.flowStyle}
+              onChange={(flowStyle) => update({ flowStyle })}
+              label="Flow style"
+            />
+          ) : null}
+        </>
+      }
+    >
+      <div className="flex flex-col gap-3">
+        {willDropDetail ? (
+          // Stated plainly, above the output, before the user copies it away.
+          <p className="rounded-md bg-warn-tint px-3 py-2 text-[12.5px] text-warn">
+            ! JSON has no comments or anchors. Converting drops them — the output
+            below is the data only.
+          </p>
+        ) : null}
+
+        <div className="grid min-h-0 gap-3 lg:grid-cols-2">
+          <CodeArea
+            value={state.input}
+            onChange={(input) => update({ input })}
+            ariaLabel={state.direction === "yaml-to-json" ? "YAML input" : "JSON input"}
+            placeholder={state.direction === "yaml-to-json" ? "Paste YAML" : "Paste JSON"}
+            className="h-[60dvh] min-h-[22rem]"
+          />
+          <div className="flex flex-col gap-2">
+            {result && !result.ok ? <ErrorNote error={result.error} /> : null}
+            <CodeArea
+              value={result?.ok ? result.value : ""}
+              readOnly
+              ariaLabel="Output"
+              className="h-[60dvh] min-h-[22rem]"
+            />
+          </div>
+        </div>
+      </div>
+    </ToolShell>
+  );
+}
