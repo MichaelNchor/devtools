@@ -11,6 +11,7 @@ import { Password } from "@/components/tools/Password";
 import { Hash } from "@/components/tools/Hash";
 import { Jwt } from "@/components/tools/Jwt";
 import { IpCalculator } from "@/components/tools/IpCalculator";
+import { CurlConvert } from "@/components/tools/CurlConvert";
 import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
 import { JSON_FORMAT_SAMPLE } from "@/lib/tools/json-format-sample";
 import { BASE64_SAMPLE } from "@/lib/tools/base64-sample";
@@ -24,7 +25,8 @@ import { PASSWORD_SAMPLE } from "@/lib/tools/password-sample";
 import { HASH_SAMPLE } from "@/lib/tools/hash-sample";
 import { JWT_SAMPLE } from "@/lib/tools/jwt-sample";
 import { IP_SAMPLE } from "@/lib/tools/ip-sample";
-import { BASE64_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
+import { CURL_SAMPLE } from "@/lib/tools/curl-sample";
+import { BASE64_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -55,6 +57,7 @@ export const TOOLS: ToolEntry[] = [
   { meta: HASH_META, Component: Hash, sample: HASH_SAMPLE },
   { meta: JWT_META, Component: Jwt, sample: JWT_SAMPLE },
   { meta: IP_META, Component: IpCalculator, sample: IP_SAMPLE },
+  { meta: CURL_META, Component: CurlConvert, sample: CURL_SAMPLE },
 ];
 
 export function allMetas(): ToolMeta[] {

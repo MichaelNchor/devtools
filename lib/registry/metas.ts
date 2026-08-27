@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -139,5 +139,15 @@ export const IP_META: ToolMeta = {
   group: "network",
   icon: Network,
   aliases: ["ip", "subnet", "cidr", "netmask", "ipv6", "vlsm"],
+  handlesSecrets: false,
+};
+
+export const CURL_META: ToolMeta = {
+  slug: "curl-convert",
+  name: "cURL Converter",
+  blurb: "Turn a curl command into fetch, axios, requests, HttpClient, Go, or PowerShell.",
+  group: "network",
+  icon: TerminalSquare,
+  aliases: ["curl", "http", "request", "convert", "fetch", "axios"],
   handlesSecrets: false,
 };
