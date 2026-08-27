@@ -13,15 +13,22 @@ import { Button } from "@/components/ui/Button";
 import { Toggle } from "@/components/ui/Toggle";
 import { Select } from "@/components/ui/Select";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Segmented } from "@/components/ui/Segmented";
+import { summarise } from "@/lib/tools/json-compare-summary";
+import { DiffSummary } from "./DiffSummary";
+import { TextDiff } from "./TextDiff";
 import { cx } from "@/lib/cx";
 
 interface State {
   left: string;
   right: string;
   options: CompareOptions;
+  view: "structural" | "summary" | "text";
 }
 
-const DEFAULTS: State = { left: "", right: "", options: DEFAULT_COMPARE_OPTIONS };
+const DEFAULTS: State = {
+  left: "", right: "", options: DEFAULT_COMPARE_OPTIONS, view: "structural",
+};
 
 function isState(value: unknown): value is State {
   if (typeof value !== "object" || value === null) return false;
@@ -37,7 +44,8 @@ function isState(value: unknown): value is State {
     && typeof o.ignoreCase === "boolean"
     && typeof o.arrayKeyField === "string"
     && typeof o.numericTolerance === "number" && Number.isFinite(o.numericTolerance)
-    && ["index", "value", "key"].includes(o.arrayMatching);
+    && ["index", "value", "key"].includes(o.arrayMatching)
+    && ["structural", "summary", "text"].includes(candidate.view);
 }
 
 const ROW_TINT: Record<DiffRow["kind"], string> = {
@@ -116,6 +124,7 @@ export function JsonCompare() {
 
   const rows = useMemo(() => (result?.ok ? toRows(result.value.root) : []), [result]);
   const differences = useMemo(() => rows.filter((r) => r.isDifference), [rows]);
+  const summary = useMemo(() => (result?.ok ? summarise(result.value.root) : []), [result]);
 
   // The panes are two independent scroll containers holding the same number of
   // lines, so mirroring scrollTop keeps matched keys on the same screen line.
@@ -167,6 +176,20 @@ export function JsonCompare() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
+
+  function selectPath(path: string) {
+    const row = rows.find((r) => r.path === path);
+    if (!row) return;
+    // Selecting from the summary switches back to the panes, which is the only
+    // view where a path has a place to scroll to.
+    update({ view: "structural" });
+    setActiveIndex(row.index);
+    requestAnimationFrame(() => {
+      leftScroll.current
+        ?.querySelector(`[data-row="${row.index}"]`)
+        ?.scrollIntoView({ block: "center" });
+    });
+  }
 
   const stats = result?.ok ? result.value.stats : null;
   const setOption = (patch: Partial<CompareOptions>) =>
@@ -241,6 +264,18 @@ export function JsonCompare() {
               className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
             />
           </label>
+          <div className="ml-auto">
+            <Segmented
+              label="Diff view"
+              value={state.view}
+              onChange={(view) => update({ view })}
+              options={[
+                { value: "structural", label: "Panes" },
+                { value: "summary", label: "Summary" },
+                { value: "text", label: "Text" },
+              ]}
+            />
+          </div>
         </>
       }
     >
@@ -280,18 +315,26 @@ export function JsonCompare() {
           </div>
         ) : null}
 
-        {rows.length > 0 ? (
-          <div className="flex min-h-0 flex-[2] gap-3">
-            <Pane rows={rows} side="leftText" label="Left" activeIndex={activeIndex} scrollRef={leftScroll} />
-            <Pane rows={rows} side="rightText" label="Right" activeIndex={activeIndex} scrollRef={rightScroll} />
-          </div>
-        ) : (
+        {rows.length === 0 ? (
           // An empty surface teaches: say what goes here and offer the sample.
           <div className="flex flex-[2] items-center justify-center rounded-lg bg-surface p-8 text-center shadow-sm">
             <p className="max-w-sm text-[13px] leading-relaxed text-fg-muted">
               Paste JSON into both panes to see a structural diff. Formatting
               differences are ignored — only the data is compared.
             </p>
+          </div>
+        ) : state.view === "summary" ? (
+          <div className="flex min-h-0 flex-[2]">
+            <DiffSummary groups={summary} onSelect={selectPath} />
+          </div>
+        ) : state.view === "text" ? (
+          <div className="flex min-h-0 flex-[2]">
+            <TextDiff left={state.left} right={state.right} />
+          </div>
+        ) : (
+          <div className="flex min-h-0 flex-[2] gap-3">
+            <Pane rows={rows} side="leftText" label="Left" activeIndex={activeIndex} scrollRef={leftScroll} />
+            <Pane rows={rows} side="rightText" label="Right" activeIndex={activeIndex} scrollRef={rightScroll} />
           </div>
         )}
       </div>
