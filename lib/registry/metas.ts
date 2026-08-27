@@ -1,4 +1,4 @@
-import { Binary, Braces, Clock, GitCompare } from "lucide-react";
+import { Binary, Braces, Clock, GitCompare, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -46,5 +46,15 @@ export const EPOCH_META: ToolMeta = {
   group: "data",
   icon: Clock,
   aliases: ["unix", "timestamp", "time", "date", "epoch time"],
+  handlesSecrets: false,
+};
+
+export const REGEX_META: ToolMeta = {
+  slug: "regex",
+  name: "Regex Tester",
+  blurb: "Test regular expressions with live matches, groups, and replacements.",
+  group: "data",
+  icon: Regex,
+  aliases: ["regexp", "pattern", "match", "regular expression"],
   handlesSecrets: false,
 };

@@ -2,11 +2,13 @@ import { JsonCompare } from "@/components/tools/JsonCompare";
 import { JsonFormat } from "@/components/tools/JsonFormat";
 import { Base64 } from "@/components/tools/Base64";
 import { Epoch } from "@/components/tools/Epoch";
+import { RegexTester } from "@/components/tools/RegexTester";
 import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
 import { JSON_FORMAT_SAMPLE } from "@/lib/tools/json-format-sample";
 import { BASE64_SAMPLE } from "@/lib/tools/base64-sample";
 import { EPOCH_SAMPLE } from "@/lib/tools/epoch-sample";
-import { BASE64_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META } from "./metas";
+import { REGEX_SAMPLE } from "@/lib/tools/regex-sample";
+import { BASE64_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -28,6 +30,7 @@ export const TOOLS: ToolEntry[] = [
   { meta: JSON_FORMAT_META, Component: JsonFormat, sample: JSON_FORMAT_SAMPLE },
   { meta: BASE64_META, Component: Base64, sample: BASE64_SAMPLE },
   { meta: EPOCH_META, Component: Epoch, sample: EPOCH_SAMPLE },
+  { meta: REGEX_META, Component: RegexTester, sample: REGEX_SAMPLE },
 ];
 
 export function allMetas(): ToolMeta[] {
