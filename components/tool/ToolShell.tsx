@@ -3,10 +3,11 @@
 import { useEffect } from "react";
 import { Link2 } from "lucide-react";
 import type { ToolMeta } from "@/lib/registry/types";
-import { encodeShare, SHARE_PREFIX } from "@/lib/share";
+import { SHARE_PREFIX } from "@/lib/share";
 import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { Button } from "@/components/ui/Button";
 import { FavouriteStar } from "./FavouriteStar";
+import { shareGate } from "./useToolState";
 
 interface Props {
   meta: ToolMeta;
@@ -27,8 +28,9 @@ export function ToolShell({ meta, shareState, options, actions, children }: Prop
   // Sharing is explicit and gated twice: the tool must not handle secrets, and
   // the payload must fit. Over the ceiling, encodeShare returns null and the
   // button explains itself rather than handing over a link that will be cut.
-  const payload = meta.handlesSecrets || shareState === undefined ? null : encodeShare(shareState);
-  const canShare = !meta.handlesSecrets && shareState !== undefined;
+  const gate = shareGate(meta, shareState);
+  const canShare = gate.shareable;
+  const payload = gate.shareable ? gate.payload : null;
 
   async function share() {
     if (!payload) return;
