@@ -1348,7 +1348,7 @@ export function saveRecents(list: RecentEntry[]): void {
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `npx vitest run tests/workspace.test.ts`
-Expected: PASS, 11 tests.
+Expected: PASS, 10 tests.
 
 - [ ] **Step 5: Write the React provider**
 
