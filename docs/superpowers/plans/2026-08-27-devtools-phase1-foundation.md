@@ -429,7 +429,11 @@ import path from "node:path";
 import { describe, it, expect } from "vitest";
 
 function tokensIn(block: string): string[] {
-  return [...block.matchAll(/^\s*(--[a-z0-9-]+):/gm)].map((m) => m[1]!).sort();
+  // Matches anywhere on a line, NOT just at line start. The status families
+  // are written three tokens to a line, and a line-anchored regex drops all
+  // eight of them from BOTH sets — which makes the parity assertion below
+  // pass even when one side is missing a token entirely.
+  return [...block.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((m) => m[1]!).sort();
 }
 
 function blockFor(css: string, selector: string): string {
@@ -449,8 +453,27 @@ describe("theme tokens", () => {
     expect(missing).toEqual([]);
   });
 
-  it("uses no pure black or pure white as a surface", () => {
-    expect(css).not.toMatch(/--bg:\s*#(000000|fff|ffffff)\b/i);
+  it("sees tokens packed several to a line", () => {
+    // Guards the guard. Without this, a line-anchored regex in tokensIn()
+    // would silently exclude the status families from the parity check and
+    // nothing would notice.
+    const light = tokensIn(blockFor(css, ":root"));
+    expect(light).toContain("--up-tint");
+    expect(light).toContain("--warn");
+    expect(light.length).toBeGreaterThanOrEqual(49);
+  });
+
+  it("separates the canvas from the card by value", () => {
+    // The card IS deliberately pure white — ported verbatim, and job-copilot's
+    // own note explains the choice: cards sit on a tinted canvas and are
+    // lifted by a blue-grey shadow. What must never happen is the canvas
+    // matching the card, because then nothing separates a card from the page.
+    const light = blockFor(css, ":root");
+    const bg = /--bg:\s*(#[0-9a-f]{6})/i.exec(light)?.[1]?.toUpperCase();
+    const surface = /--surface:\s*(#[0-9a-f]{6})/i.exec(light)?.[1]?.toUpperCase();
+    expect(surface).toBe("#FFFFFF");
+    expect(bg).not.toBe(surface);
+    expect(bg).not.toBe("#000000");
   });
 });
 ```
