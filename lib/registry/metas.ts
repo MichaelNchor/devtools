@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Database, GitCompare, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, GitCompare, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -76,5 +76,15 @@ export const SQL_FORMAT_META: ToolMeta = {
   group: "data",
   icon: Database,
   aliases: ["sql", "query", "beautify sql", "postgres", "mysql"],
+  handlesSecrets: false,
+};
+
+export const JSON_TO_CODE_META: ToolMeta = {
+  slug: "json-to-code",
+  name: "JSON → Code",
+  blurb: "Infer types from a JSON sample and emit them in seven languages.",
+  group: "data",
+  icon: Code2,
+  aliases: ["types", "interface", "typescript", "codegen", "class", "struct"],
   handlesSecrets: false,
 };
