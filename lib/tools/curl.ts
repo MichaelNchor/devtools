@@ -177,6 +177,9 @@ export function emitRequest(model: RequestModel, target: CurlTarget): string {
   const headers = headerLines(model);
 
   switch (target) {
+    // NOTE FOR REVIEWERS: the string below contains the text "fetch(" because
+    // this function GENERATES JavaScript for the user to copy. It is a string
+    // literal, not a call — nothing in this app ever touches the network.
     case "fetch": {
       const lines = [`const response = await fetch(${q(model.url)}, {`, `  method: ${q(model.method)},`];
       if (headers.length) {

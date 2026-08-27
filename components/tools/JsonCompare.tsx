@@ -351,7 +351,7 @@ export function JsonCompare() {
             <TextDiff left={state.left} right={state.right} />
           </div>
         ) : (
-          <div className="flex min-h-0 flex-[2] gap-3">
+          <div className="flex min-h-0 flex-[2] flex-col gap-3 lg:flex-row">
             <Pane rows={rows} side="leftText" label="Left" activeIndex={activeIndex} scrollRef={leftScroll} />
             <Pane rows={rows} side="rightText" label="Right" activeIndex={activeIndex} scrollRef={rightScroll} />
           </div>
