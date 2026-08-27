@@ -168,3 +168,20 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * The theme toggle's selected state is painted by CSS, not by React state.
+ *
+ * The pre-paint script in app/layout.tsx stamps data-theme-choice on <html>
+ * before the first paint, so the right option is already lit when the page
+ * appears. Driving this from useState instead meant the server rendered
+ * "System" as active and the browser corrected it after hydration, which read
+ * as the toggle flickering on every single navigation.
+ */
+[data-theme-choice="light"] [data-theme-option="light"],
+[data-theme-choice="dark"] [data-theme-option="dark"],
+[data-theme-choice="system"] [data-theme-option="system"] {
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: var(--shadow-xs);
+}

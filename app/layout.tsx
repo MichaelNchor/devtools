@@ -24,6 +24,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html:
               'try{var t=localStorage.theme;' +
+              'var c=t==="dark"||t==="light"?t:"system";' +
+              // Stamped before paint so the toggle can light the correct
+              // option in its FIRST render. Without it the component boots at
+              // "system", then snaps to the stored choice after hydration —
+              // which is the flicker this attribute exists to remove.
+              'document.documentElement.setAttribute("data-theme-choice",c);' +
               'if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))' +
               'document.documentElement.classList.add("dark")}catch(e){}',
           }}

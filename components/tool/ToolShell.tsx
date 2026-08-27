@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { Link2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, Link2 } from "lucide-react";
 import type { ToolMeta } from "@/lib/registry/types";
 import { SHARE_PREFIX } from "@/lib/share";
 import { useWorkspace } from "@/components/shell/WorkspaceProvider";
@@ -22,8 +22,16 @@ interface Props {
 
 export function ToolShell({ meta, shareState, options, actions, children }: Props) {
   const { visit } = useWorkspace();
+  const [copied, setCopied] = useState(false);
+  const Icon = meta.icon;
 
   useEffect(() => { visit(meta.slug); }, [meta.slug, visit]);
+
+  useEffect(() => {
+    if (!copied) return;
+    const id = setTimeout(() => setCopied(false), 1800);
+    return () => clearTimeout(id);
+  }, [copied]);
 
   // Sharing is explicit and gated twice: the tool must not handle secrets, and
   // the payload must fit. Over the ceiling, encodeShare returns null and the
@@ -35,19 +43,33 @@ export function ToolShell({ meta, shareState, options, actions, children }: Prop
   async function share() {
     if (!payload) return;
     const url = `${window.location.origin}${window.location.pathname}${SHARE_PREFIX}${payload}`;
-    try { await navigator.clipboard.writeText(url); } catch { /* see CopyButton */ }
+    try {
+      await navigator.clipboard.writeText(url);
+      // Silence after a click reads as a broken button. Say it worked.
+      setCopied(true);
+    } catch { /* see CopyButton */ }
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-[1600px] flex-col gap-4 p-5 lg:p-7">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-            <h1 className="font-ui text-[1.375rem] font-bold tracking-[-0.01em] text-fg">{meta.name}</h1>
-            <FavouriteStar slug={meta.slug} name={meta.name} />
+    <main className="mx-auto flex min-h-dvh w-full max-w-[1600px] flex-col">
+      <header className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3 px-5 pb-4 pt-5 lg:px-7 lg:pt-6">
+        <div className="flex min-w-0 items-start gap-3">
+          {/* The page carries the same mark as its card and its rail row, so
+              arriving here confirms you landed where you clicked. */}
+          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-surface-2 text-fg-2">
+            <Icon size={16} aria-hidden />
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h1 className="font-ui text-[1.3rem] font-bold tracking-[-0.01em] text-fg">{meta.name}</h1>
+              <FavouriteStar slug={meta.slug} name={meta.name} />
+            </div>
+            <p className="mt-0.5 max-w-prose text-[12.5px] leading-relaxed text-fg-muted">
+              {meta.blurb}
+            </p>
           </div>
-          <p className="mt-1 max-w-prose text-[13px] text-fg-muted">{meta.blurb}</p>
         </div>
+
         <div className="flex flex-wrap items-center gap-2">
           {actions}
           {canShare ? (
@@ -55,22 +77,28 @@ export function ToolShell({ meta, shareState, options, actions, children }: Prop
               size="sm"
               onClick={share}
               disabled={!payload}
-              title={payload ? "Copy a link that opens this tool with your input" : "Input is too large to share by link"}
+              title={payload
+                ? "Copy a link that opens this tool with your input"
+                : "Input is too large to share by link"}
             >
-              <Link2 size={13} aria-hidden />
-              Share
+              {copied ? <Check size={13} aria-hidden /> : <Link2 size={13} aria-hidden />}
+              {copied ? "Link copied" : "Share"}
             </Button>
           ) : null}
         </div>
       </header>
 
       {options ? (
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-lg bg-surface px-4 py-3 shadow-sm">
-          {options}
+        // Sticky: on a long diff or a tall payload the controls would
+        // otherwise scroll away exactly when you want to change one.
+        <div className="sticky top-14 z-20 border-b border-border bg-bg/90 backdrop-blur">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 px-5 py-2.5 lg:px-7">
+            {options}
+          </div>
         </div>
       ) : null}
 
-      <div className="min-h-0 flex-1">{children}</div>
+      <div className="min-h-0 flex-1 px-5 py-4 lg:px-7 lg:py-5">{children}</div>
     </main>
   );
 }

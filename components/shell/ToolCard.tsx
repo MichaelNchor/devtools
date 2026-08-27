@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import type { ToolMeta } from "@/lib/registry/types";
 import { FavouriteStar } from "@/components/tool/FavouriteStar";
 
 export function ToolCard({ meta }: { meta: ToolMeta }) {
   const Icon = meta.icon;
   return (
-    <div className="group relative flex items-start gap-3 rounded-lg bg-surface p-4 shadow-sm transition-shadow hover:shadow-md">
-      <span className="mt-0.5 shrink-0 rounded-md bg-surface-2 p-1.5 text-fg-2">
+    <div className="group relative flex items-start gap-3 rounded-xl border border-border bg-surface p-4 shadow-sm transition-all duration-150 hover:-translate-y-px hover:border-primary/40 hover:shadow-md">
+      <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-surface-2 text-fg-2 transition-colors group-hover:bg-primary-tint group-hover:text-primary-strong">
         <Icon size={15} aria-hidden />
       </span>
+
       <div className="min-w-0 flex-1">
         {/* The whole card is the hit target: the pseudo-element covers it, and
             the star sits above it on z-10 so pinning does not navigate. */}
@@ -22,7 +24,14 @@ export function ToolCard({ meta }: { meta: ToolMeta }) {
         </Link>
         <p className="mt-1 text-[12.5px] leading-snug text-fg-muted">{meta.blurb}</p>
       </div>
-      <span className="relative z-10 shrink-0">
+
+      <span className="relative z-10 flex shrink-0 items-center gap-0.5">
+        {/* Decorative only — the link text already says where this goes. */}
+        <ArrowUpRight
+          size={14}
+          aria-hidden
+          className="text-fg-muted opacity-0 transition-opacity group-hover:opacity-100"
+        />
         <FavouriteStar slug={meta.slug} name={meta.name} />
       </span>
     </div>
