@@ -1,4 +1,4 @@
-import { Binary, Braces, GitCompare } from "lucide-react";
+import { Binary, Braces, Clock, GitCompare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -36,5 +36,15 @@ export const BASE64_META: ToolMeta = {
   group: "data",
   icon: Binary,
   aliases: ["b64", "encode", "decode", "data uri", "atob", "btoa"],
+  handlesSecrets: false,
+};
+
+export const EPOCH_META: ToolMeta = {
+  slug: "epoch",
+  name: "Epoch Converter",
+  blurb: "Convert Unix timestamps to dates and back, in any time zone.",
+  group: "data",
+  icon: Clock,
+  aliases: ["unix", "timestamp", "time", "date", "epoch time"],
   handlesSecrets: false,
 };
