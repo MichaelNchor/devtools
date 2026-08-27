@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, KeyRound, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -97,4 +97,15 @@ export const GUID_META: ToolMeta = {
   icon: Fingerprint,
   aliases: ["uuid", "guid", "id", "identifier", "random id"],
   handlesSecrets: false,
+};
+
+export const PASSWORD_META: ToolMeta = {
+  slug: "password",
+  name: "Password Generator",
+  blurb: "Generate strong passwords and see the entropy behind them.",
+  group: "security",
+  icon: KeyRound,
+  aliases: ["password", "passphrase", "random", "generate", "secret"],
+  // Generated credentials never touch localStorage and never ride in a URL.
+  handlesSecrets: true,
 };
