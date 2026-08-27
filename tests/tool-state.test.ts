@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { initialToolState } from "@/components/tool/useToolState";
-import { encodeShare, SHARE_PREFIX } from "@/lib/share";
+import { initialToolState, mayPersist, shareGate } from "@/components/tool/useToolState";
+import { encodeShare, SHARE_LIMIT, SHARE_PREFIX } from "@/lib/share";
 import { KEYS } from "@/lib/storage";
 import type { ToolMeta } from "@/lib/registry/types";
 
@@ -57,5 +57,39 @@ describe("initialToolState", () => {
     localStorage.setItem(KEYS.tool("jwt"), JSON.stringify({ text: "eyJhbG", mode: "decode" }));
     const hash = `${SHARE_PREFIX}${encodeShare({ text: "leaked", mode: "decode" })}`;
     expect(initialToolState(secret, DEFAULTS, hash, isValid)).toEqual(DEFAULTS);
+  });
+});
+
+describe("mayPersist — the write gate", () => {
+  it("allows persistence for a tool that handles no secrets", () => {
+    expect(mayPersist(open)).toBe(true);
+  });
+
+  it("refuses persistence for a secret-handling tool", () => {
+    expect(mayPersist(secret)).toBe(false);
+  });
+});
+
+describe("shareGate — the share gate", () => {
+  it("refuses to share a secret-handling tool at all", () => {
+    expect(shareGate(secret, { text: "eyJhbG", mode: "decode" })).toEqual({ shareable: false });
+  });
+
+  it("refuses when the tool exposes no share state", () => {
+    expect(shareGate(open, undefined)).toEqual({ shareable: false });
+  });
+
+  it("produces a payload for an ordinary tool", () => {
+    const gate = shareGate(open, { text: "hi", mode: "encode" });
+    expect(gate.shareable).toBe(true);
+    if (!gate.shareable) throw new Error("unreachable");
+    expect(gate.payload).toBeTypeOf("string");
+  });
+
+  it("marks state past the ceiling shareable but with no payload, so the button disables", () => {
+    const gate = shareGate(open, { text: "x".repeat(SHARE_LIMIT * 2), mode: "encode" });
+    expect(gate.shareable).toBe(true);
+    if (!gate.shareable) throw new Error("unreachable");
+    expect(gate.payload).toBeNull();
   });
 });
