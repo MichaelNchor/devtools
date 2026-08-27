@@ -1131,7 +1131,7 @@ export function groupTools(
 
 - [ ] **Step 5: Write the registry itself**
 
-Create `lib/registry/index.ts`. Task 14 adds the JSON Compare entry; until then the array is empty and the final invariant test fails, which is intentional and expected.
+Create `lib/registry/index.ts`. Task 16 adds the JSON Compare entry; until then the array is empty and the final invariant test fails, which is intentional and expected.
 
 ```ts
 import type { ToolEntry, ToolMeta } from "./types";
@@ -1158,7 +1158,7 @@ export function toolBySlug(slug: string): ToolEntry | undefined {
 - [ ] **Step 6: Run the tests**
 
 Run: `npx vitest run tests/registry.test.ts`
-Expected: all `searchTools` and `groupTools` tests PASS. The invariant test **"has at least one registered tool" FAILS** — `TOOLS` is empty until Task 14. Leave it failing; it is the tripwire proving the registry is wired up, and Task 14 turns it green.
+Expected: all `searchTools` and `groupTools` tests PASS. The invariant test **"has at least one registered tool" FAILS** — `TOOLS` is empty until Task 16. Leave it failing; it is the tripwire proving the registry is wired up, and Task 16 turns it green.
 
 - [ ] **Step 7: Commit**
 
@@ -2275,7 +2275,7 @@ export function Rail() {
 - [ ] **Step 2: Typecheck**
 
 Run: `npm run typecheck`
-Expected: no errors. The rail renders nothing until Task 14 registers a tool — that is expected.
+Expected: no errors. The rail renders nothing until Task 16 registers a tool — that is expected.
 
 - [ ] **Step 3: Commit**
 
