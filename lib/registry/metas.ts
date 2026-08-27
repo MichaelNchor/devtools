@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -149,5 +149,15 @@ export const CURL_META: ToolMeta = {
   group: "network",
   icon: TerminalSquare,
   aliases: ["curl", "http", "request", "convert", "fetch", "axios"],
+  handlesSecrets: false,
+};
+
+export const HTTP_META: ToolMeta = {
+  slug: "http-inspector",
+  name: "HTTP Inspector",
+  blurb: "Break a raw HTTP request or response into headers, body, and claims.",
+  group: "network",
+  icon: FileSearch,
+  aliases: ["http", "request", "response", "headers", "inspect", "raw"],
   handlesSecrets: false,
 };
