@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, GitCompare, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Database, GitCompare, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -66,5 +66,15 @@ export const YAML_JSON_META: ToolMeta = {
   group: "data",
   icon: ArrowLeftRight,
   aliases: ["yaml", "yml", "convert", "json to yaml", "yaml to json"],
+  handlesSecrets: false,
+};
+
+export const SQL_FORMAT_META: ToolMeta = {
+  slug: "sql-format",
+  name: "SQL Formatter",
+  blurb: "Format SQL across six dialects with configurable casing and indent.",
+  group: "data",
+  icon: Database,
+  aliases: ["sql", "query", "beautify sql", "postgres", "mysql"],
   handlesSecrets: false,
 };

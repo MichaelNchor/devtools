@@ -4,13 +4,15 @@ import { Base64 } from "@/components/tools/Base64";
 import { Epoch } from "@/components/tools/Epoch";
 import { RegexTester } from "@/components/tools/RegexTester";
 import { YamlJson } from "@/components/tools/YamlJson";
+import { SqlFormat } from "@/components/tools/SqlFormat";
 import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
 import { JSON_FORMAT_SAMPLE } from "@/lib/tools/json-format-sample";
 import { BASE64_SAMPLE } from "@/lib/tools/base64-sample";
 import { EPOCH_SAMPLE } from "@/lib/tools/epoch-sample";
 import { REGEX_SAMPLE } from "@/lib/tools/regex-sample";
 import { YAML_JSON_SAMPLE } from "@/lib/tools/yaml-json-sample";
-import { BASE64_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, YAML_JSON_META } from "./metas";
+import { SQL_FORMAT_SAMPLE } from "@/lib/tools/sql-format-sample";
+import { BASE64_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -34,6 +36,7 @@ export const TOOLS: ToolEntry[] = [
   { meta: EPOCH_META, Component: Epoch, sample: EPOCH_SAMPLE },
   { meta: REGEX_META, Component: RegexTester, sample: REGEX_SAMPLE },
   { meta: YAML_JSON_META, Component: YamlJson, sample: YAML_JSON_SAMPLE },
+  { meta: SQL_FORMAT_META, Component: SqlFormat, sample: SQL_FORMAT_SAMPLE },
 ];
 
 export function allMetas(): ToolMeta[] {
