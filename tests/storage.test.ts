@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { readJson, writeJson, remove, KEYS } from "@/lib/storage";
+import { readJson, writeJson, remove, KEYS , removeByPrefix, TOOL_KEY_PREFIX } from "@/lib/storage";
 
 function installStorage(impl: Partial<Storage>) {
   vi.stubGlobal("localStorage", impl as Storage);
@@ -61,5 +61,36 @@ describe("storage", () => {
     // The pre-paint script in app/layout.tsx reads a bare `theme`, so this one
     // key must NOT be namespaced.
     expect(KEYS.theme).toBe("theme");
+  });
+
+
+  it("removes only the keys under a prefix, leaving everything else", () => {
+    // Settings clears stored tool inputs. It must not take theme, favourites,
+    // recents, or the rail state with it.
+    const data: Record<string, string> = {
+      "devtools:tool:json-compare": "a",
+      "devtools:tool:base64": "b",
+      "devtools:favourites": "keep",
+      "devtools:recents": "keep",
+      "devtools:rail": "keep",
+      theme: "keep",
+    };
+    vi.stubGlobal("localStorage", {
+      get length() { return Object.keys(data).length; },
+      key: (i: number) => Object.keys(data)[i] ?? null,
+      getItem: (k: string) => data[k] ?? null,
+      setItem: (k: string, v: string) => { data[k] = v; },
+      removeItem: (k: string) => { delete data[k]; },
+    });
+
+    expect(removeByPrefix(TOOL_KEY_PREFIX)).toBe(2);
+    expect(Object.keys(data).sort()).toEqual([
+      "devtools:favourites", "devtools:rail", "devtools:recents", "theme",
+    ]);
+  });
+
+  it("reports zero removals when storage is unavailable rather than throwing", () => {
+    vi.stubGlobal("localStorage", undefined);
+    expect(removeByPrefix(TOOL_KEY_PREFIX)).toBe(0);
   });
 });

@@ -17,6 +17,9 @@ export const KEYS = {
   tool: (slug: string) => `devtools:tool:${slug}`,
 } as const;
 
+/** Everything a tool has stored. Settings clears exactly this prefix. */
+export const TOOL_KEY_PREFIX = "devtools:tool:";
+
 function store(): Storage | null {
   try {
     return typeof localStorage === "undefined" ? null : localStorage;
@@ -51,5 +54,28 @@ export function remove(key: string): void {
     store()?.removeItem(key);
   } catch {
     // See writeJson.
+  }
+}
+
+/**
+ * Removes every key under a prefix and reports how many went.
+ *
+ * Keys are collected BEFORE deleting: removing while iterating shifts the
+ * indices under `key(i)` and silently skips half of them. Returns 0 rather
+ * than throwing when storage is unavailable, like every other read here.
+ */
+export function removeByPrefix(prefix: string): number {
+  try {
+    const storage = store();
+    if (!storage) return 0;
+    const doomed: string[] = [];
+    for (let i = 0; i < storage.length; i += 1) {
+      const key = storage.key(i);
+      if (key !== null && key.startsWith(prefix)) doomed.push(key);
+    }
+    for (const key of doomed) storage.removeItem(key);
+    return doomed.length;
+  } catch {
+    return 0;
   }
 }
