@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, KeyRound, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Hash, KeyRound, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -107,5 +107,16 @@ export const PASSWORD_META: ToolMeta = {
   icon: KeyRound,
   aliases: ["password", "passphrase", "random", "generate", "secret"],
   // Generated credentials never touch localStorage and never ride in a URL.
+  handlesSecrets: true,
+};
+
+export const HASH_META: ToolMeta = {
+  slug: "hash",
+  name: "Hash Generator",
+  blurb: "MD5, SHA and RIPEMD digests of text or a file, with HMAC and compare.",
+  group: "security",
+  icon: Hash,
+  aliases: ["md5", "sha", "sha256", "checksum", "digest", "hmac"],
+  // Input may be a secret and an HMAC key certainly is.
   handlesSecrets: true,
 };
