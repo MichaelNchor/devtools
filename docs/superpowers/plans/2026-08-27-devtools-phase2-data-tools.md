@@ -3503,7 +3503,7 @@ Inside `Pane`, replace this:
 
 ```tsx
                 <span className="whitespace-pre text-fg">
-                  {text === null ? "" : `${"  ".repeat(row.depth)}${text}`}
+                  {text === null ? " " : `${"  ".repeat(row.depth)}${text}`}
                 </span>
 ```
 

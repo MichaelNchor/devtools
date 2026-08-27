@@ -17,6 +17,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { summarise } from "@/lib/tools/json-compare-summary";
 import { DiffSummary } from "./DiffSummary";
 import { TextDiff } from "./TextDiff";
+import { tokenizeJson, type JsonTokenType } from "@/lib/highlight/json";
 import { cx } from "@/lib/cx";
 
 interface State {
@@ -64,6 +65,15 @@ const GUTTER_TEXT: Record<DiffRow["kind"], string> = {
   "type-changed": "text-warn",
 };
 
+const TOKEN_TONE: Record<JsonTokenType, string> = {
+  key: "text-[var(--code-key)]",
+  string: "text-[var(--code-string)]",
+  number: "text-[var(--code-number)]",
+  atom: "text-[var(--code-atom)]",
+  punct: "text-[var(--code-punct)]",
+  space: "",
+};
+
 function Pane({
   rows, side, label, activeIndex, scrollRef,
 }: {
@@ -94,8 +104,17 @@ function Pane({
                 <span aria-hidden className={cx("w-4 shrink-0 select-none", GUTTER_TEXT[row.kind])}>
                   {row.gutter}
                 </span>
-                <span className="whitespace-pre text-fg">
-                  {text === null ? " " : `${"  ".repeat(row.depth)}${text}`}
+                <span className="whitespace-pre">
+                  {/* \u00A0, not " ": a blank side must still occupy a line even
+                      if a future change ever leaves the gutter glyph empty. */}
+                  {text === null ? "\u00A0" : (
+                    <>
+                      {"  ".repeat(row.depth)}
+                      {tokenizeJson(text).map((token, index) => (
+                        <span key={index} className={TOKEN_TONE[token.type]}>{token.text}</span>
+                      ))}
+                    </>
+                  )}
                 </span>
               </div>
             );
