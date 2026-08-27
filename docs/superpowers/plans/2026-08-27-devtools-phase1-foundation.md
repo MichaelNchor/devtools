@@ -1512,11 +1512,17 @@ export function Button({ variant = "ghost", size = "md", className, ...rest }: P
 
 - [ ] **Step 3: Write Segmented and Toggle**
 
-Create `components/ui/Segmented.tsx`:
+Create `components/ui/Segmented.tsx`. Two things beyond the styling matter here.
+`type="button"` is required: an untyped `<button>` defaults to `type="submit"`,
+so inside a form every segment click would also submit it. And the ARIA
+radiogroup pattern is a single tab stop with arrows moving between options —
+Tab enters and leaves the group rather than walking it — so the roles below
+oblige us to implement roving `tabIndex` and arrow keys.
 
 ```tsx
 "use client";
 
+import { useRef } from "react";
 import { cx } from "@/lib/cx";
 
 interface Props<T extends string> {
@@ -1526,16 +1532,51 @@ interface Props<T extends string> {
   label: string;
 }
 
+const NAV_KEYS = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"];
+
 export function Segmented<T extends string>({ value, options, onChange, label }: Props<T>) {
+  const groupRef = useRef<HTMLDivElement>(null);
+  const activeIndex = options.findIndex((option) => option.value === value);
+
+  function onKeyDown(event: React.KeyboardEvent) {
+    if (!NAV_KEYS.includes(event.key)) return;
+    event.preventDefault();
+    const last = options.length - 1;
+    const from = activeIndex === -1 ? 0 : activeIndex;
+
+    let next: number;
+    if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = last;
+    else if (event.key === "ArrowRight" || event.key === "ArrowDown") next = from === last ? 0 : from + 1;
+    else next = from === 0 ? last : from - 1;
+
+    const target = options[next];
+    if (!target) return;
+    onChange(target.value);
+    // Selection follows focus in this pattern, so focus moves with it.
+    groupRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[next]?.focus();
+  }
+
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex rounded-md bg-surface-2 p-0.5">
-      {options.map((option) => {
+    <div
+      ref={groupRef}
+      role="radiogroup"
+      aria-label={label}
+      onKeyDown={onKeyDown}
+      className="inline-flex rounded-md bg-surface-2 p-0.5"
+    >
+      {options.map((option, index) => {
         const active = option.value === value;
+        // Exactly one tab stop. If `value` matches nothing, the first option
+        // holds it so the group can never become unreachable by keyboard.
+        const tabbable = activeIndex === -1 ? index === 0 : active;
         return (
           <button
             key={option.value}
+            type="button"
             role="radio"
             aria-checked={active}
+            tabIndex={tabbable ? 0 : -1}
             onClick={() => onChange(option.value)}
             className={cx(
               "rounded-sm px-2.5 py-1 font-ui text-[12px] font-medium transition-colors",
@@ -1587,7 +1628,9 @@ export function Toggle({ checked, onChange, label }: Props) {
           )}
         />
       </button>
-      <span className="font-ui text-[12px] text-fg-2">{label}</span>
+      {/* aria-label already names the switch; without this the same words
+          also sit in the tree as loose text and get announced twice. */}
+      <span aria-hidden="true" className="font-ui text-[12px] text-fg-2">{label}</span>
     </label>
   );
 }
@@ -1710,7 +1753,7 @@ git commit -m "feat: add UI primitives with visible focus states"
 - Produces:
   - `initialToolState<T>(meta, defaults, hash, isValid): T` — pure; precedence is share hash → stored → defaults
   - `useToolState<T>(meta: ToolMeta, defaults: T, isValid: (v: unknown) => v is T): [T, (patch: Partial<T>) => void, () => void]` — third element resets to defaults
-  - `<ToolShell meta actions options panes>` — layout only
+  - `<ToolShell meta actions options panes>` — layout, plus visit-tracking and the share flow
   - `<FavouriteStar slug />`, `<CopyButton text label />`, `<ErrorNote error />`
 
 - [ ] **Step 1: Write the failing test for state precedence**
@@ -1796,7 +1839,7 @@ Create `components/tool/useToolState.ts`:
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ToolMeta } from "@/lib/registry/types";
 import { KEYS, readJson, remove, writeJson } from "@/lib/storage";
-import { readShareFromHash } from "@/lib/share";
+import { readShareFromHash, SHARE_PREFIX, encodeShare } from "@/lib/share";
 
 const DEBOUNCE_MS = 400;
 
@@ -1826,6 +1869,29 @@ export function initialToolState<T>(
   return defaults;
 }
 
+/**
+ * The write gate, extracted so it can be regression-tested without a DOM.
+ * Two of the three places a secret could escape used to live only inside a
+ * React hook and a component, where the node-environment suite could not
+ * reach them — an accidental `&&`/`||` flip would have gone unnoticed.
+ */
+export function mayPersist(meta: ToolMeta): boolean {
+  return !meta.handlesSecrets;
+}
+
+/**
+ * The share gate, extracted for the same reason. `shareable: false` means no
+ * button at all; a `null` payload means the button renders disabled because
+ * the state exceeds SHARE_LIMIT.
+ */
+export function shareGate(
+  meta: ToolMeta,
+  shareState: unknown,
+): { shareable: false } | { shareable: true; payload: string | null } {
+  if (meta.handlesSecrets || shareState === undefined) return { shareable: false };
+  return { shareable: true, payload: encodeShare(shareState) };
+}
+
 export function useToolState<T extends object>(
   meta: ToolMeta,
   defaults: T,
@@ -1833,13 +1899,14 @@ export function useToolState<T extends object>(
 ): [T, (patch: Partial<T>) => void, () => void] {
   const [state, setState] = useState<T>(defaults);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pending = useRef<T | null>(null);
 
   // Restore after mount. The server has no localStorage and no hash, so doing
   // this during render would produce a hydration mismatch.
   useEffect(() => {
     const restored = initialToolState(meta, defaults, window.location.hash, isValid);
     setState(restored);
-    if (window.location.hash.startsWith("#s=")) {
+    if (window.location.hash.startsWith(SHARE_PREFIX)) {
       // Clear the payload from the address bar so it does not ride along into
       // history or a screenshot once it has been applied.
       window.history.replaceState(null, "", window.location.pathname);
@@ -1852,9 +1919,13 @@ export function useToolState<T extends object>(
   const update = useCallback((patch: Partial<T>) => {
     setState((current) => {
       const next = { ...current, ...patch };
-      if (!meta.handlesSecrets) {
+      if (mayPersist(meta)) {
+        pending.current = next;
         if (timer.current) clearTimeout(timer.current);
-        timer.current = setTimeout(() => writeJson(KEYS.tool(meta.slug), next), DEBOUNCE_MS);
+        timer.current = setTimeout(() => {
+          writeJson(KEYS.tool(meta.slug), next);
+          pending.current = null;
+        }, DEBOUNCE_MS);
       }
       return next;
     });
@@ -1867,7 +1938,18 @@ export function useToolState<T extends object>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [meta.slug]);
 
-  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  // Flush on unmount rather than cancel. Cancelling threw away up to 400ms of
+  // the user's most recent edit whenever they navigated mid-debounce, which
+  // defeats the point of persisting at all. A pending value can only exist for
+  // a tool that passed mayPersist(), so flushing cannot leak a secret.
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current);
+    if (pending.current !== null) {
+      writeJson(KEYS.tool(meta.slug), pending.current);
+      pending.current = null;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [meta.slug]);
 
   return [state, update, reset];
 }
@@ -1974,7 +2056,8 @@ Create `components/tool/ToolShell.tsx`:
 import { useEffect } from "react";
 import { Link2 } from "lucide-react";
 import type { ToolMeta } from "@/lib/registry/types";
-import { encodeShare, SHARE_PREFIX } from "@/lib/share";
+import { SHARE_PREFIX } from "@/lib/share";
+import { shareGate } from "./useToolState";
 import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { Button } from "@/components/ui/Button";
 import { FavouriteStar } from "./FavouriteStar";
@@ -1998,8 +2081,9 @@ export function ToolShell({ meta, shareState, options, actions, children }: Prop
   // Sharing is explicit and gated twice: the tool must not handle secrets, and
   // the payload must fit. Over the ceiling, encodeShare returns null and the
   // button explains itself rather than handing over a link that will be cut.
-  const payload = meta.handlesSecrets || shareState === undefined ? null : encodeShare(shareState);
-  const canShare = !meta.handlesSecrets && shareState !== undefined;
+  const gate = shareGate(meta, shareState);
+  const canShare = gate.shareable;
+  const payload = gate.shareable ? gate.payload : null;
 
   async function share() {
     if (!payload) return;
@@ -2121,7 +2205,7 @@ function RailLinks({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?:
                   ) : null}
                   <Link
                     href={`/${meta.slug}`}
-                    onClick={onNavigate}
+                    onClick={() => onNavigate?.()}
                     aria-current={active ? "page" : undefined}
                     title={collapsed ? meta.name : undefined}
                     className={cx(
@@ -2152,7 +2236,9 @@ export function Rail() {
   const panelRef = useRef<HTMLElement>(null);
   const openerRef = useRef<Element | null>(null);
 
-  useEffect(() => { setCollapsed(readJson(KEYS.rail, "expanded") === "collapsed"); }, []);
+  // Annotated: without it T infers the literal "expanded" and tsc rejects the
+  // comparison against "collapsed" as having no overlap (TS2367).
+  useEffect(() => { setCollapsed(readJson<string>(KEYS.rail, "expanded") === "collapsed"); }, []);
 
   function setRail(next: boolean) {
     setCollapsed(next);
