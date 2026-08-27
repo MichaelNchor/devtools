@@ -1,4 +1,4 @@
-import { Braces, GitCompare } from "lucide-react";
+import { Binary, Braces, GitCompare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -26,5 +26,15 @@ export const JSON_FORMAT_META: ToolMeta = {
   group: "data",
   icon: Braces,
   aliases: ["format", "beautify", "prettify", "minify", "validate", "pretty print"],
+  handlesSecrets: false,
+};
+
+export const BASE64_META: ToolMeta = {
+  slug: "base64",
+  name: "Base64",
+  blurb: "Encode and decode base64, including URL-safe and binary payloads.",
+  group: "data",
+  icon: Binary,
+  aliases: ["b64", "encode", "decode", "data uri", "atob", "btoa"],
   handlesSecrets: false,
 };
