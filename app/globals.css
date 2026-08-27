@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Cool grey canvas, white cards lifted on a blue-grey shadow, and a near-black
+   rail holding the left edge. Blue carries every commitment. Status is carried
+   by fill AND by a glyph or label, never by hue alone. */
+:root {
+  --bg: #F6F7FB;
+  --surface: #FFFFFF;
+  --surface-2: #EDEFF3;
+  --inset: #F6F7FB;
+
+  --fg: #313A46;
+  --fg-2: #4C4C5C;
+  --fg-muted: #616B7A;
+  --border: #E7E9EB;
+  --border-2: #EDEFF3;
+
+  --primary: #236DC9;
+  --primary-hover: #1E5DAB;
+  --primary-strong: #1E5DAB;
+  --primary-tint: #E8F0FB;
+
+  --accent: #7B70EF;
+  --accent-strong: #4A3FC7;
+  --accent-tint: #EEEDFD;
+  --indigo: #4A3FC7;
+  --indigo-tint: #EEEDFD;
+
+  /* Solid fills a dot, a bar or a gutter; the deep form is the only one
+     allowed to carry a word. */
+  --up-solid: #02BC9C;  --up: #06715F;  --up-tint: #E0F7F2;
+  --rose-solid: #F7577E; --rose: #C42A50; --rose-tint: #FDE9EE;
+  --warn-solid: #F9BF59; --warn: #7A5A10; --warn-tint: #FEF5E3;
+  --sky-solid: #5BC3E1;  --sky: #0E6F8A; --sky-tint: #E4F5FA;
+  --destructive: #C42A50;
+
+  --on-primary: #FFFFFF;
+
+  /* The rail does not invert with the theme. Written out in both blocks
+     rather than hoisted, because a token that happens to match is still a
+     themed token and the parity test wants it in both. */
+  --nav: #06070A;
+  --nav-fg: #FFFFFF;
+  --nav-fg-muted: rgba(255, 255, 255, .58);
+  --nav-line: rgba(255, 255, 255, .07);
+  --nav-hover: rgba(255, 255, 255, .06);
+
+  --ring: #236DC9;
+
+  --shadow-xs: 0 1px 2px 0 rgba(130, 143, 163, .12);
+  --shadow-sm: 0 1px 4px 0 rgba(130, 143, 163, .15);
+  --shadow-md: 0 2px 8px 0 rgba(130, 143, 163, .18);
+  --shadow-lg: 0 8px 24px -6px rgba(130, 143, 163, .28);
+
+  /* Syntax highlighting. Each is a reference to an existing themed token, so
+     highlighting can never drift from the palette. */
+  --code-key: var(--primary);
+  --code-string: var(--up);
+  --code-number: var(--indigo);
+  --code-atom: var(--warn);
+  --code-punct: var(--fg-muted);
+  --code-comment: var(--fg-muted);
+  --code-keyword: var(--accent-strong);
+}
+
+.dark {
+  /* The canvas drops below the card rather than the card rising, so the same
+     shadow vocabulary still reads. Each hue keeps its solid form and gains a
+     lighter text form: the deep labels that clear AA on white are 2:1 on a
+     dark card, so they swap rather than carry over. */
+  --bg: #08090C;
+  --surface: #101217;
+  --surface-2: #1A1D24;
+  --inset: #0B0C10;
+
+  --fg: #E9EBEF;
+  --fg-2: #B6BAC4;
+  --fg-muted: #979DAB;
+  --border: #21252D;
+  --border-2: #171A20;
+
+  --primary: #4A8EE8;
+  --primary-hover: #6BA4EF;
+  --primary-strong: #8FBAF3;
+  --primary-tint: rgba(74, 142, 232, .16);
+
+  --accent: #9A91F4;
+  --accent-strong: #B6AFF8;
+  --accent-tint: rgba(154, 145, 244, .16);
+  --indigo: #B6AFF8;
+  --indigo-tint: rgba(154, 145, 244, .16);
+
+  --up-solid: #02BC9C;  --up: #45D9BB;  --up-tint: rgba(2, 188, 156, .16);
+  --rose-solid: #F7577E; --rose: #FF8DA8; --rose-tint: rgba(247, 87, 126, .16);
+  --warn-solid: #F9BF59; --warn: #F0C67A; --warn-tint: rgba(249, 191, 89, .16);
+  --sky-solid: #5BC3E1;  --sky: #7FD3EC; --sky-tint: rgba(91, 195, 225, .16);
+  --destructive: #FF8DA8;
+
+  --on-primary: #0E1116;
+
+  /* Identical to :root — see the note there. */
+  --nav: #06070A;
+  --nav-fg: #FFFFFF;
+  --nav-fg-muted: rgba(255, 255, 255, .58);
+  --nav-line: rgba(255, 255, 255, .07);
+  --nav-hover: rgba(255, 255, 255, .06);
+
+  --ring: #4A8EE8;
+
+  /* On a dark canvas a card cannot be lifted by lightness alone, so the
+     shadows deepen and a hairline comes back to draw the edge. */
+  --shadow-xs: 0 0 0 1px rgba(255, 255, 255, .04);
+  --shadow-sm: 0 0 0 1px rgba(255, 255, 255, .05), 0 1px 4px 0 rgba(0, 0, 0, .40);
+  --shadow-md: 0 0 0 1px rgba(255, 255, 255, .05), 0 2px 10px 0 rgba(0, 0, 0, .50);
+  --shadow-lg: 0 0 0 1px rgba(255, 255, 255, .05), 0 10px 30px -8px rgba(0, 0, 0, .65);
+
+  --code-key: var(--primary);
+  --code-string: var(--up);
+  --code-number: var(--indigo);
+  --code-atom: var(--warn);
+  --code-punct: var(--fg-muted);
+  --code-comment: var(--fg-muted);
+  --code-keyword: var(--accent);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Disabling contextual alternates keeps mono ligatures out of payloads: an
+   arrow in a JSON string must render as the two characters it is. */
+.font-ui, .font-mono {
+  font-feature-settings: "calt" 0;
+}
+
+/* Machine-read facts sit on tabular figures so columns of numbers align. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.eyebrow {
+  font-family: var(--font-ui), ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+:root {
+  --ease-out-quart: cubic-bezier(.25, 1, .5, 1);
+  --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
