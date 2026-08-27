@@ -20,7 +20,8 @@
     "next": "^15.5.24",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "sql-formatter": "^15.8.2"
+    "sql-formatter": "^15.8.2",
+    "uuid": "^14.0.2"
   },
   "devDependencies": {
     "@types/node": "^26.4.0",

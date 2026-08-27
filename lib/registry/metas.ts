@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, GitCompare, Regex } from "lucide-react";
+import { ArrowLeftRight, Binary, Braces, Clock, Code2, Database, Fingerprint, GitCompare, Regex } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -86,5 +86,15 @@ export const JSON_TO_CODE_META: ToolMeta = {
   group: "data",
   icon: Code2,
   aliases: ["types", "interface", "typescript", "codegen", "class", "struct"],
+  handlesSecrets: false,
+};
+
+export const GUID_META: ToolMeta = {
+  slug: "guid",
+  name: "GUID Generator",
+  blurb: "Generate UUIDs — v4, v7, v1, and namespace-based v5.",
+  group: "security",
+  icon: Fingerprint,
+  aliases: ["uuid", "guid", "id", "identifier", "random id"],
   handlesSecrets: false,
 };
