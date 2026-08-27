@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { AppShell } from "@/components/shell/AppShell";
 
 const nunito = Nunito({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         style={{ ["--font-ui" as string]: "var(--font-mono)" }}
         className={`${nunito.variable} ${mono.variable} font-sans`}
       >
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
