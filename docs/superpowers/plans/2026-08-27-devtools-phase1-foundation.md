@@ -1064,6 +1064,9 @@ Create `lib/registry/search.ts`. Subsequence matching is what makes `jsncmp` fin
 ```ts
 import { GROUP_LABELS, GROUP_ORDER, type ToolGroup, type ToolMeta } from "./types";
 
+/** Aliases must rank below a real name's word-start match (60). */
+const ALIAS_CAP = 50;
+
 /**
  * Scores one haystack against a query. Higher is better; 0 means no match.
  *
@@ -1071,9 +1074,6 @@ import { GROUP_LABELS, GROUP_ORDER, type ToolGroup, type ToolMeta } from "./type
  * prefix beats a word-start, and a scattered subsequence comes last so that
  * typing "de" surfaces "Debugger" above "delta".
  */
-/** Aliases must rank below a real name's word-start match (60). */
-const ALIAS_CAP = 50;
-
 function score(haystack: string, query: string): number {
   const h = haystack.toLowerCase();
   if (h === query) return 100;
