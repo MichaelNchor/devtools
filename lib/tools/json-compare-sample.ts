@@ -25,3 +25,6 @@ export const SAMPLE_RIGHT = JSON.stringify(
   null,
   2,
 );
+
+/** The state patch the "Load sample" button applies. */
+export const JSON_COMPARE_SAMPLE = { left: SAMPLE_LEFT, right: SAMPLE_RIGHT };

@@ -31,4 +31,10 @@ export interface ToolMeta {
 export interface ToolEntry {
   meta: ToolMeta;
   Component: React.ComponentType;
+  /**
+   * The state patch this tool's "Load sample" button applies. Held on the
+   * entry rather than inside the component so the registry suite can assert
+   * every tool has one — an empty page should teach, not sit blank.
+   */
+  sample: Record<string, unknown>;
 }

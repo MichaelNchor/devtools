@@ -5,7 +5,7 @@ import { Eraser, FileJson } from "lucide-react";
 import { JSON_COMPARE_META } from "@/lib/registry/metas";
 import { compareJson, DEFAULT_COMPARE_OPTIONS, type CompareOptions } from "@/lib/tools/json-compare";
 import { toRows, type DiffRow } from "@/lib/tools/json-compare-rows";
-import { SAMPLE_LEFT, SAMPLE_RIGHT } from "@/lib/tools/json-compare-sample";
+import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -201,7 +201,7 @@ export function JsonCompare() {
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update({ left: SAMPLE_LEFT, right: SAMPLE_RIGHT })}>
+          <Button size="sm" onClick={() => update(JSON_COMPARE_SAMPLE)}>
             <FileJson size={13} aria-hidden />
             Load sample
           </Button>

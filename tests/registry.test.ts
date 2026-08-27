@@ -87,6 +87,15 @@ describe("registry invariants", () => {
     expect(toolBySlug("does-not-exist")).toBeUndefined();
   });
 
+  it("gives every tool a sample payload", () => {
+    // Spec 8. An empty tool page must be able to teach rather than sit blank,
+    // and that only holds if every entry actually carries a sample.
+    for (const entry of TOOLS) {
+      expect(entry.sample, entry.meta.slug).toBeTruthy();
+      expect(Object.keys(entry.sample).length, entry.meta.slug).toBeGreaterThan(0);
+    }
+  });
+
   it("has at least one registered tool", () => {
     expect(TOOLS.length).toBeGreaterThan(0);
   });

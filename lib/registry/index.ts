@@ -1,4 +1,5 @@
 import { JsonCompare } from "@/components/tools/JsonCompare";
+import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
 import { JSON_COMPARE_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
@@ -17,7 +18,7 @@ export { searchTools, groupTools } from "./search";
  * build. Each tool imports the meta it needs from ./metas instead.
  */
 export const TOOLS: ToolEntry[] = [
-  { meta: JSON_COMPARE_META, Component: JsonCompare },
+  { meta: JSON_COMPARE_META, Component: JsonCompare, sample: JSON_COMPARE_SAMPLE },
 ];
 
 export function allMetas(): ToolMeta[] {
