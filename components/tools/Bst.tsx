@@ -8,9 +8,11 @@ import {
   TRAVERSALS, BST_PSEUDOCODE, operationFrames,
   type Traversal, type BstFrame, type BstOperation,
 } from "@/lib/tools/bst";
+import { BST_CODE } from "@/lib/tools/bst-code";
 import { BST_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
+import { CodeSwitcher } from "@/components/tool/CodeSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { cx } from "@/lib/cx";
@@ -219,51 +221,27 @@ export function Bst() {
           </div>
         </div>
 
-        {/* The listing for whichever operation is running, with the line
-            currently executing marked — the same treatment the sorting
-            visualiser gets, so the two read the same way. */}
-        <div className="overflow-hidden rounded-lg border border-border bg-surface">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border px-3 py-2">
-            <p className="eyebrow">Pseudocode</p>
-            <span className="font-ui text-[12px] text-fg">
-              {BST_PSEUDOCODE[run?.op ?? "search"].title}
-            </span>
-            <span className="text-[11.5px] text-fg-muted">
-              {run ? "The highlighted line is the step on screen" : "Run an operation to step through it"}
-            </span>
-            {run ? (
-              <span className="ml-auto flex items-center gap-2">
-                <span className="font-ui text-[11.5px] text-fg-muted tabular">
-                  Step {step + 1} of {run.frames.length}
-                </span>
-                <Button size="sm" onClick={advance} disabled={atEnd}>
-                  Step
-                  <SkipForward size={13} aria-hidden />
-                </Button>
-                <Button size="sm" onClick={finish} disabled={atEnd}>Finish</Button>
+        <CodeSwitcher
+          title={BST_PSEUDOCODE[run?.op ?? "search"].title}
+          subtitle={run
+            ? "The highlighted line is the step on screen"
+            : "Run an operation above to step through it"}
+          pseudocode={BST_PSEUDOCODE[run?.op ?? "search"].lines}
+          activeLine={run ? frame!.line : null}
+          implementations={BST_CODE[run?.op ?? "search"]}
+          trailing={run ? (
+            <>
+              <span className="font-ui text-[11.5px] text-fg-muted tabular">
+                Step {step + 1} of {run.frames.length}
               </span>
-            ) : null}
-          </div>
-          <ol className="p-1.5">
-            {BST_PSEUDOCODE[run?.op ?? "search"].lines.map((code, index) => (
-              <li
-                key={index}
-                aria-current={run && index === frame!.line ? "step" : undefined}
-                className={cx(
-                  "flex gap-2.5 rounded-sm px-2 py-[3px] font-ui text-[12px] transition-colors",
-                  run && index === frame!.line
-                    ? "bg-primary-tint text-primary-strong"
-                    : "text-fg-muted",
-                )}
-              >
-                <span aria-hidden className="w-2 shrink-0">
-                  {run && index === frame!.line ? "▸" : ""}
-                </span>
-                <span className="whitespace-pre-wrap">{code}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
+              <Button size="sm" onClick={advance} disabled={atEnd}>
+                Step
+                <SkipForward size={13} aria-hidden />
+              </Button>
+              <Button size="sm" onClick={finish} disabled={atEnd}>Finish</Button>
+            </>
+          ) : null}
+        />
       </div>
     </ToolShell>
   );

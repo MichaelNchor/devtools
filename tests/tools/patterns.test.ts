@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   PATTERNS, TOPICS, PREP_SPLIT, learningOrder, totalTarget,
 } from "@/lib/tools/patterns";
+import { LANGUAGES } from "@/lib/tools/languages";
 
 describe("PATTERNS", () => {
   it("covers the fifteen patterns", () => {
@@ -23,10 +24,22 @@ describe("PATTERNS", () => {
     }
   });
 
-  it("ships a C# snippet and practice problems for every pattern", () => {
+  it("ships a real implementation in every language, for every pattern", () => {
+    // A missing language would render an empty code panel with no warning,
+    // so this is checked per pattern per language rather than in aggregate.
     for (const p of PATTERNS) {
-      expect(p.code.length, p.name).toBeGreaterThan(60);
+      for (const { value, label } of LANGUAGES) {
+        expect(p.code[value], `${p.name}: ${label}`).toBeTruthy();
+        expect(p.code[value].length, `${p.name}: ${label}`).toBeGreaterThan(50);
+      }
       expect(p.problems.length, p.name).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("does not paste the same snippet into two languages", () => {
+    for (const p of PATTERNS) {
+      const snippets = LANGUAGES.map((l) => p.code[l.value]);
+      expect(new Set(snippets).size, p.name).toBe(snippets.length);
     }
   });
 

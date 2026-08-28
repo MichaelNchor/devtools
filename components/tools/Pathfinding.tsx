@@ -7,8 +7,10 @@ import {
   makeGrid, searchFrames, toggleWall, PATH_ALGORITHMS, PATH_PSEUDOCODE,
   type Cell, type Grid, type PathAlgorithm,
 } from "@/lib/tools/pathfinding";
+import { PATH_CODE } from "@/lib/tools/pathfinding-code";
 import { PATHFINDING_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
+import { CodeSwitcher } from "@/components/tool/CodeSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { cx } from "@/lib/cx";
@@ -175,29 +177,13 @@ export function Pathfinding() {
         </p>
 
         <div className="grid gap-3 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-lg border border-border bg-surface">
-            <div className="border-b border-border px-3 py-2">
-              <p className="eyebrow">Pseudocode</p>
-              <p className="mt-0.5 text-[11.5px] leading-none text-fg-muted">
-                The highlighted line is the step on screen
-              </p>
-            </div>
-            <ol className="p-1.5">
-              {PATH_PSEUDOCODE[algorithm].map((code, index) => (
-                <li
-                  key={index}
-                  aria-current={index === frame.line ? "step" : undefined}
-                  className={cx(
-                    "flex gap-2.5 rounded-sm px-2 py-[3px] font-ui text-[12px] transition-colors",
-                    index === frame.line ? "bg-primary-tint text-primary-strong" : "text-fg-muted",
-                  )}
-                >
-                  <span aria-hidden className="w-2 shrink-0">{index === frame.line ? "▸" : ""}</span>
-                  <span className="whitespace-pre-wrap">{code}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <CodeSwitcher
+            title={info.label}
+            subtitle="Only the frontier lines differ between the three"
+            pseudocode={PATH_PSEUDOCODE[algorithm]}
+            activeLine={frame.line}
+            implementations={PATH_CODE[algorithm]}
+          />
 
           <div className="rounded-lg border border-border bg-surface p-4">
             <div className="flex flex-wrap items-baseline gap-2">

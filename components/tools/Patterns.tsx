@@ -9,7 +9,7 @@ import {
 import { PATTERNS_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { Segmented } from "@/components/ui/Segmented";
-import { CopyButton } from "@/components/tool/CopyButton";
+import { CodeSwitcher } from "@/components/tool/CodeSwitcher";
 import { cx } from "@/lib/cx";
 
 const PRIORITY_TONE: Record<Priority, string> = {
@@ -114,14 +114,14 @@ export function Patterns() {
                       <span>space {pattern.space}</span>
                     </div>
 
-                    <div className="mt-2.5 overflow-hidden rounded-md border border-border bg-inset">
-                      <div className="flex items-center gap-2 border-b border-border px-2.5 py-1.5">
-                        <span className="eyebrow">C#</span>
-                        <span className="ml-auto"><CopyButton text={pattern.code} label="Copy" /></span>
-                      </div>
-                      <pre className="overflow-x-auto px-3 py-2.5 font-ui text-[12px] leading-relaxed text-fg">
-                        {pattern.code}
-                      </pre>
+                    <div className="mt-2.5">
+                      <CodeSwitcher
+                        title="Implementation"
+                        pseudocodeLabel="Idea"
+                        defaultTab="csharp"
+                        pseudocode={[pattern.idea]}
+                        implementations={pattern.code}
+                      />
                     </div>
 
                     <p className="mt-2.5 text-[12px] text-fg-muted">

@@ -4,9 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, RotateCcw, Shuffle, SkipBack, SkipForward } from "lucide-react";
 import { SORTING_META } from "@/lib/registry/metas";
 import { sortFrames, SORT_ALGORITHMS, PSEUDOCODE, type SortAlgorithm } from "@/lib/tools/sorting";
+import { SORT_CODE } from "@/lib/tools/sorting-code";
 import { SORTING_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
+import { CodeSwitcher } from "@/components/tool/CodeSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { cx } from "@/lib/cx";
@@ -233,32 +235,14 @@ export function Sorting() {
         </p>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="overflow-hidden rounded-lg border border-border bg-surface">
-            <div className="border-b border-border px-3 py-2">
-              <p className="eyebrow">Pseudocode</p>
-              <p className="mt-0.5 text-[11.5px] leading-none text-fg-muted">
-                The highlighted line is the step on screen
-              </p>
-            </div>
-            <ol className="p-1.5">
-              {PSEUDOCODE[state.algorithm].map((code, index) => (
-                <li
-                  key={index}
-                  aria-current={index === frame.line ? "step" : undefined}
-                  className={cx(
-                    "flex gap-2.5 rounded-sm px-2 py-[3px] font-ui text-[12px] transition-colors",
-                    index === frame.line ? "bg-primary-tint text-primary-strong" : "text-fg-muted",
-                  )}
-                >
-                  {/* The marker, not just the fill, says which line is live. */}
-                  <span aria-hidden className="w-2 shrink-0">
-                    {index === frame.line ? "▸" : ""}
-                  </span>
-                  <span className="whitespace-pre">{code}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <CodeSwitcher
+            title={info.label}
+            subtitle="Pseudocode tracks the animation; the rest is code you can lift"
+            pseudocode={PSEUDOCODE[state.algorithm]}
+            activeLine={frame.line}
+            implementations={SORT_CODE[state.algorithm]}
+          />
+
           <div className="rounded-lg border border-border bg-surface p-4">
             <p className="eyebrow mb-2">Complexity</p>
             <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 font-ui text-[12.5px]">
