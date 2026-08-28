@@ -39,6 +39,54 @@ export const SORT_ALGORITHMS: SortAlgorithmInfo[] = [
   },
 ];
 
+/**
+ * The listing shown beside the animation. Frames carry an index into these,
+ * so the highlighted line is produced by the same code that does the sorting
+ * — it cannot drift out of step with what the bars are doing.
+ */
+export const PSEUDOCODE: Record<SortAlgorithm, string[]> = {
+  bubble: [
+    "for end ← n−1 down to 1",
+    "  swapped ← false",
+    "  for i ← 0 to end−1",
+    "    if a[i] > a[i+1]",
+    "      swap a[i], a[i+1];  swapped ← true",
+    "  if not swapped: stop        ▸ already sorted",
+  ],
+  insertion: [
+    "for i ← 1 to n−1",
+    "  value ← a[i];  j ← i−1",
+    "  while j ≥ 0 and a[j] > value",
+    "    a[j+1] ← a[j];  j ← j−1",
+    "  a[j+1] ← value              ▸ value is home",
+  ],
+  selection: [
+    "for i ← 0 to n−2",
+    "  min ← i",
+    "  for j ← i+1 to n−1",
+    "    if a[j] < a[min]:  min ← j",
+    "  swap a[i], a[min]           ▸ index i is final",
+  ],
+  merge: [
+    "sort(lo, hi):",
+    "  if lo ≥ hi: return          ▸ one element is sorted",
+    "  mid ← (lo + hi) / 2",
+    "  sort(lo, mid);  sort(mid+1, hi)",
+    "  merge the two halves:",
+    "    repeatedly take the smaller front element",
+    "    then copy whatever remains",
+  ],
+  quick: [
+    "sort(lo, hi):",
+    "  if lo ≥ hi: return",
+    "  pivot ← a[hi];  i ← lo",
+    "  for j ← lo to hi−1",
+    "    if a[j] < pivot:  swap a[i], a[j];  i ← i+1",
+    "  swap a[i], a[hi]            ▸ pivot is now final",
+    "  sort(lo, i−1);  sort(i+1, hi)",
+  ],
+};
+
 export interface SortFrame {
   array: number[];
   /** Indices being read this step. */
@@ -51,6 +99,8 @@ export interface SortFrame {
   swaps: number;
   /** Plain-language caption for this step. */
   note: string;
+  /** Index into PSEUDOCODE[algorithm] — the line being executed. */
+  line: number;
 }
 
 /**
@@ -65,17 +115,20 @@ class Recorder {
   comparisons = 0;
   swaps = 0;
   private truncated = false;
+  /** Held so the closing frame highlights where the algorithm ended. */
+  lastLine = 0;
 
   constructor(private readonly array: number[]) {}
 
-  push(note: string, comparing: number[] = [], swapping: number[] = [], sorted: number[] = []) {
+  push(line: number, note: string, comparing: number[] = [], swapping: number[] = [], sorted: number[] = []) {
     // Minus one: finish() always appends a closing frame, so the reserved
     // slot is what makes MAX_FRAMES a real ceiling rather than a near miss.
+    this.lastLine = line;
     if (this.frames.length >= MAX_FRAMES - 1) { this.truncated = true; return; }
     this.frames.push({
       array: [...this.array],
       comparing, swapping, sorted,
-      comparisons: this.comparisons, swaps: this.swaps, note,
+      comparisons: this.comparisons, swaps: this.swaps, note, line,
     });
   }
 
@@ -86,6 +139,7 @@ class Recorder {
       comparing: [], swapping: [],
       sorted: this.array.map((_, i) => i),
       comparisons: this.comparisons, swaps: this.swaps,
+      line: this.lastLine,
       note: this.truncated
         ? `Sorted. Earlier steps were not all recorded — ${MAX_FRAMES} frames is the display limit.`
         : `Sorted in ${this.comparisons} comparisons and ${this.swaps} swaps.`,
@@ -99,13 +153,13 @@ function bubble(a: number[], rec: Recorder) {
     let swappedThisPass = false;
     for (let i = 0; i < end; i += 1) {
       rec.comparisons += 1;
-      rec.push(`Compare ${a[i]} and ${a[i + 1]}.`, [i, i + 1], [],
+      rec.push(3, `Compare ${a[i]} and ${a[i + 1]}.`, [i, i + 1], [],
         Array.from({ length: a.length - 1 - end }, (_, k) => a.length - 1 - k));
       if (a[i]! > a[i + 1]!) {
         [a[i], a[i + 1]] = [a[i + 1]!, a[i]!];
         rec.swaps += 1;
         swappedThisPass = true;
-        rec.push(`${a[i + 1]} was larger, so they swap.`, [], [i, i + 1]);
+        rec.push(4, `${a[i + 1]} was larger, so they swap.`, [], [i, i + 1]);
       }
     }
     // A clean pass means everything below is already ordered.
@@ -117,18 +171,18 @@ function insertion(a: number[], rec: Recorder) {
   for (let i = 1; i < a.length; i += 1) {
     const value = a[i]!;
     let j = i - 1;
-    rec.push(`Take ${value} and slide it back into the sorted prefix.`, [i], [],
+    rec.push(1, `Take ${value} and slide it back into the sorted prefix.`, [i], [],
       Array.from({ length: i }, (_, k) => k));
     while (j >= 0 && a[j]! > value) {
       rec.comparisons += 1;
       a[j + 1] = a[j]!;
       rec.swaps += 1;
-      rec.push(`${a[j]} is larger than ${value}, so it shifts right.`, [j], [j + 1]);
+      rec.push(3, `${a[j]} is larger than ${value}, so it shifts right.`, [j], [j + 1]);
       j -= 1;
     }
     if (j >= 0) rec.comparisons += 1;
     a[j + 1] = value;
-    rec.push(`${value} lands at index ${j + 1}.`, [], [j + 1]);
+    rec.push(4, `${value} lands at index ${j + 1}.`, [], [j + 1]);
   }
 }
 
@@ -138,13 +192,13 @@ function selection(a: number[], rec: Recorder) {
     const done = Array.from({ length: i }, (_, k) => k);
     for (let j = i + 1; j < a.length; j += 1) {
       rec.comparisons += 1;
-      rec.push(`Is ${a[j]} smaller than the smallest so far, ${a[min]}?`, [j, min], [], done);
+      rec.push(3, `Is ${a[j]} smaller than the smallest so far, ${a[min]}?`, [j, min], [], done);
       if (a[j]! < a[min]!) min = j;
     }
     if (min !== i) {
       [a[i], a[min]] = [a[min]!, a[i]!];
       rec.swaps += 1;
-      rec.push(`Swap the smallest remaining value into index ${i}.`, [], [i, min], done);
+      rec.push(4, `Swap the smallest remaining value into index ${i}.`, [], [i, min], done);
     }
   }
 }
@@ -157,7 +211,7 @@ function mergeSort(a: number[], rec: Recorder, lo = 0, hi = a.length - 1) {
 
   const left = a.slice(lo, mid + 1);
   const right = a.slice(mid + 1, hi + 1);
-  rec.push(`Merge the halves [${left}] and [${right}].`,
+  rec.push(4, `Merge the halves [${left}] and [${right}].`,
     Array.from({ length: hi - lo + 1 }, (_, k) => lo + k));
 
   let i = 0, j = 0, k = lo;
@@ -166,33 +220,33 @@ function mergeSort(a: number[], rec: Recorder, lo = 0, hi = a.length - 1) {
     if (left[i]! <= right[j]!) { a[k] = left[i]!; i += 1; }
     else { a[k] = right[j]!; j += 1; }
     rec.swaps += 1;
-    rec.push(`Take ${a[k]} into position ${k}.`, [], [k]);
+    rec.push(5, `Take ${a[k]} into position ${k}.`, [], [k]);
     k += 1;
   }
-  while (i < left.length) { a[k] = left[i]!; rec.swaps += 1; rec.push(`Copy ${a[k]} across.`, [], [k]); i += 1; k += 1; }
-  while (j < right.length) { a[k] = right[j]!; rec.swaps += 1; rec.push(`Copy ${a[k]} across.`, [], [k]); j += 1; k += 1; }
+  while (i < left.length) { a[k] = left[i]!; rec.swaps += 1; rec.push(6, `Copy ${a[k]} across.`, [], [k]); i += 1; k += 1; }
+  while (j < right.length) { a[k] = right[j]!; rec.swaps += 1; rec.push(6, `Copy ${a[k]} across.`, [], [k]); j += 1; k += 1; }
 }
 
 function quickSort(a: number[], rec: Recorder, lo = 0, hi = a.length - 1) {
   if (lo >= hi) return;
   const pivot = a[hi]!;
-  rec.push(`Partition around the pivot ${pivot}.`, [hi]);
+  rec.push(2, `Partition around the pivot ${pivot}.`, [hi]);
   let i = lo;
   for (let j = lo; j < hi; j += 1) {
     rec.comparisons += 1;
-    rec.push(`Is ${a[j]} below the pivot ${pivot}?`, [j, hi]);
+    rec.push(3, `Is ${a[j]} below the pivot ${pivot}?`, [j, hi]);
     if (a[j]! < pivot) {
       if (i !== j) {
         [a[i], a[j]] = [a[j]!, a[i]!];
         rec.swaps += 1;
-        rec.push(`Yes — move it into the low side.`, [], [i, j]);
+        rec.push(4, `Yes — move it into the low side.`, [], [i, j]);
       }
       i += 1;
     }
   }
   [a[i], a[hi]] = [a[hi]!, a[i]!];
   rec.swaps += 1;
-  rec.push(`The pivot settles at index ${i}, and is now final.`, [], [i], [i]);
+  rec.push(5, `The pivot settles at index ${i}, and is now final.`, [], [i], [i]);
   quickSort(a, rec, lo, i - 1);
   quickSort(a, rec, i + 1, hi);
 }
@@ -204,7 +258,7 @@ function quickSort(a: number[], rec: Recorder, lo = 0, hi = a.length - 1) {
 export function sortFrames(input: number[], algorithm: SortAlgorithm): SortFrame[] {
   const a = [...input];
   const rec = new Recorder(a);
-  rec.push("Starting array.");
+  rec.push(0, "Starting array.");
 
   switch (algorithm) {
     case "bubble": bubble(a, rec); break;

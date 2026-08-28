@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Eraser, Pause, Play, RotateCcw, SkipForward } from "lucide-react";
 import { PATHFINDING_META } from "@/lib/registry/metas";
 import {
-  makeGrid, searchFrames, toggleWall, PATH_ALGORITHMS,
+  makeGrid, searchFrames, toggleWall, PATH_ALGORITHMS, PATH_PSEUDOCODE,
   type Cell, type Grid, type PathAlgorithm,
 } from "@/lib/tools/pathfinding";
 import { PATHFINDING_EXAMPLES } from "@/lib/tools/examples";
@@ -174,12 +174,38 @@ export function Pathfinding() {
           {frame.note}
         </p>
 
-        <div className="rounded-lg border border-border bg-surface p-4">
-          <div className="flex flex-wrap items-baseline gap-2">
-            <p className="eyebrow">{info.label}</p>
-            <span className="font-ui text-[11.5px] text-up">{info.guarantee}</span>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <div className="overflow-hidden rounded-lg border border-border bg-surface">
+            <div className="border-b border-border px-3 py-2">
+              <p className="eyebrow">Pseudocode</p>
+              <p className="mt-0.5 text-[11.5px] leading-none text-fg-muted">
+                The highlighted line is the step on screen
+              </p>
+            </div>
+            <ol className="p-1.5">
+              {PATH_PSEUDOCODE[algorithm].map((code, index) => (
+                <li
+                  key={index}
+                  aria-current={index === frame.line ? "step" : undefined}
+                  className={cx(
+                    "flex gap-2.5 rounded-sm px-2 py-[3px] font-ui text-[12px] transition-colors",
+                    index === frame.line ? "bg-primary-tint text-primary-strong" : "text-fg-muted",
+                  )}
+                >
+                  <span aria-hidden className="w-2 shrink-0">{index === frame.line ? "▸" : ""}</span>
+                  <span className="whitespace-pre-wrap">{code}</span>
+                </li>
+              ))}
+            </ol>
           </div>
-          <p className="mt-1.5 text-[12.5px] leading-relaxed text-fg-muted">{info.blurb}</p>
+
+          <div className="rounded-lg border border-border bg-surface p-4">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <p className="eyebrow">{info.label}</p>
+              <span className="font-ui text-[11.5px] text-up">{info.guarantee}</span>
+            </div>
+            <p className="mt-1.5 text-[12.5px] leading-relaxed text-fg-muted">{info.blurb}</p>
+          </div>
         </div>
       </div>
     </ToolShell>

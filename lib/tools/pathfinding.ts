@@ -31,6 +31,41 @@ export const PATH_ALGORITHMS: {
   },
 ];
 
+/**
+ * One listing per algorithm. They are deliberately near-identical: the only
+ * line that differs is how a cell is taken from the frontier, which is the
+ * entire difference between the three.
+ */
+export const PATH_PSEUDOCODE: Record<PathAlgorithm, string[]> = {
+  bfs: [
+    "frontier ← queue containing start",
+    "while frontier is not empty:",
+    "  cell ← frontier.removeOldest()   ▸ FIFO",
+    "  if cell is goal: return path",
+    "  for each open neighbour not seen:",
+    "    mark seen;  frontier.add(neighbour)",
+    "return no path",
+  ],
+  dfs: [
+    "frontier ← stack containing start",
+    "while frontier is not empty:",
+    "  cell ← frontier.removeNewest()   ▸ LIFO",
+    "  if cell is goal: return path",
+    "  for each open neighbour not seen:",
+    "    mark seen;  frontier.add(neighbour)",
+    "return no path",
+  ],
+  astar: [
+    "frontier ← set containing start",
+    "while frontier is not empty:",
+    "  cell ← lowest g(cell) + h(cell)   ▸ best first",
+    "  if cell is goal: return path",
+    "  for each open neighbour not seen:",
+    "    mark seen;  frontier.add(neighbour)",
+    "return no path",
+  ],
+};
+
 export interface PathFrame {
   visited: Cell[];
   frontier: Cell[];
@@ -38,6 +73,8 @@ export interface PathFrame {
   path: Cell[];
   found: boolean;
   note: string;
+  /** Index into PATH_PSEUDOCODE[algorithm] — the line being executed. */
+  line: number;
 }
 
 const key = (c: Cell) => `${c.row},${c.col}`;
@@ -112,7 +149,7 @@ export function searchFrames(grid: Grid, algorithm: PathAlgorithm): PathFrame[] 
   };
 
   frames.push({
-    visited: [], frontier: [grid.start], current: null, path: [], found: false,
+    visited: [], frontier: [grid.start], current: null, path: [], found: false, line: 0,
     note: "Start. The frontier holds the cells known but not yet explored.",
   });
 
@@ -123,7 +160,7 @@ export function searchFrames(grid: Grid, algorithm: PathAlgorithm): PathFrame[] 
     if (key(current) === key(grid.goal)) {
       const path = reconstruct(cameFrom, grid.goal);
       frames.push({
-        visited: [...visited], frontier: [...open], current, path, found: true,
+        visited: [...visited], frontier: [...open], current, path, found: true, line: 3,
         note: `Reached the goal after exploring ${visited.length} cells. The path is ${path.length - 1} steps.`,
       });
       return frames;
@@ -138,13 +175,13 @@ export function searchFrames(grid: Grid, algorithm: PathAlgorithm): PathFrame[] 
     }
 
     frames.push({
-      visited: [...visited], frontier: [...open], current, path: [], found: false,
+      visited: [...visited], frontier: [...open], current, path: [], found: false, line: 5,
       note: `Explored (${current.row}, ${current.col}). ${open.length} cells on the frontier.`,
     });
   }
 
   frames.push({
-    visited: [...visited], frontier: [], current: null, path: [], found: false,
+    visited: [...visited], frontier: [], current: null, path: [], found: false, line: 6,
     note: `No path exists. All ${visited.length} reachable cells were explored and the goal was not among them.`,
   });
   return frames;

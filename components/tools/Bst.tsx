@@ -5,7 +5,7 @@ import { Plus, RotateCcw, Search, Trash2 } from "lucide-react";
 import { BST_META } from "@/lib/registry/metas";
 import {
   buildTree, insert, remove, searchPath, traverse, layout, treeStats,
-  TRAVERSALS, type Traversal,
+  TRAVERSALS, BST_PSEUDOCODE, type Traversal,
 } from "@/lib/tools/bst";
 import { BST_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
@@ -189,6 +189,23 @@ export function Bst() {
               {stats.balanced ? "." : " — insert sorted values and it degenerates into a linked list, which is O(n)."}
             </p>
           </div>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-3">
+          {BST_PSEUDOCODE.map((block) => (
+            <div key={block.title} className="overflow-hidden rounded-lg border border-border bg-surface">
+              <p className="border-b border-border px-3 py-2 font-ui text-[12px] font-semibold text-fg">
+                {block.title}
+              </p>
+              <ol className="p-2">
+                {block.lines.map((line, index) => (
+                  <li key={index} className="whitespace-pre-wrap px-1 py-[2px] font-ui text-[11.5px] leading-snug text-fg-muted">
+                    {line}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
         </div>
       </div>
     </ToolShell>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  makeGrid, searchFrames, PATH_ALGORITHMS, toggleWall,
+  makeGrid, searchFrames, PATH_ALGORITHMS, PATH_PSEUDOCODE, toggleWall,
   type Grid, type PathAlgorithm,
 } from "@/lib/tools/pathfinding";
 
@@ -81,6 +81,30 @@ describe("searchFrames", () => {
     const frames = searchFrames(grid(), "bfs");
     for (let i = 1; i < frames.length; i += 1) {
       expect(frames[i]!.visited.length).toBeGreaterThanOrEqual(frames[i - 1]!.visited.length);
+    }
+  });
+
+  it("points every frame at a real pseudocode line", () => {
+    for (const algo of PATH_ALGORITHMS) {
+      const lines = PATH_PSEUDOCODE[algo.value];
+      for (const frame of searchFrames(grid(), algo.value)) {
+        expect(frame.line, algo.value).toBeGreaterThanOrEqual(0);
+        expect(frame.line, algo.value).toBeLessThan(lines.length);
+      }
+    }
+  });
+
+  it("gives the three algorithms listings that differ only where they truly differ", () => {
+    // Two lines carry the whole distinction: which structure holds the
+    // frontier, and how a cell is taken from it. Everything else is shared,
+    // and if that ever stops being true the explanation has drifted.
+    const DIFFER = new Set([0, 2]);
+    const [bfs, dfs, astar] = PATH_ALGORITHMS.map((a) => PATH_PSEUDOCODE[a.value]);
+    expect(bfs!.length).toBe(dfs!.length);
+    expect(bfs!.length).toBe(astar!.length);
+    for (let i = 0; i < bfs!.length; i += 1) {
+      const distinct = new Set([bfs![i], dfs![i], astar![i]]).size;
+      expect(distinct, `line ${i}`).toBe(DIFFER.has(i) ? 3 : 1);
     }
   });
 

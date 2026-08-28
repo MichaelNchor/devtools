@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, RotateCcw, Shuffle, SkipBack, SkipForward } from "lucide-react";
 import { SORTING_META } from "@/lib/registry/metas";
-import { sortFrames, SORT_ALGORITHMS, type SortAlgorithm } from "@/lib/tools/sorting";
+import { sortFrames, SORT_ALGORITHMS, PSEUDOCODE, type SortAlgorithm } from "@/lib/tools/sorting";
 import { SORTING_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
@@ -40,7 +40,16 @@ export function Sorting() {
   );
   const info = SORT_ALGORITHMS.find((a) => a.value === state.algorithm)!;
   const frame = frames[Math.min(step, frames.length - 1)]!;
-  const max = Math.max(...state.values, 1);
+  // Normalised across the real range, not just the max. Dividing by the max
+  // alone gives a zero bar no height and a negative bar a NEGATIVE height,
+  // which renders identically to zero — so the engine's support for negative
+  // values would have been invisible here.
+  const lo = Math.min(...state.values, 0);
+  const hi = Math.max(...state.values, 0);
+  const span = hi - lo || 1;
+  const heightOf = (v: number) => 6 + ((v - lo) / span) * 94;
+  // Numbers stop being legible long before the bars do.
+  const showValues = frame.array.length <= 24;
 
   // Changing the input or the algorithm invalidates the position in the run.
   useEffect(() => { setStep(0); setPlaying(false); }, [state.values, state.algorithm]);
@@ -163,16 +172,29 @@ export function Sorting() {
             const isSwapping = frame.swapping.includes(index);
             const isSorted = frame.sorted.includes(index);
             return (
-              <div
-                key={index}
-                className={cx(
-                  "flex-1 rounded-t-sm transition-all duration-150",
-                  isSwapping ? "bg-rose-solid"
-                    : isComparing ? "bg-warn-solid"
-                      : isSorted ? "bg-up-solid" : "bg-primary/45",
-                )}
-                style={{ height: `${(value / max) * 100}%` }}
-              />
+              <div key={index} className="flex h-full min-w-0 flex-1 flex-col justify-end gap-1">
+                <div
+                  className={cx(
+                    "w-full rounded-t-sm transition-all duration-150",
+                    isSwapping ? "bg-rose-solid"
+                      : isComparing ? "bg-warn-solid"
+                        : isSorted ? "bg-up-solid" : "bg-primary/45",
+                  )}
+                  style={{ height: `${heightOf(value)}%` }}
+                />
+                {showValues ? (
+                  <span
+                    className={cx(
+                      "shrink-0 text-center font-ui text-[10px] leading-none tabular",
+                      isSwapping ? "text-rose"
+                        : isComparing ? "text-warn"
+                          : isSorted ? "text-up" : "text-fg-muted",
+                    )}
+                  >
+                    {value}
+                  </span>
+                ) : null}
+              </div>
             );
           })}
         </div>
@@ -191,9 +213,31 @@ export function Sorting() {
         </p>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-border bg-surface p-4">
-            <p className="eyebrow mb-1.5">{info.label}</p>
-            <p className="text-[12.5px] leading-relaxed text-fg-muted">{info.blurb}</p>
+          <div className="overflow-hidden rounded-lg border border-border bg-surface">
+            <div className="border-b border-border px-3 py-2">
+              <p className="eyebrow">Pseudocode</p>
+              <p className="mt-0.5 text-[11.5px] leading-none text-fg-muted">
+                The highlighted line is the step on screen
+              </p>
+            </div>
+            <ol className="p-1.5">
+              {PSEUDOCODE[state.algorithm].map((code, index) => (
+                <li
+                  key={index}
+                  aria-current={index === frame.line ? "step" : undefined}
+                  className={cx(
+                    "flex gap-2.5 rounded-sm px-2 py-[3px] font-ui text-[12px] transition-colors",
+                    index === frame.line ? "bg-primary-tint text-primary-strong" : "text-fg-muted",
+                  )}
+                >
+                  {/* The marker, not just the fill, says which line is live. */}
+                  <span aria-hidden className="w-2 shrink-0">
+                    {index === frame.line ? "▸" : ""}
+                  </span>
+                  <span className="whitespace-pre">{code}</span>
+                </li>
+              ))}
+            </ol>
           </div>
           <div className="rounded-lg border border-border bg-surface p-4">
             <p className="eyebrow mb-2">Complexity</p>
@@ -204,6 +248,9 @@ export function Sorting() {
               <dt className="text-fg-muted">Space</dt><dd className="text-fg tabular">{info.space}</dd>
               <dt className="text-fg-muted">Stable</dt><dd className="text-fg">{info.stable ? "Yes" : "No"}</dd>
             </dl>
+            <p className="mt-3 border-t border-border pt-2.5 text-[12.5px] leading-relaxed text-fg-muted">
+              {info.blurb}
+            </p>
           </div>
         </div>
       </div>

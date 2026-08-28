@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { sortFrames, SORT_ALGORITHMS, MAX_FRAMES, type SortAlgorithm } from "@/lib/tools/sorting";
+import {
+  sortFrames, SORT_ALGORITHMS, MAX_FRAMES, PSEUDOCODE, type SortAlgorithm,
+} from "@/lib/tools/sorting";
 
 const run = (input: number[], algorithm: SortAlgorithm = "bubble") => sortFrames(input, algorithm);
 const sorted = (input: number[]) => [...input].sort((a, b) => a - b);
@@ -99,5 +101,34 @@ describe("sortFrames", () => {
     expect(frames.length).toBeLessThanOrEqual(MAX_FRAMES);
     // Even when truncated, the last frame must still show the sorted result.
     expect(frames.at(-1)!.array).toEqual(sorted(big));
+  });
+
+
+  it("points every frame at a real line of its algorithm's pseudocode", () => {
+    // The highlighted line is how the animation explains itself. An index
+    // past the end of the listing would highlight nothing at all.
+    for (const algo of SORT_ALGORITHMS) {
+      const lines = PSEUDOCODE[algo.value];
+      for (const frame of run([5, 2, 9, 1], algo.value)) {
+        expect(frame.line, `${algo.value}: ${frame.note}`).toBeGreaterThanOrEqual(0);
+        expect(frame.line, `${algo.value}: ${frame.note}`).toBeLessThan(lines.length);
+      }
+    }
+  });
+
+  it("ships pseudocode for every algorithm", () => {
+    for (const algo of SORT_ALGORITHMS) {
+      const lines = PSEUDOCODE[algo.value];
+      expect(lines.length, algo.value).toBeGreaterThanOrEqual(4);
+      for (const line of lines) expect(line.length, algo.value).toBeGreaterThan(0);
+    }
+  });
+
+  it("visits more than one pseudocode line during a run", () => {
+    // A run stuck on one line would mean the mapping was never wired up.
+    for (const algo of SORT_ALGORITHMS) {
+      const lines = new Set(run([4, 1, 3, 2], algo.value).map((f) => f.line));
+      expect(lines.size, algo.value).toBeGreaterThan(1);
+    }
   });
 });

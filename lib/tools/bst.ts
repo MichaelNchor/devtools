@@ -154,3 +154,41 @@ export function layout(root: BstNode | null): LaidOutNode[] {
 
   return out;
 }
+
+/**
+ * Static listings — the BST tool is driven by discrete operations rather than
+ * a stepped animation, so there is no line to highlight, only the shape of
+ * each algorithm to show beside the tree.
+ */
+export const BST_PSEUDOCODE: { title: string; lines: string[] }[] = [
+  {
+    title: "insert(node, v)",
+    lines: [
+      "if node is empty:  return new Node(v)",
+      "if v = node.value: return node   ▸ a set, no duplicates",
+      "if v < node.value: node.left  ← insert(node.left, v)",
+      "else:              node.right ← insert(node.right, v)",
+      "return node",
+    ],
+  },
+  {
+    title: "search(node, v)",
+    lines: [
+      "while node is not empty:",
+      "  if v = node.value: return found",
+      "  node ← v < node.value ? node.left : node.right",
+      "return not found                 ▸ one step per level",
+    ],
+  },
+  {
+    title: "remove(node, v)",
+    lines: [
+      "descend to the node holding v",
+      "if it has no children:   drop it",
+      "if it has one child:     promote that child",
+      "if it has two children:",
+      "  s ← smallest value in node.right",
+      "  node.value ← s;  remove s from node.right",
+    ],
+  },
+];
