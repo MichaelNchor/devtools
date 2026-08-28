@@ -12,6 +12,7 @@ import type { ToolMeta } from "./types";
 export const JSON_COMPARE_META: ToolMeta = {
   slug: "json-compare",
   name: "JSON Compare",
+  tagline: "Compare two JSONs",
   blurb: "Diff two JSON documents structurally, ignoring formatting.",
   group: "data",
   icon: GitCompare,
@@ -22,6 +23,7 @@ export const JSON_COMPARE_META: ToolMeta = {
 export const JSON_FORMAT_META: ToolMeta = {
   slug: "json-format",
   name: "JSON Formatter",
+  tagline: "Beautify & validate",
   blurb: "Beautify, minify, sort keys, and validate JSON with positional errors.",
   group: "data",
   icon: Braces,
@@ -32,6 +34,7 @@ export const JSON_FORMAT_META: ToolMeta = {
 export const BASE64_META: ToolMeta = {
   slug: "base64",
   name: "Base64",
+  tagline: "Encode & decode",
   blurb: "Encode and decode base64, including URL-safe and binary payloads.",
   group: "data",
   icon: Binary,
@@ -42,6 +45,7 @@ export const BASE64_META: ToolMeta = {
 export const EPOCH_META: ToolMeta = {
   slug: "epoch",
   name: "Epoch Converter",
+  tagline: "Unix timestamp tool",
   blurb: "Convert Unix timestamps to dates and back, in any time zone.",
   group: "data",
   icon: Clock,
@@ -52,6 +56,7 @@ export const EPOCH_META: ToolMeta = {
 export const REGEX_META: ToolMeta = {
   slug: "regex",
   name: "Regex Tester",
+  tagline: "Regular expressions",
   blurb: "Test regular expressions with live matches, groups, and replacements.",
   group: "data",
   icon: Regex,
@@ -62,6 +67,7 @@ export const REGEX_META: ToolMeta = {
 export const YAML_JSON_META: ToolMeta = {
   slug: "yaml-json",
   name: "YAML ↔ JSON",
+  tagline: "Convert between formats",
   blurb: "Convert between YAML and JSON in both directions.",
   group: "data",
   icon: ArrowLeftRight,
@@ -72,6 +78,7 @@ export const YAML_JSON_META: ToolMeta = {
 export const SQL_FORMAT_META: ToolMeta = {
   slug: "sql-format",
   name: "SQL Formatter",
+  tagline: "Clean up queries",
   blurb: "Format SQL across six dialects with configurable casing and indent.",
   group: "data",
   icon: Database,
@@ -82,6 +89,7 @@ export const SQL_FORMAT_META: ToolMeta = {
 export const JSON_TO_CODE_META: ToolMeta = {
   slug: "json-to-code",
   name: "JSON → Code",
+  tagline: "Classes & interfaces",
   blurb: "Infer types from a JSON sample and emit them in seven languages.",
   group: "data",
   icon: Code2,
@@ -92,6 +100,7 @@ export const JSON_TO_CODE_META: ToolMeta = {
 export const GUID_META: ToolMeta = {
   slug: "guid",
   name: "GUID Generator",
+  tagline: "v4, v7, v1 & v5 UUIDs",
   blurb: "Generate UUIDs — v4, v7, v1, and namespace-based v5.",
   group: "security",
   icon: Fingerprint,
@@ -102,6 +111,7 @@ export const GUID_META: ToolMeta = {
 export const PASSWORD_META: ToolMeta = {
   slug: "password",
   name: "Password Generator",
+  tagline: "Secure entropy keys",
   blurb: "Generate strong passwords and see the entropy behind them.",
   group: "security",
   icon: KeyRound,
@@ -113,6 +123,7 @@ export const PASSWORD_META: ToolMeta = {
 export const HASH_META: ToolMeta = {
   slug: "hash",
   name: "Hash Generator",
+  tagline: "SHA, MD5, RIPEMD",
   blurb: "MD5, SHA and RIPEMD digests of text or a file, with HMAC and compare.",
   group: "security",
   icon: Hash,
@@ -124,6 +135,7 @@ export const HASH_META: ToolMeta = {
 export const JWT_META: ToolMeta = {
   slug: "jwt",
   name: "JWT Debugger",
+  tagline: "Decode & verify tokens",
   blurb: "Decode a JSON Web Token, humanise its claims, and verify its signature.",
   group: "security",
   icon: KeySquare,
@@ -135,6 +147,7 @@ export const JWT_META: ToolMeta = {
 export const IP_META: ToolMeta = {
   slug: "ip-calculator",
   name: "IP Calculator",
+  tagline: "CIDR & subnetting",
   blurb: "Subnet IPv4 and IPv6 — ranges, masks, host counts, and splits.",
   group: "network",
   icon: Network,
@@ -145,6 +158,7 @@ export const IP_META: ToolMeta = {
 export const CURL_META: ToolMeta = {
   slug: "curl-convert",
   name: "cURL Converter",
+  tagline: "Request to code",
   blurb: "Turn a curl command into fetch, axios, requests, HttpClient, Go, or PowerShell.",
   group: "network",
   icon: TerminalSquare,
@@ -155,6 +169,7 @@ export const CURL_META: ToolMeta = {
 export const HTTP_META: ToolMeta = {
   slug: "http-inspector",
   name: "HTTP Inspector",
+  tagline: "Raw request parser",
   blurb: "Break a raw HTTP request or response into headers, body, and claims.",
   group: "network",
   icon: FileSearch,
@@ -165,6 +180,7 @@ export const HTTP_META: ToolMeta = {
 export const CRON_META: ToolMeta = {
   slug: "cron",
   name: "Cron Parser",
+  tagline: "Schedule humanizer",
   blurb: "Read a cron expression in plain words and see its next ten runs.",
   group: "network",
   icon: CalendarClock,

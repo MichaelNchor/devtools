@@ -7,7 +7,7 @@ import {
   encodeBase64, decodeBase64, bytesToHex, toDataUri,
   DEFAULT_BASE64_OPTIONS, type Base64Options,
 } from "@/lib/tools/base64";
-import { BASE64_SAMPLE } from "@/lib/tools/base64-sample";
+import { BASE64_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -85,13 +85,13 @@ export function Base64() {
   return (
     <ToolShell
       meta={meta}
+      examples={BASE64_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Encode or decode base64 — text or a file, standard or URL-safe, with correct UTF-8 both ways."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(BASE64_SAMPLE)}>
-            <FileJson size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={() => fileInput.current?.click()}>
             <Upload size={13} aria-hidden />
             Load file

@@ -1,3 +1,21 @@
+import {
+  JSON_COMPARE_EXAMPLES,
+  JSON_FORMAT_EXAMPLES,
+  BASE64_EXAMPLES,
+  EPOCH_EXAMPLES,
+  REGEX_EXAMPLES,
+  YAML_JSON_EXAMPLES,
+  SQL_FORMAT_EXAMPLES,
+  JSON_TO_CODE_EXAMPLES,
+  GUID_EXAMPLES,
+  PASSWORD_EXAMPLES,
+  HASH_EXAMPLES,
+  JWT_EXAMPLES,
+  IP_EXAMPLES,
+  CURL_EXAMPLES,
+  HTTP_EXAMPLES,
+  CRON_EXAMPLES,
+} from "@/lib/tools/examples";
 import { JsonCompare } from "@/components/tools/JsonCompare";
 import { JsonFormat } from "@/components/tools/JsonFormat";
 import { Base64 } from "@/components/tools/Base64";
@@ -14,22 +32,6 @@ import { IpCalculator } from "@/components/tools/IpCalculator";
 import { CurlConvert } from "@/components/tools/CurlConvert";
 import { HttpInspector } from "@/components/tools/HttpInspector";
 import { Cron } from "@/components/tools/Cron";
-import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
-import { JSON_FORMAT_SAMPLE } from "@/lib/tools/json-format-sample";
-import { BASE64_SAMPLE } from "@/lib/tools/base64-sample";
-import { EPOCH_SAMPLE } from "@/lib/tools/epoch-sample";
-import { REGEX_SAMPLE } from "@/lib/tools/regex-sample";
-import { YAML_JSON_SAMPLE } from "@/lib/tools/yaml-json-sample";
-import { SQL_FORMAT_SAMPLE } from "@/lib/tools/sql-format-sample";
-import { JSON_TO_CODE_SAMPLE } from "@/lib/tools/json-to-code-sample";
-import { GUID_SAMPLE } from "@/lib/tools/guid-sample";
-import { PASSWORD_SAMPLE } from "@/lib/tools/password-sample";
-import { HASH_SAMPLE } from "@/lib/tools/hash-sample";
-import { JWT_SAMPLE } from "@/lib/tools/jwt-sample";
-import { IP_SAMPLE } from "@/lib/tools/ip-sample";
-import { CURL_SAMPLE } from "@/lib/tools/curl-sample";
-import { HTTP_INSPECT_SAMPLE } from "@/lib/tools/http-inspect-sample";
-import { CRON_SAMPLE } from "@/lib/tools/cron-sample";
 import { BASE64_META, CRON_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
@@ -48,22 +50,22 @@ export { searchTools, groupTools } from "./search";
  * build. Each tool imports the meta it needs from ./metas instead.
  */
 export const TOOLS: ToolEntry[] = [
-  { meta: JSON_COMPARE_META, Component: JsonCompare, sample: JSON_COMPARE_SAMPLE },
-  { meta: JSON_FORMAT_META, Component: JsonFormat, sample: JSON_FORMAT_SAMPLE },
-  { meta: BASE64_META, Component: Base64, sample: BASE64_SAMPLE },
-  { meta: EPOCH_META, Component: Epoch, sample: EPOCH_SAMPLE },
-  { meta: REGEX_META, Component: RegexTester, sample: REGEX_SAMPLE },
-  { meta: YAML_JSON_META, Component: YamlJson, sample: YAML_JSON_SAMPLE },
-  { meta: SQL_FORMAT_META, Component: SqlFormat, sample: SQL_FORMAT_SAMPLE },
-  { meta: JSON_TO_CODE_META, Component: JsonToCode, sample: JSON_TO_CODE_SAMPLE },
-  { meta: GUID_META, Component: Guid, sample: GUID_SAMPLE },
-  { meta: PASSWORD_META, Component: Password, sample: PASSWORD_SAMPLE },
-  { meta: HASH_META, Component: Hash, sample: HASH_SAMPLE },
-  { meta: JWT_META, Component: Jwt, sample: JWT_SAMPLE },
-  { meta: IP_META, Component: IpCalculator, sample: IP_SAMPLE },
-  { meta: CURL_META, Component: CurlConvert, sample: CURL_SAMPLE },
-  { meta: HTTP_META, Component: HttpInspector, sample: HTTP_INSPECT_SAMPLE },
-  { meta: CRON_META, Component: Cron, sample: CRON_SAMPLE },
+  { meta: JSON_COMPARE_META, Component: JsonCompare, examples: JSON_COMPARE_EXAMPLES },
+  { meta: JSON_FORMAT_META, Component: JsonFormat, examples: JSON_FORMAT_EXAMPLES },
+  { meta: BASE64_META, Component: Base64, examples: BASE64_EXAMPLES },
+  { meta: EPOCH_META, Component: Epoch, examples: EPOCH_EXAMPLES },
+  { meta: REGEX_META, Component: RegexTester, examples: REGEX_EXAMPLES },
+  { meta: YAML_JSON_META, Component: YamlJson, examples: YAML_JSON_EXAMPLES },
+  { meta: SQL_FORMAT_META, Component: SqlFormat, examples: SQL_FORMAT_EXAMPLES },
+  { meta: JSON_TO_CODE_META, Component: JsonToCode, examples: JSON_TO_CODE_EXAMPLES },
+  { meta: GUID_META, Component: Guid, examples: GUID_EXAMPLES },
+  { meta: PASSWORD_META, Component: Password, examples: PASSWORD_EXAMPLES },
+  { meta: HASH_META, Component: Hash, examples: HASH_EXAMPLES },
+  { meta: JWT_META, Component: Jwt, examples: JWT_EXAMPLES },
+  { meta: IP_META, Component: IpCalculator, examples: IP_EXAMPLES },
+  { meta: CURL_META, Component: CurlConvert, examples: CURL_EXAMPLES },
+  { meta: HTTP_META, Component: HttpInspector, examples: HTTP_EXAMPLES },
+  { meta: CRON_META, Component: Cron, examples: CRON_EXAMPLES },
 ];
 
 export function allMetas(): ToolMeta[] {

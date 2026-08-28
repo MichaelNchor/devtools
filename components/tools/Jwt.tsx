@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Eraser, KeySquare } from "lucide-react";
 import { JWT_META } from "@/lib/registry/metas";
 import { decodeJwt, describeTimeClaims, verifyJwt, type VerifyState } from "@/lib/tools/jwt";
-import { JWT_SAMPLE } from "@/lib/tools/jwt-sample";
+import { JWT_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -69,12 +69,12 @@ export function Jwt() {
   return (
     <ToolShell
       meta={meta}
+      examples={JWT_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.token.trim()}
+      emptyHint={"Paste a JWT to decode its header and claims, and optionally verify its signature."}
       actions={
         <>
-          <Button size="sm" onClick={() => update(JWT_SAMPLE)}>
-            <KeySquare size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

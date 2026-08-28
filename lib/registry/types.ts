@@ -48,7 +48,12 @@ export interface ToolMeta {
   /** URL segment. Permanent once shipped — links depend on it. */
   slug: string;
   name: string;
-  /** One line, sentence case. Shown on the dashboard card and the tool page. */
+  /**
+   * Two to four words. This is what a card shows, because a wall of sixteen
+   * full sentences is a wall to read rather than scan.
+   */
+  tagline: string;
+  /** One line, sentence case. Shown on the tool page under its title. */
   blurb: string;
   group: ToolGroup;
   icon: LucideIcon;
@@ -62,13 +67,24 @@ export interface ToolMeta {
   handlesSecrets: boolean;
 }
 
+export interface ToolExample {
+  /** Short, concrete, and specific. "Nested config", not "Example 2". */
+  name: string;
+  /** One line on what this example is for. Shown under the name. */
+  blurb: string;
+  /** The state patch loading this example applies. */
+  state: Record<string, unknown>;
+}
+
 export interface ToolEntry {
   meta: ToolMeta;
   Component: React.ComponentType;
   /**
-   * The state patch this tool's "Load sample" button applies. Held on the
-   * entry rather than inside the component so the registry suite can assert
-   * every tool has one — an empty page should teach, not sit blank.
+   * Worked examples, most useful first. Held on the entry rather than inside
+   * the component so the registry suite can assert every tool has some — an
+   * empty page should teach, not sit blank.
+   *
+   * The first one doubles as the tool's default sample.
    */
-  sample: Record<string, unknown>;
+  examples: ToolExample[];
 }

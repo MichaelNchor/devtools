@@ -11,7 +11,7 @@ const isValid = (v: unknown): v is State =>
   typeof (v as State).text === "string" && typeof (v as State).mode === "string";
 
 const open: ToolMeta = {
-  slug: "base64", name: "Base64", blurb: "b", group: "network",
+  slug: "base64", name: "Base64", tagline: "Base64", blurb: "b", group: "network",
   icon: (() => null) as never, aliases: ["b64"], handlesSecrets: false,
 };
 const secret: ToolMeta = { ...open, slug: "jwt", name: "JWT", handlesSecrets: true };

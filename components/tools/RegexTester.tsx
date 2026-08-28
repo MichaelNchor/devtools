@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Eraser, Regex as RegexIcon } from "lucide-react";
 import { REGEX_META } from "@/lib/registry/metas";
 import { runRegex, replaceWithRegex, REGEX_LIBRARY } from "@/lib/tools/regex";
-import { REGEX_SAMPLE } from "@/lib/tools/regex-sample";
+import { REGEX_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -73,13 +73,13 @@ export function RegexTester() {
   return (
     <ToolShell
       meta={meta}
+      examples={REGEX_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.pattern.trim()}
+      emptyHint={"Write a pattern to see live matches, a capture-group table, and a replacement preview."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(REGEX_SAMPLE)}>
-            <RegexIcon size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

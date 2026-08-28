@@ -4,9 +4,9 @@ import { TOOLS, allMetas, toolBySlug, GROUP_ORDER } from "@/lib/registry";
 import type { ToolMeta } from "@/lib/registry/types";
 
 const FIXTURES: ToolMeta[] = [
-  { slug: "json-compare", name: "JSON Compare", blurb: "Diff two JSON documents structurally.", group: "data", icon: (() => null) as never, aliases: ["diff", "delta"], handlesSecrets: false },
-  { slug: "jwt", name: "JWT Debugger", blurb: "Decode and verify tokens.", group: "security", icon: (() => null) as never, aliases: ["token", "jsonwebtoken"], handlesSecrets: true },
-  { slug: "base64", name: "Base64", blurb: "Encode and decode.", group: "network", icon: (() => null) as never, aliases: ["b64"], handlesSecrets: false },
+  { slug: "json-compare", name: "JSON Compare", tagline: "JSON Compare", blurb: "Diff two JSON documents structurally.", group: "data", icon: (() => null) as never, aliases: ["diff", "delta"], handlesSecrets: false },
+  { slug: "jwt", name: "JWT Debugger", tagline: "JWT Debugger", blurb: "Decode and verify tokens.", group: "security", icon: (() => null) as never, aliases: ["token", "jsonwebtoken"], handlesSecrets: true },
+  { slug: "base64", name: "Base64", tagline: "Base64", blurb: "Encode and decode.", group: "network", icon: (() => null) as never, aliases: ["b64"], handlesSecrets: false },
 ];
 
 describe("searchTools", () => {
@@ -66,6 +66,15 @@ describe("registry invariants", () => {
     for (const slug of slugs) expect(slug).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
   });
 
+  it("keeps every tagline short enough to scan", () => {
+    // A tagline is what a card shows. Past about 28 characters it stops being
+    // scannable and becomes a second blurb, which defeats having both.
+    for (const m of metas) {
+      expect(m.tagline.length, m.slug).toBeGreaterThan(0);
+      expect(m.tagline.length, `${m.slug}: "${m.tagline}"`).toBeLessThanOrEqual(28);
+    }
+  });
+
   it("gives every tool a blurb, a valid group, and at least one alias", () => {
     for (const m of metas) {
       expect(m.blurb.length, m.slug).toBeGreaterThan(0);
@@ -87,12 +96,23 @@ describe("registry invariants", () => {
     expect(toolBySlug("does-not-exist")).toBeUndefined();
   });
 
-  it("gives every tool a sample payload", () => {
+  it("gives every tool worked examples", () => {
     // Spec 8. An empty tool page must be able to teach rather than sit blank,
-    // and that only holds if every entry actually carries a sample.
+    // and that only holds if every entry actually carries examples.
     for (const entry of TOOLS) {
-      expect(entry.sample, entry.meta.slug).toBeTruthy();
-      expect(Object.keys(entry.sample).length, entry.meta.slug).toBeGreaterThan(0);
+      expect(entry.examples.length, entry.meta.slug).toBeGreaterThan(0);
+      for (const example of entry.examples) {
+        expect(example.name.length, `${entry.meta.slug}: name`).toBeGreaterThan(0);
+        expect(example.blurb.length, `${entry.meta.slug}: blurb`).toBeGreaterThan(0);
+        expect(Object.keys(example.state).length, `${entry.meta.slug}: ${example.name}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("gives every example a distinct name within its tool", () => {
+    for (const entry of TOOLS) {
+      const names = entry.examples.map((e) => e.name);
+      expect(new Set(names).size, entry.meta.slug).toBe(names.length);
     }
   });
 

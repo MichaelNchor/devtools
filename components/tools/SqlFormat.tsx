@@ -6,7 +6,7 @@ import { SQL_FORMAT_META } from "@/lib/registry/metas";
 import {
   formatSql, DEFAULT_SQL_OPTIONS, SQL_DIALECTS, type SqlOptions,
 } from "@/lib/tools/sql-format";
-import { SQL_FORMAT_SAMPLE } from "@/lib/tools/sql-format-sample";
+import { SQL_FORMAT_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -50,13 +50,13 @@ export function SqlFormat() {
   return (
     <ToolShell
       meta={meta}
+      examples={SQL_FORMAT_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Paste a SQL statement to format it across six dialects."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(SQL_FORMAT_SAMPLE)}>
-            <Database size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

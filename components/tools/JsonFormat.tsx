@@ -7,7 +7,7 @@ import {
   formatJson, DEFAULT_FORMAT_OPTIONS,
   type FormatOptions, type IndentStyle, type SortMode,
 } from "@/lib/tools/json-format";
-import { JSON_FORMAT_SAMPLE } from "@/lib/tools/json-format-sample";
+import { JSON_FORMAT_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -62,13 +62,13 @@ export function JsonFormat() {
   return (
     <ToolShell
       meta={meta}
+      examples={JSON_FORMAT_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Paste JSON to beautify, minify, sort its keys, or browse it as a collapsible tree."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(JSON_FORMAT_SAMPLE)}>
-            <FileJson size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

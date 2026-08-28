@@ -6,7 +6,7 @@ import { GUID_META } from "@/lib/registry/metas";
 import {
   generateGuids, GUID_NAMESPACES, DEFAULT_GUID_OPTIONS, type GuidOptions, type GuidVersion,
 } from "@/lib/tools/guid";
-import { GUID_SAMPLE } from "@/lib/tools/guid-sample";
+import { GUID_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -42,16 +42,16 @@ export function Guid() {
   return (
     <ToolShell
       meta={meta}
+      examples={GUID_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={false}
+      emptyHint={"Generate UUIDs."}
       shareState={state}
       actions={
         <>
           <Button size="sm" onClick={() => setNonce((n) => n + 1)}>
             <RefreshCw size={13} aria-hidden />
             Regenerate
-          </Button>
-          <Button size="sm" onClick={() => update(GUID_SAMPLE)}>
-            <Fingerprint size={13} aria-hidden />
-            Load sample
           </Button>
           <Button size="sm" onClick={reset}>Reset</Button>
           {text ? <CopyButton text={text} label="Copy all" /> : null}

@@ -5,7 +5,7 @@ import { Eraser, FileJson } from "lucide-react";
 import { JSON_COMPARE_META } from "@/lib/registry/metas";
 import { compareJson, DEFAULT_COMPARE_OPTIONS, type CompareOptions } from "@/lib/tools/json-compare";
 import { toRows, type DiffRow } from "@/lib/tools/json-compare-rows";
-import { JSON_COMPARE_SAMPLE } from "@/lib/tools/json-compare-sample";
+import { JSON_COMPARE_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -217,13 +217,13 @@ export function JsonCompare() {
   return (
     <ToolShell
       meta={meta}
+      examples={JSON_COMPARE_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.left.trim() && !state.right.trim()}
+      emptyHint={"Paste JSON into both panes to see a structural diff. Formatting differences are ignored — only the data is compared."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(JSON_COMPARE_SAMPLE)}>
-            <FileJson size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

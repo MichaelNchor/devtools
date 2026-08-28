@@ -1,6 +1,9 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
+import { toolBySlug } from "@/lib/registry";
+import { GROUP_TEXT } from "@/lib/registry/types";
 import { LocalBadge } from "./LocalBadge";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -9,8 +12,20 @@ import { ThemeToggle } from "./ThemeToggle";
  * beneath this one and needs a number to offset by.
  */
 export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
+  const pathname = usePathname();
+  const entry = toolBySlug(pathname.replace(/^\//, ""));
+  const Icon = entry?.meta.icon;
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-bg/85 px-5 backdrop-blur lg:px-7">
+      {entry && Icon ? (
+        // Says where you are without stealing the page's own heading.
+        <div className="hidden shrink-0 items-center gap-2 pr-1 md:flex">
+          <Icon size={15} aria-hidden className={GROUP_TEXT[entry.meta.group]} />
+          <span className="font-ui text-[12.5px] font-medium text-fg">{entry.meta.name}</span>
+          <span aria-hidden className="h-4 w-px bg-border" />
+        </div>
+      ) : null}
       <button
         type="button"
         onClick={onOpenPalette}

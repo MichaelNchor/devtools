@@ -6,7 +6,7 @@ import { EPOCH_META } from "@/lib/registry/metas";
 import {
   detectUnit, epochToDate, dateToEpoch, formatDate, EPOCH_ZONES, type EpochUnit,
 } from "@/lib/tools/epoch";
-import { EPOCH_SAMPLE } from "@/lib/tools/epoch-sample";
+import { EPOCH_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -71,13 +71,13 @@ export function Epoch() {
   return (
     <ToolShell
       meta={meta}
+      examples={EPOCH_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Convert a Unix timestamp to a date or back again, in any time zone."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(EPOCH_SAMPLE)}>
-            <Clock size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button
             size="sm"
             onClick={() => update({ direction: "from-epoch", unit: "s", input: String(Math.floor(now / 1000)) })}

@@ -6,7 +6,7 @@ import { JSON_TO_CODE_META } from "@/lib/registry/metas";
 import { parseJson } from "@/lib/json/parse";
 import { inferTypes } from "@/lib/tools/json-to-code/infer";
 import { emitCode, LANGUAGES, type TargetLanguage } from "@/lib/tools/json-to-code/emit";
-import { JSON_TO_CODE_SAMPLE } from "@/lib/tools/json-to-code-sample";
+import { JSON_TO_CODE_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -59,13 +59,13 @@ export function JsonToCode() {
   return (
     <ToolShell
       meta={meta}
+      examples={JSON_TO_CODE_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Paste a JSON sample and get type declarations for it in seven languages."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(JSON_TO_CODE_SAMPLE)}>
-            <Code2 size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

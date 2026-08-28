@@ -7,7 +7,7 @@ import {
   generatePasswords, entropyBits, describeStrength, poolFor,
   DEFAULT_PASSWORD_OPTIONS, MIN_LENGTH, MAX_LENGTH, type PasswordOptions,
 } from "@/lib/tools/password";
-import { PASSWORD_SAMPLE } from "@/lib/tools/password-sample";
+import { PASSWORD_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -42,15 +42,15 @@ export function Password() {
   return (
     <ToolShell
       meta={meta}
+      examples={PASSWORD_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={false}
+      emptyHint={"Generate passwords."}
       actions={
         <>
           <Button size="sm" onClick={() => setNonce((n) => n + 1)}>
             <RefreshCw size={13} aria-hidden />
             Regenerate
-          </Button>
-          <Button size="sm" onClick={() => update(PASSWORD_SAMPLE)}>
-            <KeyRound size={13} aria-hidden />
-            Load sample
           </Button>
           <Button size="sm" onClick={reset}>Reset</Button>
           {text ? <CopyButton text={text} label="Copy all" /> : null}

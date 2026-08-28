@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Eraser, Network } from "lucide-react";
 import { IP_META } from "@/lib/registry/metas";
 import { calculateIpv4, splitSubnets, analyseIpv6 } from "@/lib/tools/ip";
-import { IP_SAMPLE } from "@/lib/tools/ip-sample";
+import { IP_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -62,13 +62,13 @@ export function IpCalculator() {
   return (
     <ToolShell
       meta={meta}
+      examples={IP_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Enter an address with a prefix or a mask to see its network, range, and host count."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(IP_SAMPLE)}>
-            <Network size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

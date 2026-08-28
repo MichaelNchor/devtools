@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { ArrowLeftRight, Eraser } from "lucide-react";
 import { YAML_JSON_META } from "@/lib/registry/metas";
 import { yamlToJson, jsonToYaml, hasCommentsOrAnchors } from "@/lib/tools/yaml-json";
-import { YAML_JSON_SAMPLE } from "@/lib/tools/yaml-json-sample";
+import { YAML_JSON_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -48,13 +48,13 @@ export function YamlJson() {
   return (
     <ToolShell
       meta={meta}
+      examples={YAML_JSON_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Convert between YAML and JSON in either direction."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(YAML_JSON_SAMPLE)}>
-            <ArrowLeftRight size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button
             size="sm"
             onClick={() => update({

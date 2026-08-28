@@ -7,7 +7,7 @@ import {
   hashText, hashStream, digestsMatch, HASH_ALGORITHMS,
   DEFAULT_HASH_OPTIONS, type HashAlgorithm, type HashOptions,
 } from "@/lib/tools/hash";
-import { HASH_SAMPLE } from "@/lib/tools/hash-sample";
+import { HASH_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -77,12 +77,12 @@ export function Hash() {
   return (
     <ToolShell
       meta={meta}
+      examples={HASH_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim() && !digest}
+      emptyHint={"Type or paste text, or choose a file, to hash it — with HMAC and a compare field."}
       actions={
         <>
-          <Button size="sm" onClick={() => { setFileName(null); update(HASH_SAMPLE); }}>
-            <HashIcon size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={() => fileInput.current?.click()}>
             <Upload size={13} aria-hidden />
             Hash a file

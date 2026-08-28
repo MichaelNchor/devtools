@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { CalendarClock, Eraser } from "lucide-react";
 import { CRON_META } from "@/lib/registry/metas";
 import { parseCron, CRON_MACROS } from "@/lib/tools/cron";
-import { CRON_SAMPLE } from "@/lib/tools/cron-sample";
+import { CRON_EXAMPLES } from "@/lib/tools/examples";
 import { EPOCH_ZONES } from "@/lib/tools/epoch";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
@@ -38,13 +38,13 @@ export function Cron() {
   return (
     <ToolShell
       meta={meta}
+      examples={CRON_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.expression.trim()}
+      emptyHint={"Enter a cron expression to read it in plain words and see its next ten runs."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(CRON_SAMPLE)}>
-            <CalendarClock size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

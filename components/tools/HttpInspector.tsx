@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Eraser, FileSearch } from "lucide-react";
 import { HTTP_META } from "@/lib/registry/metas";
 import { inspectHttp } from "@/lib/tools/http-inspect";
-import { HTTP_INSPECT_SAMPLE } from "@/lib/tools/http-inspect-sample";
+import { HTTP_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -41,13 +41,13 @@ export function HttpInspector() {
   return (
     <ToolShell
       meta={meta}
+      examples={HTTP_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Paste a raw HTTP request or response to break it into headers, body, and decoded claims."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(HTTP_INSPECT_SAMPLE)}>
-            <FileSearch size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear

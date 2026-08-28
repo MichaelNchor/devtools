@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Check, Link2 } from "lucide-react";
-import { GROUP_TONE, type ToolMeta } from "@/lib/registry/types";
+import { GROUP_TONE, type ToolExample, type ToolMeta } from "@/lib/registry/types";
 import { SHARE_PREFIX } from "@/lib/share";
 import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { Button } from "@/components/ui/Button";
 import { FavouriteStar } from "./FavouriteStar";
+import { ExampleMenu, ExampleStrip } from "./ExamplePicker";
 import { shareGate } from "./useToolState";
 
 interface Props {
@@ -15,12 +16,25 @@ interface Props {
   shareState?: unknown;
   /** The tool's controls. Rendered in one horizontal band above the panes. */
   options?: React.ReactNode;
-  /** Copy / Clear / Load sample. Rendered right-aligned in the header. */
+  /** Copy / Clear. Rendered right-aligned in the header, before Examples. */
   actions?: React.ReactNode;
+  /** Worked examples. The shell renders the menu, so no tool builds its own. */
+  examples?: ToolExample[] | undefined;
+  onLoadExample?: ((example: ToolExample) => void) | undefined;
+  /**
+   * True when the tool has no input yet. The shell then shows the examples
+   * strip in place of `children`, so a blank page teaches instead of sitting
+   * empty — every tool gets that without writing its own empty state.
+   */
+  isEmpty?: boolean | undefined;
+  emptyHint?: string | undefined;
   children: React.ReactNode;
 }
 
-export function ToolShell({ meta, shareState, options, actions, children }: Props) {
+export function ToolShell({
+  meta, shareState, options, actions,
+  examples, onLoadExample, isEmpty, emptyHint, children,
+}: Props) {
   const { visit } = useWorkspace();
   const [copied, setCopied] = useState(false);
   const Icon = meta.icon;
@@ -72,6 +86,9 @@ export function ToolShell({ meta, shareState, options, actions, children }: Prop
 
         <div className="flex flex-wrap items-center gap-2">
           {actions}
+          {examples && onLoadExample ? (
+            <ExampleMenu examples={examples} onPick={onLoadExample} />
+          ) : null}
           {canShare ? (
             <Button
               size="sm"
@@ -98,7 +115,11 @@ export function ToolShell({ meta, shareState, options, actions, children }: Prop
         </div>
       ) : null}
 
-      <div className="min-h-0 flex-1 px-5 py-4 lg:px-7 lg:py-5">{children}</div>
+      <div className="min-h-0 flex-1 px-5 py-4 lg:px-7 lg:py-5">
+        {isEmpty && emptyHint && examples && onLoadExample ? (
+          <ExampleStrip examples={examples} onPick={onLoadExample} hint={emptyHint} />
+        ) : children}
+      </div>
     </main>
   );
 }

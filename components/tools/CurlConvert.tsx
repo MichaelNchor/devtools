@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Eraser, TerminalSquare } from "lucide-react";
 import { CURL_META } from "@/lib/registry/metas";
 import { parseCurl, emitRequest, CURL_TARGETS, type CurlTarget } from "@/lib/tools/curl";
-import { CURL_SAMPLE } from "@/lib/tools/curl-sample";
+import { CURL_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
 import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
@@ -39,13 +39,13 @@ export function CurlConvert() {
   return (
     <ToolShell
       meta={meta}
+      examples={CURL_EXAMPLES}
+      onLoadExample={(example) => update(example.state as Partial<State>)}
+      isEmpty={!state.input.trim()}
+      emptyHint={"Paste a curl command to turn it into fetch, axios, requests, HttpClient, Go, or PowerShell."}
       shareState={state}
       actions={
         <>
-          <Button size="sm" onClick={() => update(CURL_SAMPLE)}>
-            <TerminalSquare size={13} aria-hidden />
-            Load sample
-          </Button>
           <Button size="sm" onClick={reset}>
             <Eraser size={13} aria-hidden />
             Clear
