@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { allMetas, searchTools, GROUP_LABELS } from "@/lib/registry";
+import { allMetas, searchTools, GROUP_LABELS, GROUP_TEXT } from "@/lib/registry";
 import { useWorkspace } from "./WorkspaceProvider";
 import { cx } from "@/lib/cx";
 
@@ -101,7 +101,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
                     index === active ? "bg-primary-tint" : "hover:bg-surface-2",
                   )}
                 >
-                  <Icon size={15} className="shrink-0 text-fg-muted" aria-hidden />
+                  <Icon size={15} className={cx("shrink-0", GROUP_TEXT[meta.group])} aria-hidden />
                   <span className="font-ui text-[13px] text-fg">{meta.name}</span>
                   <span className="ml-auto shrink-0 font-ui text-[10.5px] uppercase tracking-[.14em] text-fg-muted">
                     {GROUP_LABELS[meta.group].split(" ")[0]}

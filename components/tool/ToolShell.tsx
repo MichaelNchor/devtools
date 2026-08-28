@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Link2 } from "lucide-react";
-import type { ToolMeta } from "@/lib/registry/types";
+import { GROUP_TONE, type ToolMeta } from "@/lib/registry/types";
 import { SHARE_PREFIX } from "@/lib/share";
 import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { Button } from "@/components/ui/Button";
@@ -56,8 +56,8 @@ export function ToolShell({ meta, shareState, options, actions, children }: Prop
         <div className="flex min-w-0 items-start gap-3">
           {/* The page carries the same mark as its card and its rail row, so
               arriving here confirms you landed where you clicked. */}
-          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-surface-2 text-fg-2">
-            <Icon size={16} aria-hidden />
+          <span className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg ${GROUP_TONE[meta.group]}`}>
+            <Icon size={17} aria-hidden />
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">

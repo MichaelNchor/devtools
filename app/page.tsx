@@ -6,13 +6,21 @@ import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { RECENTS_SHOWN } from "@/lib/workspace";
 import { ToolCard } from "@/components/shell/ToolCard";
 import { LocalBadge } from "@/components/shell/LocalBadge";
-import type { ToolMeta } from "@/lib/registry/types";
+import { GROUP_DOT, type ToolGroup, type ToolMeta } from "@/lib/registry/types";
 
-function Section({ label, tools }: { label: string; tools: ToolMeta[] }) {
+function Section({ label, tools, group }: {
+  label: string;
+  tools: ToolMeta[];
+  /** Absent for Recent and Favourites, which are not categories. */
+  group?: ToolGroup | undefined;
+}) {
   if (tools.length === 0) return null;
   return (
     <section>
-      <div className="flex items-baseline gap-2.5">
+      <div className="flex items-center gap-2.5">
+        {group ? (
+          <span aria-hidden className={`h-3.5 w-1 rounded-full ${GROUP_DOT[group]}`} />
+        ) : null}
         <h2 className="eyebrow">{label}</h2>
         <span className="font-ui text-[11px] text-fg-muted tabular">{tools.length}</span>
       </div>
@@ -60,7 +68,7 @@ export default function Dashboard() {
       ) : null}
 
       {sections.map((section) => (
-        <Section key={section.group} label={section.label} tools={section.tools} />
+        <Section key={section.group} label={section.label} tools={section.tools} group={section.group} />
       ))}
     </main>
   );

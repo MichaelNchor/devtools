@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import type { ToolMeta } from "@/lib/registry/types";
+import { GROUP_TONE, type ToolMeta } from "@/lib/registry/types";
 import { FavouriteStar } from "@/components/tool/FavouriteStar";
 
 export function ToolCard({ meta }: { meta: ToolMeta }) {
   const Icon = meta.icon;
   return (
     <div className="group relative flex items-start gap-3 rounded-xl border border-border bg-surface p-4 shadow-sm transition-all duration-150 hover:-translate-y-px hover:border-primary/40 hover:shadow-md">
-      <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-surface-2 text-fg-2 transition-colors group-hover:bg-primary-tint group-hover:text-primary-strong">
+      <span className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg transition-transform duration-150 group-hover:scale-105 ${GROUP_TONE[meta.group]}`}>
         <Icon size={15} aria-hidden />
       </span>
 
