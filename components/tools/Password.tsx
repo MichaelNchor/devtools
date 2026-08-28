@@ -128,11 +128,6 @@ export function Password() {
           ariaLabel="Generated passwords"
           className="h-[45dvh] min-h-[16rem]"
         />
-
-        <p className="text-[12px] text-fg-muted">
-          Generated in this tab with crypto.getRandomValues. Never stored, never
-          shared by link, never sent anywhere.
-        </p>
       </div>
     </ToolShell>
   );

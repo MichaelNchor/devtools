@@ -117,6 +117,23 @@ export default function Settings() {
       </Section>
 
       <Section
+        title="Where your data goes"
+        hint="Nowhere. Every tool is a function that runs in this tab, so there is no server to send anything to and no analytics, logging or telemetry of any kind."
+      >
+        <ul className="flex max-w-prose flex-col gap-1.5 text-[12.5px] leading-relaxed text-fg-muted">
+          <li>The app makes no network requests at all once the page has loaded.</li>
+          <li>
+            Tools that handle secrets — JWT, Hash and Password — additionally never
+            save your input, so it dies with the tab.
+          </li>
+          <li>
+            Don&apos;t take our word for it: open your browser&apos;s network tab and
+            use any tool, or read the source.
+          </li>
+        </ul>
+      </Section>
+
+      <Section
         title="Stored tool input"
         hint="Each tool remembers what you last typed into it, so you can come back to it. Tools that handle secrets — JWT, Hash, and Password — never store anything."
       >

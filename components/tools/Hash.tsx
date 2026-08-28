@@ -180,11 +180,6 @@ export function Hash() {
             </p>
           ) : null}
         </div>
-
-        <p className="text-[12px] text-fg-muted">
-          Hashed in this tab. Input is never stored, never shared by link, and
-          never leaves your browser.
-        </p>
       </div>
     </ToolShell>
   );

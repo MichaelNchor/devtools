@@ -154,11 +154,6 @@ export function Jwt() {
             })}
           </div>
         ) : null}
-
-        <p className="text-[12px] text-fg-muted">
-          Decoded and verified in this tab. Tokens and secrets are never stored
-          and never shared by link.
-        </p>
       </div>
     </ToolShell>
   );

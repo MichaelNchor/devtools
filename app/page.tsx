@@ -8,7 +8,6 @@ import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { RECENTS_SHOWN } from "@/lib/workspace";
 import { ToolCard } from "@/components/shell/ToolCard";
 import { ToolTile } from "@/components/shell/ToolTile";
-import { LocalBadge } from "@/components/shell/LocalBadge";
 import { GROUP_DOT, type ToolGroup, type ToolMeta } from "@/lib/registry/types";
 
 function Column({ label, tools, group }: {
@@ -99,7 +98,6 @@ export default function Dashboard() {
               <Settings size={15} aria-hidden />
               Preferences
             </Link>
-            <span className="ml-1"><LocalBadge /></span>
           </div>
         </div>
       </section>

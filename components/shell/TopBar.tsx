@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { toolBySlug } from "@/lib/registry";
 import { GROUP_TEXT } from "@/lib/registry/types";
-import { LocalBadge } from "./LocalBadge";
 import { ThemeToggle } from "./ThemeToggle";
 
 /**
@@ -38,7 +37,6 @@ export function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
         </kbd>
       </button>
       <div className="ml-auto flex items-center gap-3">
-        <span className="hidden sm:inline"><LocalBadge /></span>
         <ThemeToggle />
       </div>
     </header>
