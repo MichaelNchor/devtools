@@ -40,16 +40,11 @@ export function Sorting() {
   );
   const info = SORT_ALGORITHMS.find((a) => a.value === state.algorithm)!;
   const frame = frames[Math.min(step, frames.length - 1)]!;
-  // Normalised across the real range, not just the max. Dividing by the max
-  // alone gives a zero bar no height and a negative bar a NEGATIVE height,
-  // which renders identically to zero — so the engine's support for negative
-  // values would have been invisible here.
-  const lo = Math.min(...state.values, 0);
-  const hi = Math.max(...state.values, 0);
-  const span = hi - lo || 1;
-  const heightOf = (v: number) => 6 + ((v - lo) / span) * 94;
-  // Numbers stop being legible long before the bars do.
-  const showValues = frame.array.length <= 24;
+  // Values are drawn like the tree's nodes: a circle carrying its number.
+  // Reading the value beats inferring it from a height — and it retires the
+  // normalisation entirely, so zero and negative numbers need no special case.
+  const GAP = 52;
+  const RADIUS = 20;
 
   // Changing the input or the algorithm invalidates the position in the run.
   useEffect(() => { setStep(0); setPlaying(false); }, [state.values, state.algorithm]);
@@ -108,11 +103,11 @@ export function Sorting() {
           <label className="flex items-center gap-2">
             <span className="eyebrow">Size</span>
             <input
-              type="range" min="5" max="40"
+              type="range" min="4" max="18"
               value={state.values.length}
               onChange={(e) => {
                 const size = Number(e.target.value);
-                update({ values: Array.from({ length: size }, () => 1 + Math.floor(Math.random() * size)) });
+                update({ values: Array.from({ length: size }, () => 1 + Math.floor(Math.random() * 99)) });
               }}
               aria-label="How many values to sort"
               className="w-28 accent-[var(--primary)]"
@@ -166,46 +161,71 @@ export function Sorting() {
           </span>
         </div>
 
-        <div className="flex h-64 items-end gap-[3px] rounded-lg border border-border bg-surface p-3 sm:h-80">
-          {frame.array.map((value, index) => {
-            const isComparing = frame.comparing.includes(index);
-            const isSwapping = frame.swapping.includes(index);
-            const isSorted = frame.sorted.includes(index);
-            return (
-              <div key={index} className="flex h-full min-w-0 flex-1 flex-col justify-end gap-1">
-                <div
-                  className={cx(
-                    "w-full rounded-t-sm transition-all duration-150",
-                    isSwapping ? "bg-rose-solid"
-                      : isComparing ? "bg-warn-solid"
-                        : isSorted ? "bg-up-solid" : "bg-primary/45",
-                  )}
-                  style={{ height: `${heightOf(value)}%` }}
-                />
-                {showValues ? (
-                  <span
-                    className={cx(
-                      "shrink-0 text-center font-ui text-[10px] leading-none tabular",
-                      isSwapping ? "text-rose"
-                        : isComparing ? "text-warn"
-                          : isSorted ? "text-up" : "text-fg-muted",
-                    )}
+        <div className="overflow-x-auto rounded-lg border border-border bg-surface p-4">
+          <svg
+            role="img"
+            aria-label={`Array of ${frame.array.length} values: ${frame.array.join(", ")}`}
+            viewBox={`0 0 ${Math.max(frame.array.length * GAP, GAP)} 96`}
+            className="mx-auto h-auto w-full"
+            style={{ minWidth: `${frame.array.length * 40}px` }}
+          >
+            {frame.array.map((value, index) => {
+              const isComparing = frame.comparing.includes(index);
+              const isSwapping = frame.swapping.includes(index);
+              const isSorted = frame.sorted.includes(index);
+
+              const fill = isSwapping ? "var(--rose-tint)"
+                : isComparing ? "var(--warn-tint)"
+                  : isSorted ? "var(--up-tint)" : "var(--surface-2)";
+              const stroke = isSwapping ? "var(--rose)"
+                : isComparing ? "var(--warn)"
+                  : isSorted ? "var(--up)" : "var(--border)";
+              const text = isSwapping ? "var(--rose)"
+                : isComparing ? "var(--warn)"
+                  : isSorted ? "var(--up)" : "var(--fg)";
+
+              const cx0 = index * GAP + GAP / 2;
+              return (
+                <g key={index}>
+                  <circle
+                    cx={cx0} cy={38} r={RADIUS}
+                    fill={fill} stroke={stroke}
+                    strokeWidth={isComparing || isSwapping ? 2.5 : 1.5}
+                    className="transition-all duration-150"
+                  />
+                  <text
+                    x={cx0} y={43} textAnchor="middle"
+                    className="font-ui" fontSize="13" fill={text}
                   >
                     {value}
-                  </span>
-                ) : null}
-              </div>
-            );
-          })}
+                  </text>
+                  {/* The index, so the pseudocode's i and j can be followed. */}
+                  <text
+                    x={cx0} y={78} textAnchor="middle"
+                    className="font-ui" fontSize="10" fill="var(--fg-muted)"
+                  >
+                    {index}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
         </div>
 
         {/* Colour alone would not survive greyscale, so the legend spells out
             each state and the caption narrates the current step in words. */}
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border bg-surface px-3 py-2 text-[12px]">
-          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-warn-solid" aria-hidden /> comparing</span>
-          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-rose-solid" aria-hidden /> writing</span>
-          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-up-solid" aria-hidden /> final position</span>
-          <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary/45" aria-hidden /> unsorted</span>
+          {[
+            ["bg-warn-tint border-warn", "comparing"],
+            ["bg-rose-tint border-rose", "writing"],
+            ["bg-up-tint border-up", "final position"],
+            ["bg-surface-2 border-border", "unsorted"],
+          ].map(([tone, label]) => (
+            <span key={label} className="flex items-center gap-1.5">
+              <span className={cx("h-3 w-3 rounded-full border", tone)} aria-hidden />
+              {label}
+            </span>
+          ))}
         </div>
 
         <p aria-live="polite" className="rounded-lg border border-border bg-surface px-3 py-2 text-[12.5px] text-fg">

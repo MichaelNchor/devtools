@@ -1,4 +1,4 @@
-import { ArrowLeftRight, BarChart3, Binary, Braces, CalendarClock, Clock, GitBranch, Gauge, Route, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
+import { ArrowLeftRight, BarChart3, Binary, Braces, CalendarClock, Clock, GitBranch, Gauge, Route, Target, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -229,5 +229,16 @@ export const BIG_O_META: ToolMeta = {
   group: "concepts",
   icon: Gauge,
   aliases: ["big o", "complexity", "cheatsheet", "performance", "time complexity"],
+  handlesSecrets: false,
+};
+
+export const PATTERNS_META: ToolMeta = {
+  slug: "patterns",
+  name: "Interview Patterns",
+  tagline: "Recognise, then solve",
+  blurb: "The fifteen patterns most coding interviews are built from, with the signal that gives each one away.",
+  group: "concepts",
+  icon: Target,
+  aliases: ["leetcode", "interview", "patterns", "dsa", "prep", "two sum", "roadmap"],
   handlesSecrets: false,
 };

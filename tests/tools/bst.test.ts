@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
-  buildTree, insert, remove, searchPath, traverse, layout, treeStats, type BstNode,
+  buildTree, insert, remove, searchPath, traverse, layout, treeStats,
+  operationFrames, BST_PSEUDOCODE, type BstNode,
 } from "@/lib/tools/bst";
 
 const from = (values: number[]) => buildTree(values);
@@ -130,5 +131,80 @@ describe("layout", () => {
 
   it("returns nothing for an empty tree", () => {
     expect(layout(null)).toEqual([]);
+  });
+});
+
+describe("operationFrames", () => {
+  const t = buildTree([50, 30, 70, 20, 40]);
+
+  it("walks from the root down to where a value belongs when inserting", () => {
+    const frames = operationFrames(t, "insert", 35);
+    expect(frames[0]!.current).toBe(50);
+    // The last frame highlights the node just created, not the empty slot it
+    // went into — that is the thing the reader is looking for.
+    expect(frames.map((f) => f.current)).toEqual([50, 30, 40, 35]);
+    expect(traverse(frames.at(-1)!.tree, "in")).toEqual([20, 30, 35, 40, 50, 70]);
+  });
+
+  it("leaves the tree unchanged until the final frame of an insert", () => {
+    const frames = operationFrames(t, "insert", 35);
+    for (const frame of frames.slice(0, -1)) {
+      expect(traverse(frame.tree, "in")).toEqual([20, 30, 40, 50, 70]);
+    }
+  });
+
+  it("records the comparison path when searching", () => {
+    const frames = operationFrames(t, "search", 40);
+    expect(frames.at(-1)!.path).toEqual([50, 30, 40]);
+    expect(frames.at(-1)!.found).toBe(true);
+  });
+
+  it("reports a miss, having walked as far as it could", () => {
+    const frames = operationFrames(t, "search", 45);
+    expect(frames.at(-1)!.found).toBe(false);
+    expect(frames.at(-1)!.path).toEqual([50, 30, 40]);
+  });
+
+  it("removes a value and shows the result in the last frame", () => {
+    const frames = operationFrames(t, "remove", 30);
+    expect(traverse(frames.at(-1)!.tree, "in")).toEqual([20, 40, 50, 70]);
+  });
+
+  it("narrates the successor step when removing a node with two children", () => {
+    const two = buildTree([50, 30, 70, 60, 80]);
+    const frames = operationFrames(two, "remove", 70);
+    expect(frames.some((f) => f.note.toLowerCase().includes("successor"))).toBe(true);
+    expect(traverse(frames.at(-1)!.tree, "in")).toEqual([30, 50, 60, 80]);
+  });
+
+  it("points every frame at a real pseudocode line for its operation", () => {
+    for (const op of ["insert", "search", "remove"] as const) {
+      const lines = BST_PSEUDOCODE[op].lines;
+      for (const frame of operationFrames(t, op, 40)) {
+        expect(frame.line, `${op}: ${frame.note}`).toBeGreaterThanOrEqual(0);
+        expect(frame.line, `${op}: ${frame.note}`).toBeLessThan(lines.length);
+      }
+    }
+  });
+
+  it("captions every frame", () => {
+    for (const op of ["insert", "search", "remove"] as const) {
+      for (const frame of operationFrames(t, op, 40)) {
+        expect(frame.note.length, op).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("handles an empty tree", () => {
+    const frames = operationFrames(null, "insert", 5);
+    expect(traverse(frames.at(-1)!.tree, "in")).toEqual([5]);
+    expect(operationFrames(null, "search", 5).at(-1)!.found).toBe(false);
+  });
+
+  it("never mutates the tree it was given", () => {
+    const original = buildTree([50, 30]);
+    operationFrames(original, "insert", 99);
+    operationFrames(original, "remove", 30);
+    expect(traverse(original, "in")).toEqual([30, 50]);
   });
 });

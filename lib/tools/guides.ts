@@ -178,4 +178,13 @@ export const GUIDES: Record<string, ToolGuide> = {
       { title: "Amortised is not average", body: "A dynamic array append is amortised O(1): most are free and the occasional resize copies everything. Any single call can still be slow." },
     ],
   },
+  patterns: {
+    summary: "Coding interviews reuse a small number of shapes, so the skill being tested is recognising which one a problem is — not recalling a solution you have seen before.",
+    points: [
+      { title: "Read the signal, not the title", body: "Two Sum is not a problem to memorise. 'Find the complement' is a hash map; 'sorted, find a pair' is two pointers; 'longest contiguous' is a sliding window." },
+      { title: "A hundred understood beats five hundred seen", body: "For each problem be able to say why the approach works, what it costs in time and space, and which edge cases exist. That is what a follow-up question probes." },
+      { title: "Complexity is part of the answer", body: "Stating the approach without its cost is half an answer. Interviewers ask for time and space because the trade-off is the actual decision." },
+      { title: "DSA is not the whole interview", body: "For a mid-level backend role it is roughly a third. System design, the language itself, and real production experience carry as much weight — more, outside big tech." },
+    ],
+  },
 };

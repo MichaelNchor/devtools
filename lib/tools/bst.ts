@@ -155,40 +155,157 @@ export function layout(root: BstNode | null): LaidOutNode[] {
   return out;
 }
 
+export type BstOperation = "insert" | "search" | "remove";
+
 /**
- * Static listings — the BST tool is driven by discrete operations rather than
- * a stepped animation, so there is no line to highlight, only the shape of
- * each algorithm to show beside the tree.
+ * One listing per operation, with frames carrying an index into it — so the
+ * highlighted line is emitted by the same walk that moves through the tree
+ * and cannot drift out of step with what is drawn.
  */
-export const BST_PSEUDOCODE: { title: string; lines: string[] }[] = [
-  {
+export const BST_PSEUDOCODE: Record<BstOperation, { title: string; lines: string[] }> = {
+  insert: {
     title: "insert(node, v)",
     lines: [
       "if node is empty:  return new Node(v)",
-      "if v = node.value: return node   ▸ a set, no duplicates",
-      "if v < node.value: node.left  ← insert(node.left, v)",
-      "else:              node.right ← insert(node.right, v)",
-      "return node",
+      "if v = node.value: return node        ▸ a set, no duplicates",
+      "if v < node.value: go left",
+      "else:              go right",
+      "attach the new node and return",
     ],
   },
-  {
+  search: {
     title: "search(node, v)",
     lines: [
       "while node is not empty:",
       "  if v = node.value: return found",
-      "  node ← v < node.value ? node.left : node.right",
-      "return not found                 ▸ one step per level",
+      "  if v < node.value: node ← node.left",
+      "  else:              node ← node.right",
+      "return not found                      ▸ one step per level",
     ],
   },
-  {
+  remove: {
     title: "remove(node, v)",
     lines: [
       "descend to the node holding v",
-      "if it has no children:   drop it",
-      "if it has one child:     promote that child",
+      "if it has no children:  drop it",
+      "if it has one child:    promote that child",
       "if it has two children:",
-      "  s ← smallest value in node.right",
+      "  s ← smallest value in node.right    ▸ the successor",
       "  node.value ← s;  remove s from node.right",
     ],
   },
-];
+};
+
+export interface BstFrame {
+  /** The tree as it stands at this step. Only the last frame differs. */
+  tree: BstNode | null;
+  /** The node being examined, or null once the walk has run off the end. */
+  current: number | null;
+  /** Values compared so far, in order. */
+  path: number[];
+  found: boolean;
+  line: number;
+  note: string;
+}
+
+/** Counts children without walking the whole subtree. */
+function childCount(node: BstNode): number {
+  return (node.left ? 1 : 0) + (node.right ? 1 : 0);
+}
+
+/**
+ * Records an operation as replayable frames. The tree is only replaced in the
+ * final frame, so stepping shows the WALK first and the result last — which is
+ * the order the operation actually happens in.
+ */
+export function operationFrames(
+  root: BstNode | null,
+  operation: BstOperation,
+  value: number,
+): BstFrame[] {
+  const frames: BstFrame[] = [];
+  const path: number[] = [];
+  // Annotated: without it the reassignment inside the walk makes TypeScript
+  // lose the narrowing and infer the loop variables as any.
+  let node: BstNode | null = root;
+
+  const step = (line: number, note: string, current: number | null, found = false) => {
+    frames.push({ tree: root, current, path: [...path], found, line, note });
+  };
+
+  if (operation === "search") {
+    while (node !== null) {
+      path.push(node.value);
+      if (value === node.value) {
+        step(1, `${value} is here. Found it in ${path.length} comparisons.`, node.value, true);
+        return frames;
+      }
+      const goLeft: boolean = value < node.value;
+      step(goLeft ? 2 : 3, `${value} is ${goLeft ? "less" : "greater"} than ${node.value}, so go ${goLeft ? "left" : "right"}.`, node.value);
+      node = goLeft ? node.left : node.right;
+    }
+    step(4, `Ran out of tree after ${path.length} comparisons — ${value} is not present.`, null);
+    return frames;
+  }
+
+  if (operation === "insert") {
+    if (node === null) {
+      const tree = insert(root, value);
+      frames.push({ tree, current: null, path: [], found: false, line: 0, note: `The tree was empty, so ${value} becomes the root.` });
+      return frames;
+    }
+    while (node !== null) {
+      path.push(node.value);
+      if (value === node.value) {
+        step(1, `${value} is already in the tree. A BST holds a set, so nothing changes.`, node.value, true);
+        return frames;
+      }
+      const goLeft: boolean = value < node.value;
+      step(goLeft ? 2 : 3, `${value} is ${goLeft ? "less" : "greater"} than ${node.value}, so go ${goLeft ? "left" : "right"}.`, node.value);
+      const next: BstNode | null = goLeft ? node.left : node.right;
+      if (next === null) {
+        frames.push({
+          tree: insert(root, value), current: value, path: [...path], found: false, line: 4,
+          note: `There is no ${goLeft ? "left" : "right"} child, so ${value} attaches here at depth ${path.length}.`,
+        });
+        return frames;
+      }
+      node = next;
+    }
+    return frames;
+  }
+
+  // remove
+  while (node !== null && node.value !== value) {
+    path.push(node.value);
+    const goLeft: boolean = value < node.value;
+    step(0, `${value} is ${goLeft ? "less" : "greater"} than ${node.value}, so go ${goLeft ? "left" : "right"}.`, node.value);
+    node = goLeft ? node.left : node.right;
+  }
+
+  if (node === null) {
+    step(0, `${value} is not in the tree, so there is nothing to remove.`, null);
+    return frames;
+  }
+
+  path.push(node.value);
+  const children = childCount(node);
+  if (children === 0) {
+    step(1, `${value} is a leaf, so it can simply be dropped.`, node.value);
+  } else if (children === 1) {
+    step(2, `${value} has one child, which is promoted into its place.`, node.value);
+  } else {
+    let successor = node.right!;
+    while (successor.left !== null) successor = successor.left;
+    step(3, `${value} has two children, so it cannot just be removed.`, node.value);
+    step(4, `The in-order successor is ${successor.value} — the smallest value on its right.`, successor.value);
+    step(5, `${successor.value} takes its place, and is removed from the right subtree.`, successor.value);
+  }
+
+  frames.push({
+    tree: remove(root, value), current: null, path: [...path], found: true,
+    line: children === 2 ? 5 : children === 1 ? 2 : 1,
+    note: `${value} removed. The tree is still ordered.`,
+  });
+  return frames;
+}

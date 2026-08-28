@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, RotateCcw, Search, Trash2 } from "lucide-react";
+import { Plus, RotateCcw, Search, SkipForward, Trash2 } from "lucide-react";
 import { BST_META } from "@/lib/registry/metas";
 import {
   buildTree, insert, remove, searchPath, traverse, layout, treeStats,
-  TRAVERSALS, BST_PSEUDOCODE, type Traversal,
+  TRAVERSALS, BST_PSEUDOCODE, operationFrames,
+  type Traversal, type BstFrame, type BstOperation,
 } from "@/lib/tools/bst";
 import { BST_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
@@ -32,9 +33,17 @@ export function Bst() {
   const meta = BST_META;
   const [state, update, reset] = useToolState<State>(meta, DEFAULTS, isState);
   const [entry, setEntry] = useState("");
-  const [highlight, setHighlight] = useState<{ path: number[]; found: boolean } | null>(null);
+  // A recorded run the user steps through, rather than a jump to the answer.
+  const [run, setRun] = useState<{ op: BstOperation; frames: BstFrame[] } | null>(null);
+  const [step, setStep] = useState(0);
 
-  const tree = useMemo(() => buildTree(state.values), [state.values]);
+  const frame: BstFrame | null = run ? run.frames[Math.min(step, run.frames.length - 1)]! : null;
+  const atEnd = run ? step >= run.frames.length - 1 : true;
+
+  const committed = useMemo(() => buildTree(state.values), [state.values]);
+  // While a run is playing the drawing follows its frames; otherwise it shows
+  // the committed tree.
+  const tree = frame ? frame.tree : committed;
   const nodes = useMemo(() => layout(tree), [tree]);
   const stats = useMemo(() => treeStats(tree), [tree]);
   const order = useMemo(() => traverse(tree, state.order), [tree, state.order]);
@@ -43,14 +52,28 @@ export function Bst() {
   const columns = Math.max(nodes.length, 1);
   const rows = Math.max(stats.height, 1);
 
-  function apply(action: "insert" | "remove" | "search") {
+  function start(op: BstOperation) {
     const value = Number(entry.trim());
     if (!Number.isFinite(value) || entry.trim() === "") return;
-    setHighlight(null);
-    if (action === "insert") update({ values: traverse(insert(tree, value), "level") });
-    if (action === "remove") update({ values: traverse(remove(tree, value), "level") });
-    if (action === "search") setHighlight(searchPath(tree, value));
-    if (action !== "search") setEntry("");
+    setRun({ op, frames: operationFrames(committed, op, value) });
+    setStep(0);
+  }
+
+  /** Steps forward, and commits the result once the run reaches its end. */
+  function advance() {
+    if (!run) return;
+    const next = Math.min(step + 1, run.frames.length - 1);
+    setStep(next);
+    if (next === run.frames.length - 1 && run.op !== "search") {
+      update({ values: traverse(run.frames[next]!.tree, "level") });
+    }
+  }
+
+  function finish() {
+    if (!run) return;
+    const last = run.frames.length - 1;
+    setStep(last);
+    if (run.op !== "search") update({ values: traverse(run.frames[last]!.tree, "level") });
   }
 
   return (
@@ -58,9 +81,9 @@ export function Bst() {
       meta={meta}
       shareState={state}
       examples={BST_EXAMPLES}
-      onLoadExample={(example) => { setHighlight(null); update(example.state as Partial<State>); }}
+      onLoadExample={(example) => { setRun(null); update(example.state as Partial<State>); }}
       actions={
-        <Button size="sm" onClick={() => { setHighlight(null); reset(); }}>
+        <Button size="sm" onClick={() => { setRun(null); reset(); }}>
           <RotateCcw size={13} aria-hidden />
           Reset
         </Button>
@@ -72,22 +95,22 @@ export function Bst() {
             <input
               value={entry}
               onChange={(e) => setEntry(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") apply("insert"); }}
+              onKeyDown={(e) => { if (e.key === "Enter") start("insert"); }}
               inputMode="numeric"
               aria-label="Value to insert, remove, or find"
               placeholder="42"
               className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
             />
           </label>
-          <Button size="sm" variant="primary" onClick={() => apply("insert")}>
+          <Button size="sm" variant="primary" onClick={() => start("insert")}>
             <Plus size={13} aria-hidden />
             Insert
           </Button>
-          <Button size="sm" onClick={() => apply("search")}>
+          <Button size="sm" onClick={() => start("search")}>
             <Search size={13} aria-hidden />
             Find
           </Button>
-          <Button size="sm" variant="danger" onClick={() => apply("remove")}>
+          <Button size="sm" variant="danger" onClick={() => start("remove")}>
             <Trash2 size={13} aria-hidden />
             Remove
           </Button>
@@ -111,14 +134,19 @@ export function Bst() {
             {stats.balanced ? "✓ balanced" : "! unbalanced"}
           </span>
           {stats.min !== null ? <span className="text-fg-muted">min {stats.min} · max {stats.max}</span> : null}
-          {highlight ? (
-            <span className={cx("ml-auto", highlight.found ? "text-up" : "text-rose")}>
-              {highlight.found
-                ? `✓ found in ${highlight.path.length} comparisons`
-                : `✗ not present — ${highlight.path.length} comparisons to rule it out`}
+          {run && atEnd ? (
+            <span className={cx("ml-auto", frame!.found ? "text-up" : "text-rose")}>
+              {frame!.found ? "✓ " : "✗ "}
+              {frame!.path.length} comparison{frame!.path.length === 1 ? "" : "s"}
             </span>
           ) : null}
         </div>
+
+        {frame ? (
+          <p aria-live="polite" className="rounded-lg border border-border bg-surface px-3 py-2 text-[12.5px] text-fg">
+            {frame.note}
+          </p>
+        ) : null}
 
         <div className="overflow-x-auto rounded-lg border border-border bg-surface p-4">
           {nodes.length === 0 ? (
@@ -142,18 +170,18 @@ export function Bst() {
                 />
               ) : null)}
               {nodes.map((n) => {
-                const onPath = highlight?.path.includes(n.value) ?? false;
-                const isTarget = onPath && highlight!.path.at(-1) === n.value;
+                const onPath = frame?.path.includes(n.value) ?? false;
+                const isTarget = frame?.current === n.value;
                 return (
                   <g key={n.value}>
                     <circle
                       cx={n.x * 56 + 28} cy={n.y * 64 + 32} r="19"
                       fill={isTarget
-                        ? (highlight!.found ? "var(--up-tint)" : "var(--rose-tint)")
-                        : onPath ? "var(--warn-tint)" : "var(--surface-2)"}
+                        ? (atEnd && frame!.found ? "var(--up-tint)" : "var(--warn-tint)")
+                        : onPath ? "var(--primary-tint)" : "var(--surface-2)"}
                       stroke={isTarget
-                        ? (highlight!.found ? "var(--up)" : "var(--rose)")
-                        : onPath ? "var(--warn)" : "var(--border)"}
+                        ? (atEnd && frame!.found ? "var(--up)" : "var(--warn)")
+                        : onPath ? "var(--primary)" : "var(--border)"}
                       strokeWidth="2"
                     />
                     <text
@@ -191,21 +219,50 @@ export function Bst() {
           </div>
         </div>
 
-        <div className="grid gap-3 md:grid-cols-3">
-          {BST_PSEUDOCODE.map((block) => (
-            <div key={block.title} className="overflow-hidden rounded-lg border border-border bg-surface">
-              <p className="border-b border-border px-3 py-2 font-ui text-[12px] font-semibold text-fg">
-                {block.title}
-              </p>
-              <ol className="p-2">
-                {block.lines.map((line, index) => (
-                  <li key={index} className="whitespace-pre-wrap px-1 py-[2px] font-ui text-[11.5px] leading-snug text-fg-muted">
-                    {line}
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ))}
+        {/* The listing for whichever operation is running, with the line
+            currently executing marked — the same treatment the sorting
+            visualiser gets, so the two read the same way. */}
+        <div className="overflow-hidden rounded-lg border border-border bg-surface">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border px-3 py-2">
+            <p className="eyebrow">Pseudocode</p>
+            <span className="font-ui text-[12px] text-fg">
+              {BST_PSEUDOCODE[run?.op ?? "search"].title}
+            </span>
+            <span className="text-[11.5px] text-fg-muted">
+              {run ? "The highlighted line is the step on screen" : "Run an operation to step through it"}
+            </span>
+            {run ? (
+              <span className="ml-auto flex items-center gap-2">
+                <span className="font-ui text-[11.5px] text-fg-muted tabular">
+                  Step {step + 1} of {run.frames.length}
+                </span>
+                <Button size="sm" onClick={advance} disabled={atEnd}>
+                  Step
+                  <SkipForward size={13} aria-hidden />
+                </Button>
+                <Button size="sm" onClick={finish} disabled={atEnd}>Finish</Button>
+              </span>
+            ) : null}
+          </div>
+          <ol className="p-1.5">
+            {BST_PSEUDOCODE[run?.op ?? "search"].lines.map((code, index) => (
+              <li
+                key={index}
+                aria-current={run && index === frame!.line ? "step" : undefined}
+                className={cx(
+                  "flex gap-2.5 rounded-sm px-2 py-[3px] font-ui text-[12px] transition-colors",
+                  run && index === frame!.line
+                    ? "bg-primary-tint text-primary-strong"
+                    : "text-fg-muted",
+                )}
+              >
+                <span aria-hidden className="w-2 shrink-0">
+                  {run && index === frame!.line ? "▸" : ""}
+                </span>
+                <span className="whitespace-pre-wrap">{code}</span>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     </ToolShell>

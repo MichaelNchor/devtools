@@ -602,3 +602,26 @@ export const BIG_O_EXAMPLES: ToolExample[] = [
     state: { view: "growth", n: 1000000 },
   },
 ];
+
+export const PATTERNS_EXAMPLES: ToolExample[] = [
+  {
+    name: "The fifteen patterns",
+    blurb: "Each with the phrasing that gives it away, its complexity, and a short C# implementation.",
+    state: { view: "patterns", query: "", open: "Hash Map / Hash Set" },
+  },
+  {
+    name: "Learning order",
+    blurb: "What to study in which order, with how many problems are worth doing per topic.",
+    state: { view: "roadmap", query: "" },
+  },
+  {
+    name: "Where the time goes",
+    blurb: "How to divide preparation for a mid-level backend role — DSA is only about a third of it.",
+    state: { view: "split", query: "" },
+  },
+  {
+    name: "Find a pattern by symptom",
+    blurb: "Filter by what the problem says rather than what it is called — try 'contiguous' or 'cycle'.",
+    state: { view: "patterns", query: "contiguous" },
+  },
+];
