@@ -65,7 +65,13 @@ export function DiffSummary({
                 {GLYPH[group.kind]}
               </span>
               <span className="eyebrow">{group.label}</span>
-              <span className="font-ui text-[11px] text-fg-muted tabular">{group.items.length}</span>
+              <span className="font-ui text-[11px] text-fg-muted tabular">
+                {group.items.length}
+                {/* Only worth stating when a difference covers more than one
+                    value — otherwise the two numbers are the same and the
+                    second is noise. */}
+                {group.size > group.items.length ? ` · ${group.size} values` : ""}
+              </span>
             </button>
 
             {!isCollapsed ? (
@@ -81,6 +87,14 @@ export function DiffSummary({
                       {item.kind === "changed" || item.kind === "type-changed" ? (
                         <span className="truncate font-ui text-[11.5px] text-fg-muted">
                           {preview(item.left)} → {preview(item.right)}
+                        </span>
+                      ) : null}
+                      {item.size > 1 ? (
+                        // A whole subtree, not a single value. Worth saying so:
+                        // "$.handler changed" reads very differently once you
+                        // know it took three values with it.
+                        <span className="ml-auto shrink-0 font-ui text-[11px] text-fg-muted tabular">
+                          {item.size} values
                         </span>
                       ) : null}
                     </button>
