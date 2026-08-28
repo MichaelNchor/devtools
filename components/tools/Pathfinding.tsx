@@ -185,7 +185,7 @@ export function Pathfinding() {
             implementations={PATH_CODE[algorithm]}
           />
 
-          <div className="rounded-lg border border-border bg-surface p-4">
+          <div className="rounded-lg border border-border bg-inset p-4">
             <div className="flex flex-wrap items-baseline gap-2">
               <p className="eyebrow">{info.label}</p>
               <span className="font-ui text-[11.5px] text-up">{info.guarantee}</span>

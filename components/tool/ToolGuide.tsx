@@ -2,15 +2,23 @@ import { Info } from "lucide-react";
 import type { ToolGuide as Guide } from "@/lib/tools/guides";
 
 /**
- * Sits under every tool. Not decoration: each point is a gotcha or a
- * guarantee that the tool's own controls cannot state on their own.
+ * Guidance, not output — and it should not look like output.
+ *
+ * A raised surface with a shadow is what this system uses for the tool's own
+ * working areas, so explanation borrowing that treatment made a paragraph
+ * compete with the result above it. This sits UNLIFTED on the page colour
+ * with a hairline, and is marked in --sky: the one brand hue not carrying
+ * status meaning, so guidance never reads as a verdict.
+ *
+ * No left-edge accent: the rail's position marker is the only sanctioned edge
+ * indicator in this system.
  */
 export function ToolGuide({ guide }: { guide: Guide }) {
   return (
-    <section className="mt-6 rounded-xl border border-border bg-surface p-5 shadow-sm lg:p-6">
+    <section className="mt-6 rounded-xl border border-border bg-inset p-5 lg:p-6">
       <div className="flex items-center gap-2">
-        <Info size={14} aria-hidden className="text-fg-muted" />
-        <h2 className="eyebrow">How it works</h2>
+        <Info size={14} aria-hidden className="text-sky" />
+        <h2 className="eyebrow eyebrow-info">How it works</h2>
       </div>
 
       <p className="mt-2.5 max-w-3xl text-[13px] leading-relaxed text-fg-2">{guide.summary}</p>

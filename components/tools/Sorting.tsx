@@ -243,7 +243,7 @@ export function Sorting() {
             implementations={SORT_CODE[state.algorithm]}
           />
 
-          <div className="rounded-lg border border-border bg-surface p-4">
+          <div className="rounded-lg border border-border bg-inset p-4">
             <p className="eyebrow mb-2">Complexity</p>
             <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 font-ui text-[12.5px]">
               <dt className="text-fg-muted">Best</dt><dd className="text-fg tabular">{info.best}</dd>

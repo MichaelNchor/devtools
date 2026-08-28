@@ -136,7 +136,7 @@ export function Patterns() {
         </div>
       ) : view === "roadmap" ? (
         <div className="flex flex-col gap-3">
-          <div className="rounded-lg border border-border bg-surface px-4 py-3">
+          <div className="rounded-lg border border-border bg-inset px-4 py-3">
             <p className="text-[12.5px] leading-relaxed text-fg-2">
               About <span className="font-ui text-fg">{totalTarget()}</span> well-understood
               problems beats five hundred half-remembered ones. For each, be able to say

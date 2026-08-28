@@ -116,7 +116,7 @@ export function Guid() {
       <div className="flex flex-col gap-3">
         {!result.ok ? <ErrorNote error={result.error} /> : null}
         {state.version === "v5" ? (
-          <p className="rounded-md bg-surface px-3 py-2 text-[12.5px] text-fg-muted">
+          <p className="rounded-md border border-border bg-inset px-3 py-2 text-[12.5px] text-fg-muted">
             v5 is a hash of the namespace and name, so it is deterministic — the
             same inputs always give the same GUID, and a batch repeats one value.
           </p>

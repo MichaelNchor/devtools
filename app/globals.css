@@ -158,6 +158,13 @@ body {
   color: var(--fg-muted);
 }
 
+/* A modifier rather than a utility override: these rules sit after Tailwind's
+   utilities in the cascade, so `.eyebrow text-sky` would lose. Guidance is
+   marked in --sky, the one brand hue carrying no status meaning. */
+.eyebrow-info {
+  color: var(--sky);
+}
+
 :root {
   --ease-out-quart: cubic-bezier(.25, 1, .5, 1);
   --ease-out-expo: cubic-bezier(.16, 1, .3, 1);

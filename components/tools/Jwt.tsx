@@ -113,7 +113,7 @@ export function Jwt() {
         </div>
 
         {verified === "not-verified" && decoded?.ok ? (
-          <p className="rounded-md bg-surface px-3 py-2 text-[12.5px] leading-relaxed text-fg-muted">
+          <p className="rounded-md border border-border bg-inset px-3 py-2 text-[12.5px] leading-relaxed text-fg-muted">
             Decoding a token proves nothing about its signature.
             {alg && alg.toLowerCase() === "none"
               ? ' This token declares alg "none", which is unsigned — it can never be reported valid.'

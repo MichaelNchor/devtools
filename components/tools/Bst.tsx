@@ -203,14 +203,14 @@ export function Bst() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg border border-border bg-surface p-4">
+          <div className="rounded-lg border border-border bg-inset p-4">
             <p className="eyebrow mb-1.5">{traversalInfo.label}</p>
             <p className="break-words font-ui text-[13px] text-fg tabular">
               {order.length > 0 ? order.join(" → ") : "—"}
             </p>
             <p className="mt-2 text-[12.5px] leading-relaxed text-fg-muted">{traversalInfo.blurb}</p>
           </div>
-          <div className="rounded-lg border border-border bg-surface p-4">
+          <div className="rounded-lg border border-border bg-inset p-4">
             <p className="eyebrow mb-1.5">Why height matters</p>
             <p className="text-[12.5px] leading-relaxed text-fg-muted">
               Lookup costs one comparison per level, so a balanced tree of {stats.size} nodes
