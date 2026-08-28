@@ -563,3 +563,42 @@ export const BST_EXAMPLES: ToolExample[] = [
     state: { values: [8, 3, 10, 1, 6, 14, 4, 7, 13], order: "pre" },
   },
 ];
+
+export const PATHFINDING_EXAMPLES: ToolExample[] = [
+  {
+    name: "Open grid",
+    blurb: "Nothing in the way. Compare how much of the grid each algorithm explores to reach the same goal.",
+    state: { walls: [], algorithm: "bfs" },
+  },
+  {
+    name: "Wall with a gap",
+    blurb: "One barrier and a single opening — the case where depth-first wanders and A* goes almost straight there.",
+    state: {
+      walls: ["0,10","1,10","2,10","3,10","4,10","5,10","7,10","8,10","9,10","10,10","11,10"],
+      algorithm: "astar",
+    },
+  },
+  {
+    name: "Sealed goal",
+    blurb: "The goal is walled off entirely, so the search has to explore everything reachable before it can say no.",
+    state: { walls: ["10,21","11,20","10,20"], algorithm: "bfs" },
+  },
+];
+
+export const BIG_O_EXAMPLES: ToolExample[] = [
+  {
+    name: "Data structures",
+    blurb: "Access, search, insert and delete for the structures you reach for daily.",
+    state: { view: "structures", n: 1000 },
+  },
+  {
+    name: "Algorithms",
+    blurb: "Best, average and worst case — including the gap that makes quicksort risky.",
+    state: { view: "algorithms", n: 1000 },
+  },
+  {
+    name: "Growth at a million",
+    blurb: "What each complexity class actually costs once n gets large. This is where O(n squared) stops being abstract.",
+    state: { view: "growth", n: 1000000 },
+  },
+];

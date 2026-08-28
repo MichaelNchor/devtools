@@ -1,4 +1,4 @@
-import { ArrowLeftRight, BarChart3, Binary, Braces, CalendarClock, Clock, GitBranch, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
+import { ArrowLeftRight, BarChart3, Binary, Braces, CalendarClock, Clock, GitBranch, Gauge, Route, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -207,5 +207,27 @@ export const BST_META: ToolMeta = {
   group: "concepts",
   icon: GitBranch,
   aliases: ["bst", "tree", "binary tree", "traversal", "data structure"],
+  handlesSecrets: false,
+};
+
+export const PATHFINDING_META: ToolMeta = {
+  slug: "pathfinding",
+  name: "Pathfinding",
+  tagline: "BFS, DFS and A*",
+  blurb: "Draw a maze and watch three search algorithms explore it very differently.",
+  group: "concepts",
+  icon: Route,
+  aliases: ["bfs", "dfs", "a star", "graph", "search", "maze", "shortest path"],
+  handlesSecrets: false,
+};
+
+export const BIG_O_META: ToolMeta = {
+  slug: "big-o",
+  name: "Big-O Reference",
+  tagline: "Costs at a glance",
+  blurb: "Complexity for the structures and algorithms you actually use, with what each costs at a real n.",
+  group: "concepts",
+  icon: Gauge,
+  aliases: ["big o", "complexity", "cheatsheet", "performance", "time complexity"],
   handlesSecrets: false,
 };

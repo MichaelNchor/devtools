@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel, EmptyOutput } from "@/components/ui/Panel";
 import type { ToolError } from "@/lib/types";
 
 interface State {
@@ -131,13 +132,15 @@ export function Hash() {
       <div className="flex flex-col gap-3">
         {error ? <ErrorNote error={error} /> : null}
 
-        <CodeArea
-          value={state.input}
-          onChange={(input) => { setFileName(null); update({ input }); }}
-          ariaLabel="Text to hash"
-          placeholder="Type or paste text, or hash a file"
-          className="h-40"
-        />
+        <Panel title="Input" subtitle="Text, or a file you choose above" className="h-44">
+          <CodeArea
+            value={state.input}
+            onChange={(input) => { setFileName(null); update({ input }); }}
+            ariaLabel="Text to hash"
+            placeholder="Type or paste text, or hash a file"
+            className="h-full rounded-none border-0"
+          />
+        </Panel>
 
         {fileName ? (
           <p className="text-[12px] text-fg-muted">
@@ -145,12 +148,17 @@ export function Hash() {
           </p>
         ) : null}
 
-        <div className="rounded-lg bg-surface px-4 py-3 shadow-sm">
-          <p className="eyebrow mb-1.5">
-            {state.hmacKey ? `HMAC-${state.algorithm.toUpperCase()}` : state.algorithm.toUpperCase()}
-          </p>
-          <p className="break-all font-ui text-[13px] text-fg">{digest || "—"}</p>
-        </div>
+        <Panel
+          title={state.hmacKey ? `HMAC-${state.algorithm.toUpperCase()}` : state.algorithm.toUpperCase()}
+          subtitle={state.encoding === "base64" ? "Base64" : "Hexadecimal"}
+          actions={digest ? <CopyButton text={digest} label="Copy" /> : null}
+        >
+          {digest ? (
+            <p className="break-all px-3 py-2.5 font-ui text-[13px] text-fg">{digest}</p>
+          ) : (
+            <EmptyOutput>The digest will appear here.</EmptyOutput>
+          )}
+        </Panel>
 
         <div className="flex flex-col gap-2 rounded-lg bg-surface px-4 py-3 shadow-sm">
           <label className="flex items-center gap-2">

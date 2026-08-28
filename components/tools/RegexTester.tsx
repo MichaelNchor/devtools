@@ -12,6 +12,7 @@ import { CopyButton } from "@/components/tool/CopyButton";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel } from "@/components/ui/Panel";
 import { cx } from "@/lib/cx";
 
 const FLAGS = ["g", "i", "m", "s", "u", "y"] as const;
@@ -164,14 +165,15 @@ export function RegexTester() {
 
         <div className="grid gap-3 lg:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <p className="eyebrow">Test text</p>
-            <CodeArea
-              value={state.text}
-              onChange={(text) => update({ text })}
-              ariaLabel="Test text"
-              placeholder="Text to match against"
-              className="h-40"
-            />
+            <Panel title="Test text" subtitle="What the pattern runs against" className="h-44">
+              <CodeArea
+                value={state.text}
+                onChange={(text) => update({ text })}
+                ariaLabel="Test text"
+                placeholder="Text to match against"
+                className="h-full rounded-none border-0"
+              />
+            </Panel>
             {report ? (
               <div className="min-h-24 overflow-auto rounded-md border border-border bg-surface p-3">
                 <p className="eyebrow mb-1.5">

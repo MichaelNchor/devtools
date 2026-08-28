@@ -10,6 +10,7 @@ import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
 import { Button } from "@/components/ui/Button";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel } from "@/components/ui/Panel";
 import { JsonCode } from "@/components/ui/JsonCode";
 
 interface State {
@@ -83,13 +84,15 @@ export function Jwt() {
       }
     >
       <div className="flex flex-col gap-3">
-        <CodeArea
-          value={state.token}
-          onChange={(token) => update({ token })}
-          ariaLabel="JWT"
-          placeholder="Paste a JWT"
-          className="h-28"
-        />
+        <Panel title="Encoded token" subtitle="Header, payload and signature" className="h-32">
+          <CodeArea
+            value={state.token}
+            onChange={(token) => update({ token })}
+            ariaLabel="JWT"
+            placeholder="Paste a JWT"
+            className="h-full rounded-none border-0"
+          />
+        </Panel>
 
         {decoded && !decoded.ok ? <ErrorNote error={decoded.error} /> : null}
 
@@ -122,14 +125,12 @@ export function Jwt() {
 
         {decoded?.ok ? (
           <div className="grid gap-3 lg:grid-cols-2">
-            <div className="min-h-0 overflow-auto rounded-lg bg-surface p-3 shadow-sm">
-              <p className="eyebrow mb-1.5">Header</p>
+            <Panel title="Header" subtitle="Algorithm and type" bodyClassName="overflow-auto p-3">
               <JsonCode text={JSON.stringify(decoded.value.header, null, 2)} />
-            </div>
-            <div className="min-h-0 overflow-auto rounded-lg bg-surface p-3 shadow-sm">
-              <p className="eyebrow mb-1.5">Payload</p>
+            </Panel>
+            <Panel title="Payload" subtitle="Data and claims" bodyClassName="overflow-auto p-3">
               <JsonCode text={JSON.stringify(decoded.value.payload, null, 2)} />
-            </div>
+            </Panel>
           </div>
         ) : null}
 

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel, EmptyOutput } from "@/components/ui/Panel";
 
 interface State {
   input: string;
@@ -115,22 +116,30 @@ export function JsonToCode() {
       }
     >
       <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-        <CodeArea
+        <Panel title="JSON sample" subtitle="Data to infer types from" className="h-[60dvh] min-h-[22rem]">
+          <CodeArea
           value={state.input}
           onChange={(input) => update({ input })}
           ariaLabel="JSON sample"
           placeholder="Paste a JSON sample to infer types from"
-          className="h-[60dvh] min-h-[22rem]"
-        />
-        <div className="flex flex-col gap-2">
-          {result && !result.ok ? <ErrorNote error={result.error} /> : null}
-          <CodeArea
-            value={result?.ok ? result.value : ""}
-            readOnly
-            ariaLabel="Generated code"
-            className="h-[60dvh] min-h-[22rem]"
+            className="h-full rounded-none border-0"
           />
-        </div>
+        </Panel>
+
+        <Panel
+          title="Generated code"
+          subtitle={LANGUAGES.find((l) => l.value === state.language)?.label}
+          className="h-[60dvh] min-h-[22rem]"
+        actions={result?.ok ? <CopyButton text={result.value} label="Copy" /> : null}
+        >
+          {result && !result.ok ? (
+            <div className="p-3"><ErrorNote error={result.error} /></div>
+          ) : result?.ok ? (
+            <CodeArea value={result.value} readOnly ariaLabel="Generated code" className="h-full rounded-none border-0" />
+          ) : (
+            <EmptyOutput>Type declarations will appear here.</EmptyOutput>
+          )}
+        </Panel>
       </div>
     </ToolShell>
   );

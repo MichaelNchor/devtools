@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel, EmptyOutput } from "@/components/ui/Panel";
 
 interface State {
   input: string;
@@ -113,22 +114,30 @@ export function SqlFormat() {
       }
     >
       <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-        <CodeArea
-          value={state.input}
-          onChange={(input) => update({ input })}
-          ariaLabel="SQL input"
-          placeholder="Paste a SQL statement"
-          className="h-[60dvh] min-h-[22rem]"
-        />
-        <div className="flex flex-col gap-2">
-          {result && !result.ok ? <ErrorNote error={result.error} /> : null}
+        <Panel title="Raw SQL" subtitle="The statement to format" className="h-[60dvh] min-h-[22rem]">
           <CodeArea
-            value={result?.ok ? result.value : ""}
-            readOnly
-            ariaLabel="Formatted SQL"
-            className="h-[60dvh] min-h-[22rem]"
+            value={state.input}
+            onChange={(input) => update({ input })}
+            ariaLabel="SQL input"
+            placeholder="Paste a SQL statement"
+            className="h-full rounded-none border-0"
           />
-        </div>
+        </Panel>
+
+        <Panel
+          title="Formatted"
+          subtitle={SQL_DIALECTS.find((d) => d.value === state.options.dialect)?.label}
+          className="h-[60dvh] min-h-[22rem]"
+          actions={result?.ok ? <CopyButton text={result.value} label="Copy" /> : null}
+        >
+          {result && !result.ok ? (
+            <div className="p-3"><ErrorNote error={result.error} /></div>
+          ) : result?.ok ? (
+            <CodeArea value={result.value} readOnly ariaLabel="Formatted SQL" className="h-full rounded-none border-0" />
+          ) : (
+            <EmptyOutput>Formatted SQL will appear here.</EmptyOutput>
+          )}
+        </Panel>
       </div>
     </ToolShell>
   );

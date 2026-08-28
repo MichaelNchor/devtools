@@ -25,7 +25,7 @@ export function JsonTree({ value }: { value: unknown }) {
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-auto rounded-lg bg-surface p-2 shadow-sm">
+    <div className="h-full min-h-0 overflow-auto p-2">
       {rows.map((row) => (
         <div
           key={row.path}

@@ -17,6 +17,8 @@ import {
   CRON_EXAMPLES,
   SORTING_EXAMPLES,
   BST_EXAMPLES,
+  PATHFINDING_EXAMPLES,
+  BIG_O_EXAMPLES,
 } from "@/lib/tools/examples";
 import { JsonCompare } from "@/components/tools/JsonCompare";
 import { JsonFormat } from "@/components/tools/JsonFormat";
@@ -36,7 +38,9 @@ import { HttpInspector } from "@/components/tools/HttpInspector";
 import { Cron } from "@/components/tools/Cron";
 import { Sorting } from "@/components/tools/Sorting";
 import { Bst } from "@/components/tools/Bst";
-import { BASE64_META, BST_META, CRON_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SORTING_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
+import { Pathfinding } from "@/components/tools/Pathfinding";
+import { BigO } from "@/components/tools/BigO";
+import { BASE64_META, BIG_O_META, BST_META, CRON_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, PATHFINDING_META, SORTING_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -72,6 +76,8 @@ export const TOOLS: ToolEntry[] = [
   { meta: CRON_META, Component: Cron, examples: CRON_EXAMPLES },
   { meta: SORTING_META, Component: Sorting, examples: SORTING_EXAMPLES },
   { meta: BST_META, Component: Bst, examples: BST_EXAMPLES },
+  { meta: PATHFINDING_META, Component: Pathfinding, examples: PATHFINDING_EXAMPLES },
+  { meta: BIG_O_META, Component: BigO, examples: BIG_O_EXAMPLES },
 ];
 
 export function allMetas(): ToolMeta[] {

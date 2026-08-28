@@ -12,6 +12,7 @@ import { CopyButton } from "@/components/tool/CopyButton";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel, EmptyOutput } from "@/components/ui/Panel";
 
 interface State {
   input: string;
@@ -79,19 +80,30 @@ export function CurlConvert() {
         ) : null}
 
         <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-          <CodeArea
-            value={state.input}
-            onChange={(input) => update({ input })}
-            ariaLabel="curl command"
-            placeholder="Paste a curl command"
-            className="h-[55dvh] min-h-[20rem]"
-          />
-          <CodeArea
-            value={code}
-            readOnly
-            ariaLabel="Generated request code"
-            className="h-[55dvh] min-h-[20rem]"
-          />
+          <Panel title="curl command" subtitle="The command to convert" className="h-[60dvh] min-h-[22rem]">
+            <CodeArea
+              value={state.input}
+              onChange={(input) => update({ input })}
+              ariaLabel="curl command"
+              placeholder="Paste a curl command"
+              className="h-full rounded-none border-0"
+            />
+          </Panel>
+
+          <Panel
+            title="Generated code"
+            subtitle={CURL_TARGETS.find((t) => t.value === state.target)?.label}
+            className="h-[60dvh] min-h-[22rem]"
+            actions={code ? <CopyButton text={code} label="Copy" /> : null}
+          >
+            {/* The parse error already sits above both panes, so this side
+                only ever shows a result or says it is waiting for one. */}
+            {code ? (
+              <CodeArea value={code} readOnly ariaLabel="Generated request code" className="h-full rounded-none border-0" />
+            ) : (
+              <EmptyOutput>Converted request code will appear here.</EmptyOutput>
+            )}
+          </Panel>
         </div>
       </div>
     </ToolShell>

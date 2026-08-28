@@ -10,6 +10,7 @@ import { useToolState } from "@/components/tool/useToolState";
 import { ErrorNote } from "@/components/tool/ErrorNote";
 import { Button } from "@/components/ui/Button";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel, EmptyOutput } from "@/components/ui/Panel";
 import { JsonCode } from "@/components/ui/JsonCode";
 
 interface State { input: string }
@@ -56,16 +57,24 @@ export function HttpInspector() {
       }
     >
       <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-        <CodeArea
-          value={state.input}
-          onChange={(input) => update({ input })}
-          ariaLabel="Raw HTTP message"
-          placeholder="Paste a raw HTTP request or response"
-          className="h-[70dvh] min-h-[24rem]"
-        />
+        <Panel title="Raw message" subtitle="Request or response" className="h-[70dvh] min-h-[24rem]">
+          <CodeArea
+            value={state.input}
+            onChange={(input) => update({ input })}
+            ariaLabel="Raw HTTP message"
+            placeholder="Paste a raw HTTP request or response"
+            className="h-full rounded-none border-0"
+          />
+        </Panel>
 
         <div className="flex max-h-[70dvh] min-h-0 flex-col gap-3 overflow-auto">
           {result && !result.ok ? <ErrorNote error={result.error} /> : null}
+
+          {!analysis && !(result && !result.ok) ? (
+            <div className="rounded-lg border border-border bg-surface">
+              <EmptyOutput>Headers, body and decoded credentials will appear here.</EmptyOutput>
+            </div>
+          ) : null}
 
           {analysis ? (
             <>

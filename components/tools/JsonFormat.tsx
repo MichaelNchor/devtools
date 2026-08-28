@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel, EmptyOutput } from "@/components/ui/Panel";
 import { JsonCode } from "@/components/ui/JsonCode";
 import { JsonTree } from "./JsonTree";
 
@@ -129,31 +130,33 @@ export function JsonFormat() {
     >
       <div className="flex h-[calc(100dvh-15rem)] min-h-[26rem] flex-col gap-3">
         <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-2">
-          <CodeArea
-            value={state.input}
-            onChange={(input) => update({ input })}
-            ariaLabel="JSON input"
-            placeholder="Paste JSON to format"
-          />
+          <Panel title="Raw input" subtitle="The JSON to format" className="min-h-0">
+            <CodeArea
+              value={state.input}
+              onChange={(input) => update({ input })}
+              ariaLabel="JSON input"
+              placeholder="Paste JSON to format"
+              className="h-full rounded-none border-0"
+            />
+          </Panel>
 
-          {result === null ? (
-            <div className="flex items-center justify-center rounded-md border border-border bg-surface p-8 text-center">
-              <p className="max-w-sm text-[13px] leading-relaxed text-fg-muted">
-                Paste JSON on the left to beautify, minify, sort its keys, or
-                browse it as a tree.
-              </p>
-            </div>
-          ) : !result.ok ? (
-            <div className="flex items-start rounded-md border border-border bg-surface p-3">
-              <ErrorNote error={result.error} />
-            </div>
-          ) : state.view === "tree" && parsed !== null ? (
-            <JsonTree value={parsed} />
-          ) : (
-            <div className="min-h-0 overflow-auto rounded-md border border-border bg-surface p-3">
-              <JsonCode text={result.value} />
-            </div>
-          )}
+          <Panel
+            title="Output"
+            subtitle={state.view === "tree" ? "Collapsible tree" : state.options.minify ? "Minified" : "Beautified"}
+            className="min-h-0"
+            bodyClassName="overflow-auto"
+            actions={result?.ok ? <CopyButton text={result.value} label="Copy" /> : null}
+          >
+            {result === null ? (
+              <EmptyOutput>Formatted JSON will appear here.</EmptyOutput>
+            ) : !result.ok ? (
+              <div className="p-3"><ErrorNote error={result.error} /></div>
+            ) : state.view === "tree" && parsed !== null ? (
+              <JsonTree value={parsed} />
+            ) : (
+              <div className="p-3"><JsonCode text={result.value} /></div>
+            )}
+          </Panel>
         </div>
       </div>
     </ToolShell>

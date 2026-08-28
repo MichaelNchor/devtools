@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/Button";
 import { Toggle } from "@/components/ui/Toggle";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
+import { Panel, EmptyOutput } from "@/components/ui/Panel";
 
 interface State {
   input: string;
@@ -151,37 +152,54 @@ export function Base64() {
         ) : null}
 
         <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-2">
-          <CodeArea
-            value={state.input}
-            onChange={(input) => update({ input })}
-            ariaLabel={state.mode === "encode" ? "Text to encode" : "Base64 to decode"}
-            placeholder={state.mode === "encode" ? "Type or paste text" : "Paste base64"}
-          />
-          <div className="flex min-h-0 flex-col gap-2">
-            {error ? <ErrorNote error={error} /> : null}
+          <Panel
+            title={state.mode === "encode" ? "Plain text" : "Base64"}
+            subtitle={state.mode === "encode" ? "What to encode" : "What to decode"}
+            className="min-h-0"
+          >
+            <CodeArea
+              value={state.input}
+              onChange={(input) => update({ input })}
+              ariaLabel={state.mode === "encode" ? "Text to encode" : "Base64 to decode"}
+              placeholder={state.mode === "encode" ? "Type or paste text" : "Paste base64"}
+              className="h-full rounded-none border-0"
+            />
+          </Panel>
 
-            {binary ? (
-              <div className="flex min-h-0 flex-1 flex-col gap-2 rounded-md border border-border bg-surface p-3">
-                {/* The word, not just a colour, says what happened. */}
+          <Panel
+            title={state.mode === "encode" ? "Base64" : "Decoded"}
+            subtitle={binary ? "Not valid UTF-8 — shown as hex" : "Result"}
+            className="min-h-0"
+            actions={
+              <>
+                {encoded?.ok && encoded.value
+                  ? <CopyButton text={toDataUri(encoded.value, state.mime)} label="Data URI" />
+                  : null}
+                {output ? <CopyButton text={output} label="Copy" /> : null}
+              </>
+            }
+          >
+            {error ? (
+              <div className="p-3"><ErrorNote error={error} /></div>
+            ) : binary ? (
+              <div className="flex h-full min-h-0 flex-col gap-2 p-3">
+                {/* The word, not just the tint, says what happened. */}
                 <p className="text-[12.5px] text-warn">
-                  ! Decoded bytes are not valid UTF-8. Showing hex.
+                  ! These bytes are not valid UTF-8, so they are shown as hex.
                 </p>
                 <pre className="min-h-0 flex-1 overflow-auto whitespace-pre-wrap break-all font-ui text-[12px] text-fg">
                   {bytesToHex(binary)}
                 </pre>
                 <Button size="sm" onClick={download}>Download {binary.length} bytes</Button>
               </div>
+            ) : output ? (
+              <CodeArea value={output} readOnly ariaLabel="Output" className="h-full rounded-none border-0" />
             ) : (
-              <CodeArea value={output} readOnly ariaLabel="Output" />
+              <EmptyOutput>
+                {state.mode === "encode" ? "Encoded base64" : "Decoded text"} will appear here.
+              </EmptyOutput>
             )}
-
-            {encoded?.ok && encoded.value ? (
-              <div className="flex items-center gap-2">
-                <p className="eyebrow">Data URI</p>
-                <CopyButton text={toDataUri(encoded.value, state.mime)} label="Copy data URI" />
-              </div>
-            ) : null}
-          </div>
+          </Panel>
         </div>
       </div>
     </ToolShell>

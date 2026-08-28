@@ -160,4 +160,22 @@ export const GUIDES: Record<string, ToolGuide> = {
       { title: "Traversals are different tools", body: "In-order sorts, pre-order copies, post-order frees, level-order is breadth-first search. Same shape; the order you visit it decides what you can do with it." },
     ],
   },
+  pathfinding: {
+    summary: "All three algorithms run the same loop and differ only in which cell they take from the frontier next — which is the entire lesson.",
+    points: [
+      { title: "The frontier decides everything", body: "Breadth-first takes the oldest cell (a queue), depth-first takes the newest (a stack), A* takes the most promising. Same code, completely different behaviour." },
+      { title: "Why BFS is shortest", body: "It explores in rings of equal distance, so the first time it reaches the goal it cannot have taken a longer route. That guarantee costs memory: the whole frontier is held at once." },
+      { title: "What A* adds", body: "Cost so far plus an estimate of the cost remaining. Because the estimate never overshoots the true distance, the shortest-path guarantee survives while far fewer cells get explored." },
+      { title: "Failure has a cost too", body: "Proving no path exists means exhausting every reachable cell. Seal the goal and watch the search fill the whole grid before it can answer." },
+    ],
+  },
+  "big-o": {
+    summary: "Big-O describes how cost grows with input size, not how fast something runs — which is why the constant factors it ignores still decide real performance.",
+    points: [
+      { title: "Average is not worst", body: "Quicksort and hash tables are both O(n) in the worst case and both are used everywhere, because the bad case is rare or avoidable. A table showing only the average would hide that." },
+      { title: "Growth beats constants, eventually", body: "An O(n squared) algorithm with tiny constants can beat O(n log n) on small inputs. That is why real sorts switch to insertion sort under a threshold." },
+      { title: "Space is a real budget", body: "Merge sort's guaranteed O(n log n) costs O(n) extra memory. Heapsort gives the same guarantee in O(1) space and loses on cache behaviour instead." },
+      { title: "Amortised is not average", body: "A dynamic array append is amortised O(1): most are free and the occasional resize copies everything. Any single call can still be slow." },
+    ],
+  },
 };
