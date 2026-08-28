@@ -11,7 +11,7 @@ import { ErrorNote } from "@/components/tool/ErrorNote";
 import { Button } from "@/components/ui/Button";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel, EmptyOutput } from "@/components/ui/Panel";
-import { JsonCode } from "@/components/ui/JsonCode";
+import { JsonViewer } from "@/components/ui/JsonViewer";
 
 interface State { input: string }
 const DEFAULTS: State = { input: "" };
@@ -38,6 +38,13 @@ export function HttpInspector() {
     [state.input],
   );
   const analysis = result?.ok ? result.value : null;
+
+  // Parsed once, defensively: prettyBody can be non-null for a form body that
+  // happens to start with a brace, and JSON.parse inside render would throw.
+  const jsonBody = useMemo(() => {
+    if (!analysis?.message.body) return null;
+    try { return JSON.parse(analysis.message.body) as unknown; } catch { return null; }
+  }, [analysis]);
 
   return (
     <ToolShell
@@ -137,9 +144,17 @@ export function HttpInspector() {
 
               {analysis.prettyBody !== null ? (
                 <Card title="Body">
-                  <div className="overflow-auto">
-                    <JsonCode text={analysis.prettyBody} />
-                  </div>
+                  {/* A JSON body folds; a form-encoded one is already a flat
+                      list of pairs and has nothing to fold. */}
+                  {jsonBody !== null ? (
+                    <div className="max-h-80 overflow-hidden rounded-md border border-border">
+                      <JsonViewer value={jsonBody} className="max-h-80" />
+                    </div>
+                  ) : (
+                    <pre className="overflow-auto whitespace-pre-wrap font-ui text-[12px] text-fg">
+                      {analysis.prettyBody}
+                    </pre>
+                  )}
                 </Card>
               ) : analysis.message.body ? (
                 <Card title="Body">

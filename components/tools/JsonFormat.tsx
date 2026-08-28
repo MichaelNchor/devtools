@@ -18,7 +18,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel, EmptyOutput } from "@/components/ui/Panel";
 import { JsonCode } from "@/components/ui/JsonCode";
-import { JsonTree } from "./JsonTree";
+import { JsonViewer } from "@/components/ui/JsonViewer";
 
 interface State {
   input: string;
@@ -152,7 +152,7 @@ export function JsonFormat() {
             ) : !result.ok ? (
               <div className="p-3"><ErrorNote error={result.error} /></div>
             ) : state.view === "tree" && parsed !== null ? (
-              <JsonTree value={parsed} />
+              <JsonViewer value={parsed} className="h-full" showPaths />
             ) : (
               <div className="p-3"><JsonCode text={result.value} /></div>
             )}

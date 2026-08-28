@@ -11,7 +11,7 @@ import { ErrorNote } from "@/components/tool/ErrorNote";
 import { Button } from "@/components/ui/Button";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel } from "@/components/ui/Panel";
-import { JsonCode } from "@/components/ui/JsonCode";
+import { JsonViewer } from "@/components/ui/JsonViewer";
 
 interface State {
   token: string;
@@ -125,11 +125,11 @@ export function Jwt() {
 
         {decoded?.ok ? (
           <div className="grid gap-3 lg:grid-cols-2">
-            <Panel title="Header" subtitle="Algorithm and type" bodyClassName="overflow-auto p-3">
-              <JsonCode text={JSON.stringify(decoded.value.header, null, 2)} />
+            <Panel title="Header" subtitle="Algorithm and type" className="max-h-72">
+              <JsonViewer value={decoded.value.header} className="h-full" />
             </Panel>
-            <Panel title="Payload" subtitle="Data and claims" bodyClassName="overflow-auto p-3">
-              <JsonCode text={JSON.stringify(decoded.value.payload, null, 2)} />
+            <Panel title="Payload" subtitle="Data and claims" className="max-h-72">
+              <JsonViewer value={decoded.value.payload} className="h-full" />
             </Panel>
           </div>
         ) : null}

@@ -17,7 +17,7 @@ import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel, EmptyOutput } from "@/components/ui/Panel";
-import { JsonCode } from "@/components/ui/JsonCode";
+import { JsonViewer } from "@/components/ui/JsonViewer";
 
 interface State {
   left: string;
@@ -258,11 +258,10 @@ export function JsonMerge() {
           title="Merged"
           subtitle="Both documents combined"
           className="min-h-[16rem]"
-          bodyClassName="overflow-auto"
           actions={output ? <CopyButton text={output} label="Copy" /> : null}
         >
-          {output ? (
-            <div className="p-3"><JsonCode text={output} /></div>
+          {result?.ok && output ? (
+            <JsonViewer value={result.value.value} className="h-full" />
           ) : (
             <EmptyOutput>The merged document will appear here.</EmptyOutput>
           )}
