@@ -7,6 +7,7 @@ import { allMetas, groupTools } from "@/lib/registry";
 import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { RECENTS_SHOWN } from "@/lib/workspace";
 import { ToolCard } from "@/components/shell/ToolCard";
+import { ToolTile } from "@/components/shell/ToolTile";
 import { LocalBadge } from "@/components/shell/LocalBadge";
 import { GROUP_DOT, type ToolGroup, type ToolMeta } from "@/lib/registry/types";
 
@@ -28,6 +29,22 @@ function Column({ label, tools, group }: {
       </div>
       <div className="flex flex-col gap-2.5">
         {tools.map((meta) => <ToolCard key={meta.slug} meta={meta} />)}
+      </div>
+    </section>
+  );
+}
+
+/** A full-width horizontal row of compact tiles. */
+function Strip({ label, tools }: { label: string; tools: ToolMeta[] }) {
+  if (tools.length === 0) return null;
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex items-center gap-2 px-1">
+        <h2 className="eyebrow">{label}</h2>
+        <span className="font-ui text-[11px] text-fg-muted tabular">{tools.length}</span>
+      </div>
+      <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {tools.map((meta) => <ToolTile key={meta.slug} meta={meta} />)}
       </div>
     </section>
   );
@@ -58,14 +75,14 @@ export default function Dashboard() {
         />
         <div className="relative z-10 max-w-2xl">
           <h1 className="font-ui text-[2rem] font-bold leading-[1.1] tracking-[-0.03em] text-fg lg:text-[2.75rem]">
-            Sixteen tools.
+            Your essential
             <br />
-            <span className="text-primary-strong">Nothing leaves this tab.</span>
+            <span className="text-primary-strong">backend workspace.</span>
           </h1>
           <p className="mt-4 max-w-xl text-[14px] leading-relaxed text-fg-muted lg:text-[15px]">
-            Formatting, encoding, decoding, hashing, comparing — the small
-            utilities you reach for daily, without pasting your data into
-            someone else&apos;s server.
+            Sixteen developer tools for formatting, encoding, hashing,
+            inspecting and comparing. Every one runs in this tab — instant, and
+            with nothing uploaded.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
@@ -87,13 +104,12 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Recents and Favourites are absent, not empty, on a first visit. */}
-      {recent.length > 0 || pinned.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2">
-          <Column label="Recent" tools={recent} />
-          <Column label="Favourites" tools={pinned} />
-        </div>
-      ) : null}
+      {/* Recents and Favourites are absent, not empty, on a first visit.
+          They run ACROSS the page rather than down a column: these are the
+          few tools you actually return to, so they get the full width and are
+          read in one sweep instead of competing with a category. */}
+      <Strip label="Recent" tools={recent} />
+      <Strip label="Favourites" tools={pinned} />
 
       {/* Three columns, so every category is visible at once rather than
           stacked behind a scroll. */}

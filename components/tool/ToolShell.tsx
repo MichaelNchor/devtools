@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Check, Link2 } from "lucide-react";
-import { GROUP_TONE, type ToolExample, type ToolMeta } from "@/lib/registry/types";
+import { toneFor, type ToolExample, type ToolMeta } from "@/lib/registry/types";
 import { SHARE_PREFIX } from "@/lib/share";
 import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { Button } from "@/components/ui/Button";
 import { FavouriteStar } from "./FavouriteStar";
+import { GUIDES } from "@/lib/tools/guides";
 import { ExampleMenu, ExampleStrip } from "./ExamplePicker";
+import { ToolGuide } from "./ToolGuide";
 import { shareGate } from "./useToolState";
 
 interface Props {
@@ -38,6 +40,7 @@ export function ToolShell({
   const { visit } = useWorkspace();
   const [copied, setCopied] = useState(false);
   const Icon = meta.icon;
+  const guide = GUIDES[meta.slug];
 
   useEffect(() => { visit(meta.slug); }, [meta.slug, visit]);
 
@@ -70,7 +73,7 @@ export function ToolShell({
         <div className="flex min-w-0 items-start gap-3">
           {/* The page carries the same mark as its card and its rail row, so
               arriving here confirms you landed where you clicked. */}
-          <span className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg ${GROUP_TONE[meta.group]}`}>
+          <span className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg ${toneFor(meta.slug, meta.group)}`}>
             <Icon size={17} aria-hidden />
           </span>
           <div className="min-w-0">
@@ -119,6 +122,8 @@ export function ToolShell({
         {isEmpty && emptyHint && examples && onLoadExample ? (
           <ExampleStrip examples={examples} onPick={onLoadExample} hint={emptyHint} />
         ) : children}
+
+        {guide ? <ToolGuide guide={guide} /> : null}
       </div>
     </main>
   );

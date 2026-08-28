@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { GROUP_TONE, type ToolMeta } from "@/lib/registry/types";
+import { toneFor, type ToolMeta } from "@/lib/registry/types";
 import { FavouriteStar } from "@/components/tool/FavouriteStar";
 
 /**
@@ -14,7 +14,7 @@ export function ToolCard({ meta }: { meta: ToolMeta }) {
   const Icon = meta.icon;
   return (
     <div className="group relative flex items-center gap-3.5 rounded-2xl border border-border bg-surface p-3.5 shadow-sm transition-all duration-150 hover:border-primary/30 hover:shadow-md">
-      <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl transition-transform duration-150 group-hover:scale-110 ${GROUP_TONE[meta.group]}`}>
+      <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl transition-transform duration-150 group-hover:scale-110 ${toneFor(meta.slug, meta.group)}`}>
         <Icon size={19} aria-hidden />
       </span>
 

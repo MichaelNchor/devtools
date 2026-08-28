@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { GUIDES } from "@/lib/tools/guides";
 import { searchTools, groupTools } from "@/lib/registry/search";
 import { TOOLS, allMetas, toolBySlug, GROUP_ORDER } from "@/lib/registry";
 import type { ToolMeta } from "@/lib/registry/types";
@@ -113,6 +114,21 @@ describe("registry invariants", () => {
     for (const entry of TOOLS) {
       const names = entry.examples.map((e) => e.name);
       expect(new Set(names).size, entry.meta.slug).toBe(names.length);
+    }
+  });
+
+  it("gives every tool a guide with real points", () => {
+    // The explainer under each tool. A point that only restates the tool's
+    // name is worse than no point, so this also checks they say something.
+    for (const m of metas) {
+      const guide = GUIDES[m.slug];
+      expect(guide, m.slug).toBeDefined();
+      expect(guide!.summary.length, m.slug).toBeGreaterThan(40);
+      expect(guide!.points.length, m.slug).toBeGreaterThanOrEqual(3);
+      for (const point of guide!.points) {
+        expect(point.title.length, `${m.slug}: ${point.title}`).toBeGreaterThan(0);
+        expect(point.body.length, `${m.slug}: ${point.title}`).toBeGreaterThan(40);
+      }
     }
   });
 

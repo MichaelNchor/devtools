@@ -37,6 +37,43 @@ export const GROUP_DOT: Record<ToolGroup, string> = {
   network: "bg-sky",
 };
 
+/**
+ * Per-tool icon colour. Purely decorative: it encodes nothing, so it cannot
+ * violate the Status Escape Rule — group is carried by the heading beside the
+ * cards, not by these. Sixteen icons in three colours read as a rigid grid;
+ * spreading them over six hues is what makes the wall scannable.
+ *
+ * Every hue was measured against its own tint in both themes and clears
+ * 4.5:1, including the status families, which are safe on a dashboard card
+ * because there is no status being reported.
+ */
+export const TOOL_TONE: Record<string, string> = {
+  // Security & Identity
+  guid: "bg-primary-tint text-primary-strong",
+  password: "bg-rose-tint text-rose",
+  hash: "bg-accent-tint text-accent-strong",
+  jwt: "bg-warn-tint text-warn",
+  // Data & Formatting
+  "json-compare": "bg-sky-tint text-sky",
+  "json-format": "bg-primary-tint text-primary-strong",
+  "json-to-code": "bg-accent-tint text-accent-strong",
+  base64: "bg-up-tint text-up",
+  epoch: "bg-warn-tint text-warn",
+  regex: "bg-rose-tint text-rose",
+  "yaml-json": "bg-sky-tint text-sky",
+  "sql-format": "bg-up-tint text-up",
+  // Networking & Backend
+  "ip-calculator": "bg-sky-tint text-sky",
+  "curl-convert": "bg-accent-tint text-accent-strong",
+  "http-inspector": "bg-primary-tint text-primary-strong",
+  cron: "bg-warn-tint text-warn",
+};
+
+/** Falls back to the group tone for any tool not listed above. */
+export function toneFor(slug: string, group: ToolGroup): string {
+  return TOOL_TONE[slug] ?? GROUP_TONE[group];
+}
+
 /** The same hues without a fill, for icons sitting directly on a surface. */
 export const GROUP_TEXT: Record<ToolGroup, string> = {
   security: "text-accent-strong",
