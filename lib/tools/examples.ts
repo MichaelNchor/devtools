@@ -625,3 +625,55 @@ export const PATTERNS_EXAMPLES: ToolExample[] = [
     state: { view: "patterns", query: "contiguous" },
   },
 ];
+
+export const JSON_MERGE_EXAMPLES: ToolExample[] = [
+  {
+    name: "Config overlay",
+    blurb: "A base config with an environment override on top — nested objects merge instead of replacing.",
+    state: {
+      left: j({
+        service: "checkout", replicas: 2,
+        limits: { cpu: "500m", memory: "512Mi" },
+        features: ["cart", "coupons"],
+      }),
+      right: j({
+        replicas: 5,
+        limits: { memory: "1Gi" },
+        features: ["coupons", "gift-cards"],
+        probes: { liveness: "/healthz" },
+      }),
+      options: { arrays: "union", onConflict: "right", keyField: "id" },
+      indent: 2,
+    },
+  },
+  {
+    name: "Records by id",
+    blurb: "Two partial lists of the same records. Merge by key field to combine them field by field.",
+    state: {
+      left: j({ users: [{ id: 1, name: "ada" }, { id: 2, name: "grace" }] }),
+      right: j({ users: [{ id: 1, role: "admin" }, { id: 3, name: "alan" }] }),
+      options: { arrays: "by-key", onConflict: "right", keyField: "id" },
+      indent: 2,
+    },
+  },
+  {
+    name: "Duplicate-heavy lists",
+    blurb: "Overlapping arrays with repeats on both sides — union keeps one of each.",
+    state: {
+      left: j({ tags: ["a", "b", "b", "c"] }),
+      right: j({ tags: ["c", "d", "a"] }),
+      options: { arrays: "union", onConflict: "right", keyField: "id" },
+      indent: 2,
+    },
+  },
+  {
+    name: "Conflicting values",
+    blurb: "The same keys with different values on each side, so every conflict is listed with what was kept.",
+    state: {
+      left: j({ version: "1.0.0", debug: true, port: 8080 }),
+      right: j({ version: "2.0.0", debug: false, port: 9090 }),
+      options: { arrays: "union", onConflict: "left", keyField: "id" },
+      indent: 2,
+    },
+  },
+];

@@ -1,6 +1,7 @@
 import {
   JSON_COMPARE_EXAMPLES,
   JSON_FORMAT_EXAMPLES,
+  JSON_MERGE_EXAMPLES,
   BASE64_EXAMPLES,
   EPOCH_EXAMPLES,
   REGEX_EXAMPLES,
@@ -23,6 +24,7 @@ import {
 } from "@/lib/tools/examples";
 import { JsonCompare } from "@/components/tools/JsonCompare";
 import { JsonFormat } from "@/components/tools/JsonFormat";
+import { JsonMerge } from "@/components/tools/JsonMerge";
 import { Base64 } from "@/components/tools/Base64";
 import { Epoch } from "@/components/tools/Epoch";
 import { RegexTester } from "@/components/tools/RegexTester";
@@ -42,7 +44,7 @@ import { Bst } from "@/components/tools/Bst";
 import { Pathfinding } from "@/components/tools/Pathfinding";
 import { BigO } from "@/components/tools/BigO";
 import { Patterns } from "@/components/tools/Patterns";
-import { BASE64_META, BIG_O_META, BST_META, CRON_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, PATHFINDING_META, PATTERNS_META, SORTING_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
+import { BASE64_META, BIG_O_META, BST_META, CRON_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_MERGE_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, PATHFINDING_META, PATTERNS_META, SORTING_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -62,6 +64,7 @@ export { searchTools, groupTools } from "./search";
 export const TOOLS: ToolEntry[] = [
   { meta: JSON_COMPARE_META, Component: JsonCompare, examples: JSON_COMPARE_EXAMPLES },
   { meta: JSON_FORMAT_META, Component: JsonFormat, examples: JSON_FORMAT_EXAMPLES },
+  { meta: JSON_MERGE_META, Component: JsonMerge, examples: JSON_MERGE_EXAMPLES },
   { meta: BASE64_META, Component: Base64, examples: BASE64_EXAMPLES },
   { meta: EPOCH_META, Component: Epoch, examples: EPOCH_EXAMPLES },
   { meta: REGEX_META, Component: RegexTester, examples: REGEX_EXAMPLES },

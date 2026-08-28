@@ -187,4 +187,13 @@ export const GUIDES: Record<string, ToolGuide> = {
       { title: "DSA is not the whole interview", body: "For a mid-level backend role it is roughly a third. System design, the language itself, and real production experience carry as much weight — more, outside big tech." },
     ],
   },
+  "json-merge": {
+    summary: "Both documents are parsed and combined into a new value: objects merge key by key, and nested objects merge rather than replacing each other wholesale.",
+    points: [
+      { title: "A conflict is reported, never hidden", body: "When both sides hold a different value at the same path, one has to win — so every one is listed with the losing value beside it. A merge that silently drops data is the failure mode this avoids." },
+      { title: "Union compares by value", body: "Two array items count as the same when their contents match, so {a:1,b:2} and {b:2,a:1} deduplicate to one. Key order is not part of a value's identity." },
+      { title: "Merge by key for records", body: "Union treats two records that differ in any field as different items. When both sides describe the SAME record partially, match on id instead and the fields combine." },
+      { title: "The result shares nothing with its inputs", body: "Every value is copied, so editing the output can never reach back into either source document." },
+    ],
+  },
 };

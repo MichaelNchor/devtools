@@ -1,4 +1,4 @@
-import { ArrowLeftRight, BarChart3, Binary, Braces, CalendarClock, Clock, GitBranch, Gauge, Route, Target, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
+import { ArrowLeftRight, BarChart3, Binary, Braces, CalendarClock, Clock, GitBranch, Gauge, Route, Target, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Merge, Network, Regex, TerminalSquare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -240,5 +240,16 @@ export const PATTERNS_META: ToolMeta = {
   group: "concepts",
   icon: Target,
   aliases: ["leetcode", "interview", "patterns", "dsa", "prep", "two sum", "roadmap"],
+  handlesSecrets: false,
+};
+
+export const JSON_MERGE_META: ToolMeta = {
+  slug: "json-merge",
+  name: "JSON Merge",
+  tagline: "Combine two documents",
+  blurb: "Deep-merge two JSON documents, dropping repeated array items and reporting every conflict.",
+  group: "data",
+  icon: Merge,
+  aliases: ["merge", "combine", "union", "deep merge", "join json", "patch"],
   handlesSecrets: false,
 };
