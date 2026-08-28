@@ -8,8 +8,10 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const entry = toolBySlug(slug);
-  if (!entry) return { title: "Not found — DevTools" };
-  return { title: `${entry.meta.name} — DevTools`, description: entry.meta.blurb };
+  // Just the name: the root layout's title template appends " — DevTools",
+  // and spelling it out here too produced "JSON Merge — DevTools — DevTools".
+  if (!entry) return { title: "Not found" };
+  return { title: entry.meta.name, description: entry.meta.blurb };
 }
 
 export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/shell/AppShell";
@@ -7,8 +7,16 @@ const nunito = Nunito({ subsets: ["latin"], variable: "--font-body" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "DevTools",
-  description: "Local-first developer utilities. Nothing leaves your browser.",
+  // A template, so every tool page reads "JSON Merge — DevTools" in the tab
+  // rather than repeating the site name by hand in each route.
+  title: { default: "DevTools", template: "%s — DevTools" },
+  description: "Twenty-two developer utilities that run entirely in your browser tab. No server, no network, nothing uploaded.",
+};
+
+// Next wants this separate from metadata; the tab strip is mostly favicons,
+// so the theme colour matches the icon tile.
+export const viewport: Viewport = {
+  themeColor: "#236DC9",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
