@@ -92,7 +92,7 @@ export function ExampleStrip({
   hint: string;
 }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-10 text-center">
+    <div className="flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-border px-6 py-9 text-center">
       <p className="max-w-md text-[13px] leading-relaxed text-fg-muted">{hint}</p>
 
       {examples.length > 0 ? (

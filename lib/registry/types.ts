@@ -1,13 +1,14 @@
 import type { LucideIcon } from "lucide-react";
 
-export type ToolGroup = "security" | "data" | "network";
+export type ToolGroup = "security" | "data" | "network" | "concepts";
 
-export const GROUP_ORDER: ToolGroup[] = ["security", "data", "network"];
+export const GROUP_ORDER: ToolGroup[] = ["security", "data", "network", "concepts"];
 
 export const GROUP_LABELS: Record<ToolGroup, string> = {
   security: "Security & Identity",
   data: "Data & Formatting",
   network: "Networking & Backend",
+  concepts: "Algorithms & Concepts",
 };
 
 /**
@@ -25,6 +26,7 @@ export const GROUP_TONE: Record<ToolGroup, string> = {
   security: "bg-accent-tint text-accent-strong",
   data: "bg-primary-tint text-primary-strong",
   network: "bg-sky-tint text-sky",
+  concepts: "bg-up-tint text-up",
 };
 
 /**
@@ -35,6 +37,7 @@ export const GROUP_DOT: Record<ToolGroup, string> = {
   security: "bg-accent-strong",
   data: "bg-primary-strong",
   network: "bg-sky",
+  concepts: "bg-up",
 };
 
 /**
@@ -79,6 +82,7 @@ export const GROUP_TEXT: Record<ToolGroup, string> = {
   security: "text-accent-strong",
   data: "text-primary-strong",
   network: "text-sky",
+  concepts: "text-up",
 };
 
 export interface ToolMeta {

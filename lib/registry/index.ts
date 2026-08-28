@@ -15,6 +15,8 @@ import {
   CURL_EXAMPLES,
   HTTP_EXAMPLES,
   CRON_EXAMPLES,
+  SORTING_EXAMPLES,
+  BST_EXAMPLES,
 } from "@/lib/tools/examples";
 import { JsonCompare } from "@/components/tools/JsonCompare";
 import { JsonFormat } from "@/components/tools/JsonFormat";
@@ -32,7 +34,9 @@ import { IpCalculator } from "@/components/tools/IpCalculator";
 import { CurlConvert } from "@/components/tools/CurlConvert";
 import { HttpInspector } from "@/components/tools/HttpInspector";
 import { Cron } from "@/components/tools/Cron";
-import { BASE64_META, CRON_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
+import { Sorting } from "@/components/tools/Sorting";
+import { Bst } from "@/components/tools/Bst";
+import { BASE64_META, BST_META, CRON_META, CURL_META, EPOCH_META, JSON_COMPARE_META, JSON_FORMAT_META, REGEX_META, GUID_META, HASH_META, HTTP_META, IP_META, JSON_TO_CODE_META, JWT_META, PASSWORD_META, SORTING_META, SQL_FORMAT_META, YAML_JSON_META } from "./metas";
 import type { ToolEntry, ToolMeta } from "./types";
 
 export * from "./types";
@@ -66,6 +70,8 @@ export const TOOLS: ToolEntry[] = [
   { meta: CURL_META, Component: CurlConvert, examples: CURL_EXAMPLES },
   { meta: HTTP_META, Component: HttpInspector, examples: HTTP_EXAMPLES },
   { meta: CRON_META, Component: Cron, examples: CRON_EXAMPLES },
+  { meta: SORTING_META, Component: Sorting, examples: SORTING_EXAMPLES },
+  { meta: BST_META, Component: Bst, examples: BST_EXAMPLES },
 ];
 
 export function allMetas(): ToolMeta[] {

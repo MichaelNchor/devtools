@@ -65,8 +65,8 @@ export default function Dashboard() {
   const quickStart = recent[0]?.slug ?? "json-compare";
 
   return (
-    <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-8 px-5 py-6 lg:px-8 lg:py-8">
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-surface p-8 shadow-sm lg:p-12">
+    <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-7 px-5 py-6 lg:px-7 lg:py-7">
+      <section className="relative overflow-hidden rounded-xl border border-border bg-surface p-6 shadow-sm lg:p-9">
         {/* A wash rather than a block of colour: it gives the card depth
             without competing with the tool icons below it. */}
         <div

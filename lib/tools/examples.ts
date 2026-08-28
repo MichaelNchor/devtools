@@ -522,3 +522,44 @@ export const CRON_EXAMPLES: ToolExample[] = [
     state: { expression: "30 2 * * *", zone: "America/New_York" },
   },
 ];
+
+export const SORTING_EXAMPLES: ToolExample[] = [
+  {
+    name: "Random shuffle",
+    blurb: "The ordinary case. Try the same array under each algorithm and compare the counts.",
+    state: { values: [5, 3, 8, 1, 9, 2, 7, 4], algorithm: "bubble", speed: 60 },
+  },
+  {
+    name: "Already sorted",
+    blurb: "Bubble and insertion finish in one pass; selection still does all the work anyway.",
+    state: { values: [1, 2, 3, 4, 5, 6, 7, 8], algorithm: "bubble", speed: 60 },
+  },
+  {
+    name: "Reversed — the worst case",
+    blurb: "Every pair is out of order, which is where the quadratic sorts fall apart.",
+    state: { values: [8, 7, 6, 5, 4, 3, 2, 1], algorithm: "insertion", speed: 70 },
+  },
+  {
+    name: "Quicksort's bad pivot",
+    blurb: "Sorted input with a last-element pivot degrades quicksort to O(n squared).",
+    state: { values: [1, 2, 3, 4, 5, 6, 7, 8], algorithm: "quick", speed: 70 },
+  },
+];
+
+export const BST_EXAMPLES: ToolExample[] = [
+  {
+    name: "Balanced tree",
+    blurb: "Inserted middle-out, so every level fills before the next — lookup is logarithmic.",
+    state: { values: [50, 30, 70, 20, 40, 60, 80], order: "in" },
+  },
+  {
+    name: "Degenerate tree",
+    blurb: "The same values inserted in sorted order. The tree becomes a linked list and lookup becomes linear.",
+    state: { values: [20, 30, 40, 50, 60, 70, 80], order: "in" },
+  },
+  {
+    name: "Traversal orders",
+    blurb: "A small tree for comparing in-order, pre-order, post-order and level-order side by side.",
+    state: { values: [8, 3, 10, 1, 6, 14, 4, 7, 13], order: "pre" },
+  },
+];

@@ -7,7 +7,7 @@ import type { ToolGuide as Guide } from "@/lib/tools/guides";
  */
 export function ToolGuide({ guide }: { guide: Guide }) {
   return (
-    <section className="mt-6 rounded-2xl border border-border bg-surface p-5 shadow-sm lg:p-6">
+    <section className="mt-6 rounded-xl border border-border bg-surface p-5 shadow-sm lg:p-6">
       <div className="flex items-center gap-2">
         <Info size={14} aria-hidden className="text-fg-muted" />
         <h2 className="eyebrow">How it works</h2>

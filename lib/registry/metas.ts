@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Binary, Braces, CalendarClock, Clock, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
+import { ArrowLeftRight, BarChart3, Binary, Braces, CalendarClock, Clock, GitBranch, Code2, Database, FileSearch, Fingerprint, GitCompare, Hash, KeyRound, KeySquare, Network, Regex, TerminalSquare } from "lucide-react";
 import type { ToolMeta } from "./types";
 
 /**
@@ -185,5 +185,27 @@ export const CRON_META: ToolMeta = {
   group: "network",
   icon: CalendarClock,
   aliases: ["cron", "crontab", "schedule", "job", "timer"],
+  handlesSecrets: false,
+};
+
+export const SORTING_META: ToolMeta = {
+  slug: "sorting",
+  name: "Sorting Visualiser",
+  tagline: "Watch five algorithms run",
+  blurb: "Step through bubble, insertion, selection, merge and quicksort, and see what each one actually costs.",
+  group: "concepts",
+  icon: BarChart3,
+  aliases: ["sort", "algorithm", "bubble", "quicksort", "merge sort", "big o"],
+  handlesSecrets: false,
+};
+
+export const BST_META: ToolMeta = {
+  slug: "bst",
+  name: "Binary Search Tree",
+  tagline: "Insert, find, traverse",
+  blurb: "Build a binary search tree by hand and see how its shape decides what lookup costs.",
+  group: "concepts",
+  icon: GitBranch,
+  aliases: ["bst", "tree", "binary tree", "traversal", "data structure"],
   handlesSecrets: false,
 };

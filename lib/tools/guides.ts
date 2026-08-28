@@ -142,4 +142,22 @@ export const GUIDES: Record<string, ToolGuide> = {
       { title: "Errors name the field", body: "An out-of-range value reports which of the five or six positions was wrong and what range it accepts." },
     ],
   },
+  sorting: {
+    summary: "Each algorithm runs to completion and every read and write is recorded as a frame, so the playback is the real algorithm rather than an animation of one.",
+    points: [
+      { title: "Comparisons versus writes", body: "Counted separately because they cost differently. Selection sort makes at most n swaps but always does n-squared comparisons — a good trade when writing is expensive." },
+      { title: "Best case is not a footnote", body: "Bubble and insertion finish an already-sorted array in one linear pass. Selection sort cannot: it always scans the rest of the list to find the minimum." },
+      { title: "Stability", body: "A stable sort keeps equal elements in their original order. It matters the moment you sort by one field having already sorted by another." },
+      { title: "Why quicksort still wins", body: "Its worst case is quadratic, but its constant factors and cache behaviour beat merge sort in practice — which is why real implementations randomise the pivot instead of abandoning it." },
+    ],
+  },
+  bst: {
+    summary: "Every node holds a value larger than everything in its left subtree and smaller than everything in its right, which is exactly what makes an in-order walk come out sorted.",
+    points: [
+      { title: "Height is the cost", body: "Lookup, insert and delete all walk from the root down, so each costs one comparison per level. A balanced tree of n nodes is about log2(n) deep." },
+      { title: "Sorted input is the trap", body: "Insert in ascending order and every node becomes a right child. The tree is now a linked list and every operation is O(n) — which is why real code uses AVL or red-black trees that rebalance." },
+      { title: "Deleting a node with two children", body: "It cannot simply be removed. It is replaced by its in-order successor, the smallest value on its right, because that is the only value that keeps every ordering invariant intact." },
+      { title: "Traversals are different tools", body: "In-order sorts, pre-order copies, post-order frees, level-order is breadth-first search. Same shape; the order you visit it decides what you can do with it." },
+    ],
+  },
 };
