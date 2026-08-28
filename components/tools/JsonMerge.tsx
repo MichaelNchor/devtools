@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import { Eraser, Merge } from "lucide-react";
 import { JSON_MERGE_META } from "@/lib/registry/metas";
 import {
-  mergeJson, DEFAULT_MERGE_OPTIONS, type ArrayStrategy, type MergeOptions,
+  mergeJson, DEFAULT_MERGE_OPTIONS,
+  type ArrayStrategy, type ConflictKind, type MergeOptions,
 } from "@/lib/tools/json-merge";
 import { JSON_MERGE_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
@@ -36,6 +37,18 @@ function isState(value: unknown): value is State {
   return typeof c.options.keyField === "string"
     && ["union", "concat", "replace", "by-key"].includes(c.options.arrays)
     && ["left", "right"].includes(c.options.onConflict);
+}
+
+const CONFLICT_KIND: Record<ConflictKind, { glyph: string; label: string; tone: string }> = {
+  subtree: { glyph: "!", label: "object replaced", tone: "bg-rose-tint text-rose" },
+  type: { glyph: "~", label: "type changed", tone: "bg-warn-tint text-warn" },
+  value: { glyph: "·", label: "value differs", tone: "bg-surface-2 text-fg-2" },
+};
+
+/** Long values are unreadable in a table cell; the full text stays in title. */
+function preview(value: unknown): { short: string; full: string } {
+  const full = JSON.stringify(value) ?? String(value);
+  return { full, short: full.length > 44 ? `${full.slice(0, 43)}…` : full };
 }
 
 export function JsonMerge() {
@@ -132,6 +145,12 @@ export function JsonMerge() {
               {result.value.stats.conflicts} conflict
               {result.value.stats.conflicts === 1 ? "" : "s"}
             </span>
+            {result.value.stats.subtreesDropped > 0 ? (
+              <span className="text-rose">
+                ! {result.value.stats.subtreesDropped} whole
+                {result.value.stats.subtreesDropped === 1 ? " object" : " objects"} replaced
+              </span>
+            ) : null}
             <span className="text-fg-muted">
               {result.value.stats.deduplicated} duplicate
               {result.value.stats.deduplicated === 1 ? "" : "s"} dropped
@@ -160,6 +179,54 @@ export function JsonMerge() {
           </Panel>
         </div>
 
+        {result?.ok && result.value.conflicts.length > 0 ? (
+          <Panel
+            title={`${result.value.conflicts.length} conflict${result.value.conflicts.length === 1 ? "" : "s"}`}
+            subtitle={`Both sides had a value here. ${state.options.onConflict === "left" ? "Left" : "Right"} was kept.`}
+          >
+            <div className="max-h-72 overflow-auto">
+              <table className="w-full font-ui text-[12px]">
+                <thead className="sticky top-0 bg-surface text-left text-fg-muted">
+                  <tr>
+                    <th className="px-3 py-1.5 font-medium">Path</th>
+                    <th className="px-3 py-1.5 font-medium">What happened</th>
+                    <th className="px-3 py-1.5 font-medium">Discarded</th>
+                    <th className="px-3 py-1.5 font-medium">Kept</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {result.value.conflicts.map((conflict) => {
+                    const kind = CONFLICT_KIND[conflict.kind];
+                    const discarded = preview(
+                      state.options.onConflict === "left" ? conflict.right : conflict.left,
+                    );
+                    const kept = preview(conflict.taken);
+                    return (
+                      <tr key={conflict.path} className="border-t border-border align-top">
+                        <td className="px-3 py-2 text-[var(--code-key)]">{conflict.path}</td>
+                        <td className="px-3 py-2">
+                          <span className={`inline-block rounded-sm px-1.5 py-0.5 ${kind.tone}`}>
+                            <span aria-hidden>{kind.glyph} </span>{kind.label}
+                          </span>
+                          {conflict.lost > 0 ? (
+                            <span className="ml-2 text-rose">
+                              {conflict.lost} value{conflict.lost === 1 ? "" : "s"} lost
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="px-3 py-2 text-fg-muted line-through" title={discarded.full}>
+                          {discarded.short}
+                        </td>
+                        <td className="px-3 py-2 text-fg" title={kept.full}>{kept.short}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Panel>
+        ) : null}
+
         <Panel
           title="Merged"
           subtitle="Both documents combined"
@@ -174,35 +241,6 @@ export function JsonMerge() {
           )}
         </Panel>
 
-        {result?.ok && result.value.conflicts.length > 0 ? (
-          <Panel
-            title="Conflicts"
-            subtitle={`${state.options.onConflict === "left" ? "Left" : "Right"} was kept at each of these paths`}
-          >
-            <div className="max-h-64 overflow-auto">
-              <table className="w-full font-ui text-[12px]">
-                <thead className="sticky top-0 bg-surface text-left text-fg-muted">
-                  <tr>
-                    <th className="px-3 py-1.5 font-medium">Path</th>
-                    <th className="px-3 py-1.5 font-medium">Left</th>
-                    <th className="px-3 py-1.5 font-medium">Right</th>
-                    <th className="px-3 py-1.5 font-medium">Kept</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {result.value.conflicts.map((conflict) => (
-                    <tr key={conflict.path} className="border-t border-border">
-                      <td className="px-3 py-1.5 text-[var(--code-key)]">{conflict.path}</td>
-                      <td className="px-3 py-1.5 text-fg-muted">{JSON.stringify(conflict.left)}</td>
-                      <td className="px-3 py-1.5 text-fg-muted">{JSON.stringify(conflict.right)}</td>
-                      <td className="px-3 py-1.5 text-fg">{JSON.stringify(conflict.taken)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Panel>
-        ) : null}
       </div>
     </ToolShell>
   );

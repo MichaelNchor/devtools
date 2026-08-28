@@ -23,12 +23,24 @@ export const DEFAULT_MERGE_OPTIONS: MergeOptions = {
   keyField: "id",
 };
 
+/**
+ * Not all conflicts are equally serious, and the UI should not present them
+ * as if they were:
+ *   value   — two scalars of the same type disagree
+ *   type    — the JSON type itself changed, e.g. 3 became "three"
+ *   subtree — an object or array was discarded, taking its contents with it
+ */
+export type ConflictKind = "value" | "type" | "subtree";
+
 export interface Conflict {
   path: string;
   left: unknown;
   right: unknown;
   /** The value actually kept, so the report is not merely advisory. */
   taken: unknown;
+  kind: ConflictKind;
+  /** How many scalar values the discarded side contained. 0 for a scalar. */
+  lost: number;
 }
 
 export interface MergeStats {
@@ -37,6 +49,8 @@ export interface MergeStats {
   conflicts: number;
   /** Array items dropped as duplicates. */
   deduplicated: number;
+  /** Conflicts where a whole object or array was discarded. */
+  subtreesDropped: number;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -71,6 +85,22 @@ function clone<T>(value: T): T {
     return out as unknown as T;
   }
   return value;
+}
+
+/** The JSON type, at the granularity that matters for a merge. */
+function typeOf(value: unknown): string {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+  return typeof value;
+}
+
+/** Counts the scalars inside a value, so a dropped subtree can state its size. */
+function countScalars(value: unknown): number {
+  if (Array.isArray(value)) return value.reduce<number>((n, item) => n + countScalars(item), 0);
+  if (isPlainObject(value)) {
+    return Object.values(value).reduce<number>((n, item) => n + countScalars(item), 0);
+  }
+  return 1;
 }
 
 function childPath(parent: string, key: string | number): string {
@@ -164,7 +194,23 @@ class Merger {
     if (sameValue(left, right)) return clone(left);
 
     const taken = this.options.onConflict === "left" ? left : right;
-    this.conflicts.push({ path, left: clone(left), right: clone(right), taken: clone(taken) });
+    const discarded = this.options.onConflict === "left" ? right : left;
+
+    // A dropped container is the serious case: data disappears rather than
+    // merely changing. It is counted so the summary can say how much.
+    const isSubtree = Array.isArray(discarded) || isPlainObject(discarded);
+    const kind: ConflictKind = isSubtree
+      ? "subtree"
+      : typeOf(left) !== typeOf(right) ? "type" : "value";
+
+    this.conflicts.push({
+      path,
+      left: clone(left),
+      right: clone(right),
+      taken: clone(taken),
+      kind,
+      lost: isSubtree ? countScalars(discarded) : 0,
+    });
     return clone(taken);
   }
 }
@@ -203,6 +249,7 @@ export function mergeJson(
       added: merger.added,
       conflicts: merger.conflicts.length,
       deduplicated: merger.deduplicated,
+      subtreesDropped: merger.conflicts.filter((c) => c.kind === "subtree").length,
     },
   });
 }

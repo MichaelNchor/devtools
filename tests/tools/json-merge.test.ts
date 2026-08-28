@@ -34,8 +34,8 @@ describe("mergeJson — objects", () => {
   it("reports every conflict rather than resolving one silently", () => {
     const out = merged(j({ a: 1, o: { b: 2 } }), j({ a: 9, o: { b: 8 } }));
     expect(out.conflicts).toEqual([
-      { path: "$.a", left: 1, right: 9, taken: 9 },
-      { path: "$.o.b", left: 2, right: 8, taken: 8 },
+      { path: "$.a", left: 1, right: 9, taken: 9, kind: "value", lost: 0 },
+      { path: "$.o.b", left: 2, right: 8, taken: 8, kind: "value", lost: 0 },
     ]);
   });
 
@@ -136,5 +136,40 @@ describe("mergeJson — roots and errors", () => {
     const value = out.value as { o: Record<string, unknown> };
     value.o.a = 99;
     expect(merged(j({ o: { a: 1 } }), j({ o: { b: 2 } })).value).toEqual({ o: { a: 1, b: 2 } });
+  });
+
+  it("classifies a plain value swap as a value conflict", () => {
+    const out = merged(j({ a: "1.0.0" }), j({ a: "2.0.0" }));
+    expect(out.conflicts[0]).toMatchObject({ kind: "value" });
+  });
+
+  it("classifies a changed JSON type as a type conflict", () => {
+    // 3 becoming "three" is a different kind of surprise from 3 becoming 4.
+    const out = merged(j({ retries: 3 }), j({ retries: "three" }));
+    expect(out.conflicts[0]).toMatchObject({ kind: "type" });
+  });
+
+  it("classifies a dropped object or array as a subtree conflict", () => {
+    // This is the dangerous one: a whole branch of data is discarded.
+    const dropped = merged(j({ h: { a: 1, b: { c: 2 } } }), j({ h: "inline" }));
+    expect(dropped.conflicts[0]).toMatchObject({ kind: "subtree" });
+
+    const arr = merged(j({ h: [1, 2, 3] }), j({ h: null }));
+    expect(arr.conflicts[0]).toMatchObject({ kind: "subtree" });
+  });
+
+  it("counts how many values a dropped subtree took with it", () => {
+    // "A whole object was replaced" is only meaningful with a size beside it.
+    const out = merged(j({ h: { a: 1, b: { c: 2, d: 3 } } }), j({ h: "inline" }));
+    expect(out.conflicts[0]!.lost).toBe(3);
+  });
+
+  it("reports no loss for a scalar conflict", () => {
+    expect(merged(j({ a: 1 }), j({ a: 2 })).conflicts[0]!.lost).toBe(0);
+  });
+
+  it("counts subtree losses separately in the stats", () => {
+    const out = merged(j({ h: { a: 1 }, x: 1 }), j({ h: "gone", x: 2 }));
+    expect(out.stats).toMatchObject({ conflicts: 2, subtreesDropped: 1 });
   });
 });
