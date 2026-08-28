@@ -172,4 +172,73 @@ describe("mergeJson — roots and errors", () => {
     const out = merged(j({ h: { a: 1 }, x: 1 }), j({ h: "gone", x: 2 }));
     expect(out.stats).toMatchObject({ conflicts: 2, subtreesDropped: 1 });
   });
+
+  it("auto-detects the identity field and merges records on it", () => {
+    // The real-world case: two config files each holding one host that is the
+    // SAME host. Nothing is called "id", so a fixed default key cannot help.
+    const host = (indexes: unknown[]) => j({
+      Hosts: [{ Url: "xxx", Alias: "insurance-merchant", Indexes: indexes }],
+    });
+    const out = merged(
+      host([{ Index: "policies", Alias: "a" }]),
+      host([{ Index: "policies", Alias: "a" }, { Index: "policies_sandbox", Alias: "b" }]),
+      { arrays: "auto" },
+    );
+    const value = out.value as { Hosts: { Indexes: unknown[] }[] };
+    expect(value.Hosts).toHaveLength(1);
+    expect(value.Hosts[0]!.Indexes).toHaveLength(2);
+  });
+
+  it("says which field it matched on, so the choice is not invisible", () => {
+    const out = merged(
+      j({ xs: [{ Alias: "a", n: 1 }] }),
+      j({ xs: [{ Alias: "a", n: 2 }, { Alias: "b" }] }),
+      { arrays: "auto" },
+    );
+    expect(out.stats.matchedOn).toEqual({ "$.xs": "Alias" });
+  });
+
+  it("prefers a conventional identity name over any other unique field", () => {
+    const out = merged(
+      j({ xs: [{ id: 1, code: "x" }] }),
+      j({ xs: [{ id: 1, code: "y" }] }),
+      { arrays: "auto" },
+    );
+    expect(out.stats.matchedOn["$.xs"]).toBe("id");
+  });
+
+  it("never treats a boolean as an identity", () => {
+    // Two items sharing `enabled: true` are not the same record.
+    const out = merged(
+      j({ xs: [{ enabled: true, v: 1 }] }),
+      j({ xs: [{ enabled: true, v: 2 }] }),
+      { arrays: "auto" },
+    );
+    expect((out.value as { xs: unknown[] }).xs).toHaveLength(2);
+  });
+
+  it("falls back to union when no field identifies the items", () => {
+    const out = merged(j({ xs: [1, 2] }), j({ xs: [2, 3] }), { arrays: "auto" });
+    expect(out.value).toEqual({ xs: [1, 2, 3] });
+    expect(out.stats.matchedOn).toEqual({});
+  });
+
+  it("does not match on a field that repeats within one side", () => {
+    // `kind` is shared by two items on the left, so it identifies nothing.
+    const out = merged(
+      j({ xs: [{ kind: "a", n: 1 }, { kind: "a", n: 2 }] }),
+      j({ xs: [{ kind: "a", n: 3 }] }),
+      { arrays: "auto" },
+    );
+    expect(out.stats.matchedOn).toEqual({});
+  });
+
+  it("still deduplicates identical records under auto", () => {
+    const out = merged(
+      j({ xs: [{ id: 1, n: 1 }] }),
+      j({ xs: [{ id: 1, n: 1 }] }),
+      { arrays: "auto" },
+    );
+    expect((out.value as { xs: unknown[] }).xs).toEqual([{ id: 1, n: 1 }]);
+  });
 });

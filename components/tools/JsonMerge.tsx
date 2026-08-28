@@ -35,7 +35,7 @@ function isState(value: unknown): value is State {
   if (typeof c.indent !== "number" || !Number.isFinite(c.indent)) return false;
   if (typeof c.options !== "object" || c.options === null) return false;
   return typeof c.options.keyField === "string"
-    && ["union", "concat", "replace", "by-key"].includes(c.options.arrays)
+    && ["auto", "union", "concat", "replace", "by-key"].includes(c.options.arrays)
     && ["left", "right"].includes(c.options.onConflict);
 }
 
@@ -73,7 +73,7 @@ export function JsonMerge() {
       examples={JSON_MERGE_EXAMPLES}
       onLoadExample={(example) => update(example.state as Partial<State>)}
       isEmpty={!state.left.trim() && !state.right.trim()}
-      emptyHint="Paste JSON into both panes to combine them into one document — nested objects merged, and repeated array items dropped."
+      emptyHint="Paste JSON into both panes to combine them into one document — nested objects merged, records matched on their identity field, and repeated items dropped."
       actions={
         <>
           <Button size="sm" onClick={reset}>
@@ -92,6 +92,7 @@ export function JsonMerge() {
               ariaLabel="How to combine arrays"
               onChange={(arrays: ArrayStrategy) => setOption({ arrays })}
               options={[
+                { value: "auto", label: "Auto (match records, else union)" },
                 { value: "union", label: "Union (no repeats)" },
                 { value: "concat", label: "Concatenate (keep all)" },
                 { value: "by-key", label: "Merge by key field" },
@@ -155,6 +156,14 @@ export function JsonMerge() {
               {result.value.stats.deduplicated} duplicate
               {result.value.stats.deduplicated === 1 ? "" : "s"} dropped
             </span>
+            {Object.keys(result.value.stats.matchedOn).length > 0 ? (
+              <span className="text-sky">
+                matched records on{" "}
+                {[...new Set(Object.values(result.value.stats.matchedOn))]
+                  .map((f) => `"${f}"`)
+                  .join(", ")}
+              </span>
+            ) : null}
           </div>
         ) : null}
 
@@ -223,6 +232,24 @@ export function JsonMerge() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </Panel>
+        ) : null}
+
+        {result?.ok && Object.keys(result.value.stats.matchedOn).length > 0 ? (
+          <Panel
+            title="Matched records"
+            subtitle="Arrays of records were combined on a detected identity field"
+          >
+            <div className="max-h-40 overflow-auto">
+              {Object.entries(result.value.stats.matchedOn).map(([path, field]) => (
+                <div key={path} className="flex items-baseline gap-3 border-b border-border px-3 py-1.5 last:border-0">
+                  <code className="font-ui text-[12px] text-[var(--code-key)]">{path}</code>
+                  <span className="font-ui text-[12px] text-fg-muted">
+                    matched on <span className="text-fg">{field}</span>
+                  </span>
+                </div>
+              ))}
             </div>
           </Panel>
         ) : null}

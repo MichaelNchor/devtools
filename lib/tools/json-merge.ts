@@ -1,10 +1,11 @@
 import { parseJson } from "@/lib/json/parse";
 import { err, ok, type ToolResult } from "@/lib/types";
 
-export type ArrayStrategy = "union" | "concat" | "replace" | "by-key";
+export type ArrayStrategy = "auto" | "union" | "concat" | "replace" | "by-key";
 
 export interface MergeOptions {
   /**
+   * auto    — merge records on a detected identity field, else union
    * union   — combine and drop repeats (deep equality)
    * concat  — keep everything, including repeats
    * replace — the right array wins outright
@@ -18,7 +19,10 @@ export interface MergeOptions {
 }
 
 export const DEFAULT_MERGE_OPTIONS: MergeOptions = {
-  arrays: "union",
+  // Auto, because the common real case is two files describing the SAME
+  // records partially. Union keeps both copies whenever any field differs,
+  // which is right for value lists and wrong for records.
+  arrays: "auto",
   onConflict: "right",
   keyField: "id",
 };
@@ -51,6 +55,8 @@ export interface MergeStats {
   deduplicated: number;
   /** Conflicts where a whole object or array was discarded. */
   subtreesDropped: number;
+  /** Array path to the field auto-detected as its identity. */
+  matchedOn: Record<string, string>;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -103,6 +109,53 @@ function countScalars(value: unknown): number {
   return 1;
 }
 
+/**
+ * Field names that conventionally identify a record, in preference order.
+ *
+ * Auto-detection considers ONLY these. A field whose values merely happen to
+ * be unique — a counter, a price, a timestamp — is not an identity, and
+ * matching records on one would silently combine unrelated entries. Naming
+ * any other field is still possible through the explicit by-key strategy.
+ */
+const IDENTITY_NAMES = [
+  "id", "Id", "ID", "_id", "uuid", "guid", "key", "Key",
+  "name", "Name", "alias", "Alias", "slug", "code", "Code", "url", "Url",
+];
+
+/** Only a string or a number can identify a record. */
+function isIdentityValue(value: unknown): value is string | number {
+  return typeof value === "string" || typeof value === "number";
+}
+
+/**
+ * Finds the field that identifies items in two arrays of objects.
+ *
+ * A field qualifies when every object on both sides has it, its values are
+ * identity-shaped, and they are unique WITHIN each side — a value repeated on
+ * one side identifies nothing. Booleans are excluded outright: two records
+ * sharing `enabled: true` are not the same record.
+ */
+export function detectKeyField(left: unknown[], right: unknown[]): string | null {
+  const items = [...left, ...right];
+  if (items.length === 0 || !items.every(isPlainObject)) return null;
+
+  const objects = items as Record<string, unknown>[];
+  const shared = Object.keys(objects[0]!).filter((key) =>
+    objects.every((o) => Object.prototype.hasOwnProperty.call(o, key) && isIdentityValue(o[key])));
+  if (shared.length === 0) return null;
+
+  const uniqueWithin = (side: unknown[], key: string) => {
+    const values = (side as Record<string, unknown>[]).map((o) => String(o[key]));
+    return new Set(values).size === values.length;
+  };
+
+  const usable = shared.filter((key) =>
+    IDENTITY_NAMES.includes(key) && uniqueWithin(left, key) && uniqueWithin(right, key));
+
+  // Preference order, so `id` wins over `name` when a record carries both.
+  return IDENTITY_NAMES.find((name) => usable.includes(name)) ?? null;
+}
+
 function childPath(parent: string, key: string | number): string {
   return typeof key === "number" ? `${parent}[${key}]` : `${parent}.${key}`;
 }
@@ -111,6 +164,7 @@ class Merger {
   conflicts: Conflict[] = [];
   added = 0;
   deduplicated = 0;
+  matchedOn: Record<string, string> = {};
 
   constructor(private readonly options: MergeOptions) {}
 
@@ -124,7 +178,23 @@ class Merger {
   }
 
   private mergeArrays(left: unknown[], right: unknown[], path: string): unknown[] {
-    switch (this.options.arrays) {
+    let strategy: ArrayStrategy = this.options.arrays;
+    let keyField = this.options.keyField;
+
+    if (strategy === "auto") {
+      const detected = detectKeyField(left, right);
+      if (detected === null) {
+        strategy = "union";
+      } else {
+        strategy = "by-key";
+        keyField = detected;
+        // Recorded so the UI can say what it matched on. Silent magic here
+        // would be worse than the wrong default it replaces.
+        this.matchedOn[path] = detected;
+      }
+    }
+
+    switch (strategy) {
       case "replace":
         return clone(right);
 
@@ -134,7 +204,7 @@ class Merger {
       case "by-key": {
         const out: unknown[] = [];
         const indexByKey = new Map<string, number>();
-        const field = this.options.keyField;
+        const field = keyField;
 
         const take = (item: unknown, side: "left" | "right") => {
           const key = isPlainObject(item) ? item[field] : undefined;
@@ -250,6 +320,7 @@ export function mergeJson(
       conflicts: merger.conflicts.length,
       deduplicated: merger.deduplicated,
       subtreesDropped: merger.conflicts.filter((c) => c.kind === "subtree").length,
+      matchedOn: merger.matchedOn,
     },
   });
 }

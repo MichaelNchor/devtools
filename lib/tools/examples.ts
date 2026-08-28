@@ -628,6 +628,33 @@ export const PATTERNS_EXAMPLES: ToolExample[] = [
 
 export const JSON_MERGE_EXAMPLES: ToolExample[] = [
   {
+    name: "Same records, split across files",
+    blurb: "Two configs describing the same host. Nothing is called id, so the identity field is detected — union alone would keep both copies.",
+    state: {
+      left: j({
+        Hosts: [{
+          Url: "https://search.internal", Alias: "insurance-merchant",
+          Indexes: [
+            { Index: "platform_policies", Alias: "platform-policies", EnableVerboseLogging: true },
+            { Index: "platform_transactions", Alias: "platform-transactions", EnableVerboseLogging: true },
+          ],
+        }],
+      }),
+      right: j({
+        Hosts: [{
+          Url: "https://search.internal", Alias: "insurance-merchant",
+          Indexes: [
+            { Index: "platform_policies", Alias: "platform-policies", EnableVerboseLogging: true },
+            { Index: "platform_policies_sandbox", Alias: "platform-policies-sandbox", EnableVerboseLogging: true },
+            { Index: "platform_transactions_sandbox", Alias: "platform-transactions-sandbox", EnableVerboseLogging: true },
+          ],
+        }],
+      }),
+      options: { arrays: "auto", onConflict: "right", keyField: "id" },
+      indent: 2,
+    },
+  },
+  {
     name: "Config overlay",
     blurb: "A base config with an environment override on top — nested objects merge instead of replacing.",
     state: {
@@ -642,7 +669,7 @@ export const JSON_MERGE_EXAMPLES: ToolExample[] = [
         features: ["coupons", "gift-cards"],
         probes: { liveness: "/healthz" },
       }),
-      options: { arrays: "union", onConflict: "right", keyField: "id" },
+      options: { arrays: "auto", onConflict: "right", keyField: "id" },
       indent: 2,
     },
   },
