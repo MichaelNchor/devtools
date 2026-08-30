@@ -104,6 +104,59 @@ export function describeTimeClaims(
 
 const HMAC_HASH: Record<string, string> = { HS256: "SHA-256", HS384: "SHA-384", HS512: "SHA-512" };
 
+/**
+ * What this tool can actually sign.
+ *
+ * Only the HMAC family, because signing RS or ES requires a private key
+ * rather than a shared secret. Offering them would promise something the tool
+ * cannot do — and a JWT tool of all things should not overstate what it did.
+ */
+export const SIGNING_ALGORITHMS = ["HS256", "HS384", "HS512"] as const;
+export type SigningAlgorithm = (typeof SIGNING_ALGORITHMS)[number];
+
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  // base64url: the URL-safe alphabet, and no padding.
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function jsonToBase64Url(value: unknown): string {
+  return bytesToBase64Url(new TextEncoder().encode(JSON.stringify(value)));
+}
+
+/**
+ * Signs a token. The signature covers "<header>.<payload>" exactly, which is
+ * the same string verifyJwt checks — the two are deliberately symmetrical, and
+ * a test signs then verifies to prove they agree.
+ */
+export async function signJwt(
+  algorithm: SigningAlgorithm,
+  payload: Record<string, unknown>,
+  secret: string,
+): Promise<ToolResult<string>> {
+  if (!secret) return err("Enter a secret. A token with no signature is not a signed token.");
+  if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
+    return err("The payload must be a JSON object.");
+  }
+  const hash = HMAC_HASH[algorithm];
+  if (!hash) return err(`${algorithm} cannot be signed with a shared secret.`);
+
+  try {
+    const signingInput = `${jsonToBase64Url({ alg: algorithm, typ: "JWT" })}.${jsonToBase64Url(payload)}`;
+    const key = await globalThis.crypto.subtle.importKey(
+      "raw", new TextEncoder().encode(secret),
+      { name: "HMAC", hash }, false, ["sign"],
+    );
+    const mac = await globalThis.crypto.subtle.sign(
+      "HMAC", key, new TextEncoder().encode(signingInput),
+    );
+    return ok(`${signingInput}.${bytesToBase64Url(new Uint8Array(mac))}`);
+  } catch (cause) {
+    return err(cause instanceof Error ? cause.message : "That token could not be signed.");
+  }
+}
+
 export async function verifyJwt(token: string, key: string): Promise<ToolResult<VerifyState>> {
   const decoded = decodeJwt(token);
   if (!decoded.ok) return decoded;

@@ -372,6 +372,17 @@ export const HASH_EXAMPLES: ToolExample[] = [
 
 export const JWT_EXAMPLES: ToolExample[] = [
   {
+    name: "Create a token",
+    blurb: "Compose claims and sign them, then open the result in the decoder to watch it verify.",
+    state: {
+      mode: "encode",
+      claims: '{\n  "sub": "1234567890",\n  "name": "Ada Lovelace",\n  "admin": false\n}',
+      key: "topsecret",
+      algorithm: "HS256",
+      token: "",
+    },
+  },
+  {
     name: "Signed with 'secret'",
     blurb: "A demo token whose secret is the word secret — type it in to watch verification pass.",
     state: {

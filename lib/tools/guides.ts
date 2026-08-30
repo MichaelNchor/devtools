@@ -107,6 +107,8 @@ export const GUIDES: Record<string, ToolGuide> = {
       { title: "Three states, not two", body: "Signature valid, signature invalid, and not verified are different answers. An empty key gives not verified — never invalid." },
       { title: "alg: none is never valid", body: "An unsigned token cannot be verified by any key. This tool refuses to report it valid, because that is the classic forgery vector." },
       { title: "Claims are read, not trusted", body: "exp, nbf and iat are rendered with their state. A token whose claims look fine can still have a bad signature." },
+      { title: "Creating is the same operation in reverse", body: "Signing covers exactly the bytes verification checks — header and payload, dot-separated — which is why a token made here verifies here. A test signs one and then verifies it rather than trusting that." },
+      { title: "Only HMAC can be signed with a secret", body: "HS256, HS384 and HS512 take a shared secret. RS and ES need a private key, so this tool verifies those and does not offer to sign them — a JWT tool overstating what it signed would be the worst possible bug." },
       { title: "Nothing is stored", body: "Tokens and secrets are never persisted and never shareable by link." },
     ],
   },

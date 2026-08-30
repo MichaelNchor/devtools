@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { decodeJwt, describeTimeClaims, verifyJwt } from "@/lib/tools/jwt";
+import {
+  decodeJwt, describeTimeClaims, verifyJwt, signJwt, SIGNING_ALGORITHMS,
+} from "@/lib/tools/jwt";
 
 const b64url = (obj: unknown) =>
   Buffer.from(JSON.stringify(obj)).toString("base64url");
@@ -135,5 +137,79 @@ describe("verifyJwt", () => {
     const [h, , s] = t.split(".");
     const tampered = `${h}.${b64url({ sub: "admin" })}.${s}`;
     expect(await verifyJwt(tampered, "topsecret")).toMatchObject({ ok: true, value: "invalid" });
+  });
+});
+
+describe("signJwt", () => {
+  const payload = { sub: "ada", name: "Ada Lovelace" };
+
+  it("produces a token that verifies against the same secret", async () => {
+    const signed = await signJwt("HS256", payload, "topsecret");
+    expect(signed.ok).toBe(true);
+    if (!signed.ok) return;
+    expect(await verifyJwt(signed.value, "topsecret")).toMatchObject({ ok: true, value: "valid" });
+  });
+
+  it("produces a token that fails against a different secret", async () => {
+    const signed = await signJwt("HS256", payload, "topsecret");
+    if (!signed.ok) return;
+    expect(await verifyJwt(signed.value, "wrong")).toMatchObject({ ok: true, value: "invalid" });
+  });
+
+  it("round-trips: what it signs is what decodeJwt reads back", async () => {
+    const signed = await signJwt("HS256", payload, "k");
+    if (!signed.ok) return;
+    const decoded = decodeJwt(signed.value);
+    expect(decoded.ok).toBe(true);
+    if (!decoded.ok) return;
+    expect(decoded.value.payload).toEqual(payload);
+    expect(decoded.value.header).toEqual({ alg: "HS256", typ: "JWT" });
+  });
+
+  it("signs with each supported algorithm, and each verifies", async () => {
+    for (const alg of SIGNING_ALGORITHMS) {
+      const signed = await signJwt(alg, payload, "k");
+      expect(signed.ok, alg).toBe(true);
+      if (!signed.ok) continue;
+      expect((await verifyJwt(signed.value, "k")), alg).toMatchObject({ value: "valid" });
+    }
+  });
+
+  it("produces different signatures for different algorithms", async () => {
+    const a = await signJwt("HS256", payload, "k");
+    const b = await signJwt("HS512", payload, "k");
+    if (!a.ok || !b.ok) return;
+    expect(a.value).not.toBe(b.value);
+  });
+
+  it("emits base64url with no padding, as the spec requires", async () => {
+    const signed = await signJwt("HS256", { a: "?".repeat(10) }, "k");
+    if (!signed.ok) return;
+    expect(signed.value).not.toContain("=");
+    expect(signed.value).not.toContain("+");
+    expect(signed.value).not.toContain("/");
+  });
+
+  it("survives multi-byte claim values", async () => {
+    const signed = await signJwt("HS256", { name: "café 🙂" }, "k");
+    if (!signed.ok) return;
+    const decoded = decodeJwt(signed.value);
+    expect(decoded.ok && decoded.value.payload.name).toBe("café 🙂");
+  });
+
+  it("refuses to sign without a secret", async () => {
+    // An unsigned token is not a signed one, and pretending otherwise is the
+    // exact confusion this tool exists to prevent.
+    expect((await signJwt("HS256", payload, "")).ok).toBe(false);
+  });
+
+  it("refuses a payload that is not a JSON object", async () => {
+    expect((await signJwt("HS256", [1, 2] as unknown as Record<string, unknown>, "k")).ok).toBe(false);
+  });
+
+  it("offers only the algorithms it can actually sign", async () => {
+    // No RS or ES here: those need a private key, not a shared secret, and
+    // listing them would promise something the tool cannot do.
+    expect(SIGNING_ALGORITHMS).toEqual(["HS256", "HS384", "HS512"]);
   });
 });
