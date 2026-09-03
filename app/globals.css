@@ -7,21 +7,21 @@
    that make a wall of sixteen cards scannable. Everything here is measured
    against its own background; nothing is picked by eye. */
 :root {
-  --bg: #F4EFE8;
-  --surface: #FFFCF8;
-  --surface-2: #EBE4DB;
-  --inset: #F7F2EB;
+  --bg: #FAF9F7;
+  --surface: #FEFEFD;
+  --surface-2: #F0EFEB;
+  --inset: #F5F4F1;
 
-  --fg: #141311;
-  --fg-2: #3C3934;
-  --fg-muted: #6F6A63;
-  --border: #E0D8CE;
-  --border-2: #EBE4DB;
+  --fg: #0C0B0A;
+  --fg-2: #33312D;
+  --fg-muted: #63605A;
+  --border: #E7E5E0;
+  --border-2: #F0EFEB;
 
   /* Buttons and active nav stay ink: emphasis in this system is weight and
      contrast, not hue. The accent hues below are for marks, not for chrome. */
-  --primary: #1B4FD8;
-  --primary-hover: #1740B4;
+  --primary: #1746D6;
+  --primary-hover: #123AB0;
   --primary-strong: #1740B4;
   --primary-tint: #E3ECFF;
 
@@ -37,22 +37,22 @@
   --sky-solid: #14B8E0;  --sky: #06708F;  --sky-tint: #DBF3FC;
   --destructive: #C50E42;
 
-  --on-primary: #F4EFE8;
+  --on-primary: #FEFEFD;
 
-  --nav: #141311;
-  --nav-fg: #F4EFE8;
-  --nav-fg-muted: rgba(244, 239, 232, .58);
-  --nav-line: rgba(244, 239, 232, .08);
-  --nav-hover: rgba(244, 239, 232, .08);
+  --nav: #0C0B0A;
+  --nav-fg: #FEFEFD;
+  --nav-fg-muted: rgba(254, 254, 253, .60);
+  --nav-line: rgba(254, 254, 253, .09);
+  --nav-hover: rgba(254, 254, 253, .09);
 
-  --switch-knob: #FFFCF8;
+  --switch-knob: #FEFEFD;
 
-  --ring: #141311;
+  --ring: #0C0B0A;
 
-  --shadow-xs: 0 1px 2px 0 rgba(40, 32, 24, .08);
-  --shadow-sm: 0 1px 4px 0 rgba(40, 32, 24, .10);
-  --shadow-md: 0 8px 24px -8px rgba(40, 32, 24, .18);
-  --shadow-lg: 0 18px 40px -12px rgba(40, 32, 24, .28);
+  --shadow-xs: 0 1px 2px 0 rgba(28, 26, 22, .06);
+  --shadow-sm: 0 1px 4px 0 rgba(28, 26, 22, .08);
+  --shadow-md: 0 8px 24px -8px rgba(28, 26, 22, .14);
+  --shadow-lg: 0 18px 40px -12px rgba(28, 26, 22, .22);
 
   /* A payload rendered in three greys is unreadable at a glance. Each token
      type gets a hue that is already in the palette, so highlighting cannot
@@ -70,16 +70,16 @@
 }
 
 .dark {
-  --bg: #121110;
-  --surface: #1A1816;
-  --surface-2: #24211E;
-  --inset: #161412;
+  --bg: #090908;
+  --surface: #151514;
+  --surface-2: #212120;
+  --inset: #0E0E0D;
 
-  --fg: #F4EFE8;
-  --fg-2: #C8C1B6;
-  --fg-muted: #8E877C;
-  --border: #2C2924;
-  --border-2: #24211E;
+  --fg: #FAFAF8;
+  --fg-2: #D0CEC9;
+  --fg-muted: #918E88;
+  --border: #2A2A27;
+  --border-2: #212120;
 
   /* Lifted, not merely lightened: a hue that clears contrast on dark paper
      has to be brighter AND still saturated, or it turns to grey. */
@@ -100,17 +100,17 @@
   --sky-solid: #14B8E0;  --sky: #5FD5F2;  --sky-tint: rgba(20, 184, 224, .18);
   --destructive: #FF8AA6;
 
-  --on-primary: #121110;
+  --on-primary: #090908;
 
-  --nav: #1A1816;
-  --nav-fg: #F4EFE8;
-  --nav-fg-muted: rgba(244, 239, 232, .55);
-  --nav-line: rgba(244, 239, 232, .08);
-  --nav-hover: rgba(244, 239, 232, .07);
+  --nav: #0E0E0D;
+  --nav-fg: #FAFAF8;
+  --nav-fg-muted: rgba(250, 250, 248, .58);
+  --nav-line: rgba(250, 250, 248, .08);
+  --nav-hover: rgba(250, 250, 248, .07);
 
-  --switch-knob: #121110;
+  --switch-knob: #090908;
 
-  --ring: #F4EFE8;
+  --ring: #FAFAF8;
 
   --shadow-xs: 0 0 0 1px rgba(255, 255, 255, .04);
   --shadow-sm: 0 0 0 1px rgba(255, 255, 255, .05), 0 1px 4px 0 rgba(0, 0, 0, .40);
