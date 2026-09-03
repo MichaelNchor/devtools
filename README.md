@@ -1,8 +1,8 @@
 # DevTools
 
-Sixteen developer utilities that run entirely in your browser tab. No server,
-no database, no network calls — paste a token or a payload and it never leaves
-the page.
+Twenty-two developer utilities that run entirely in your browser tab. No
+server, no database, no network calls — paste a token or a payload and it
+never leaves the page.
 
 ## Why
 
@@ -27,13 +27,14 @@ The single hit is a string literal in the cURL converter, which *generates*
 | GUID Generator | UUID v4 and v7 from `crypto.getRandomValues`, plus v1 and namespaced v5 |
 | Password Generator | Rejection-sampled passwords with real entropy reporting |
 | Hash Generator | MD5, SHA-1/256/384/512, RIPEMD-160, HMAC; files stream in chunks |
-| JWT Debugger | Decode, humanise claims, and verify — three states, never two |
+| JWT Debugger | Decode, edit claims and re-sign; verify in three states, never two |
 
 **Data & Formatting**
 
 | Tool | What it does |
 |---|---|
 | JSON Compare | Structural diff with aligned panes, a summary, and a text view |
+| JSON Merge | Deep-merge two documents, matching records and reporting every conflict |
 | JSON Formatter | Beautify, minify, sort keys recursively, browse as a tree |
 | JSON → Code | Infer types and emit TypeScript, C#, Go, Java, Python, Kotlin |
 | Base64 | Encode/decode text or files, URL-safe alphabet, data URIs |
@@ -50,6 +51,19 @@ The single hit is a string literal in the cURL converter, which *generates*
 | cURL Converter | A curl command into fetch, axios, requests, HttpClient, Go, PowerShell |
 | HTTP Inspector | Break a raw request or response into headers, body, and claims |
 | Cron Parser | Plain-language reading, per-field breakdown, next ten runs |
+
+**Algorithms & Concepts**
+
+| Tool | What it does |
+|---|---|
+| Sorting Visualiser | Step through five sorts; every read and write is a real recorded frame |
+| Binary Search Tree | Build a tree by hand and watch its shape decide what lookup costs |
+| Pathfinding | BFS, DFS and A* over a maze you draw — one loop, three frontiers |
+| Big-O Reference | Complexity for what you actually use, with costs at a real n |
+| Interview Patterns | The fifteen patterns interviews reuse, led by the signal that gives each away |
+
+Every algorithm tool shows its pseudocode with the executing line highlighted,
+and the same algorithm in C#, TypeScript, Python and Java.
 
 ## Design rules
 
