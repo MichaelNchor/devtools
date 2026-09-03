@@ -268,7 +268,7 @@ export function JsonCompare() {
                 value={state.options.arrayKeyField}
                 onChange={(e) => setOption({ arrayKeyField: e.target.value })}
                 aria-label="Array key field"
-                className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
               />
             </label>
           ) : null}
@@ -281,7 +281,7 @@ export function JsonCompare() {
               value={state.options.numericTolerance}
               onChange={(e) => setOption({ numericTolerance: Number(e.target.value) || 0 })}
               aria-label="Numeric tolerance"
-              className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
           <div className="ml-auto">

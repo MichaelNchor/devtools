@@ -84,7 +84,7 @@ export function Cron() {
           aria-label="Cron expression"
           placeholder="0 9 * * 1-5"
           spellCheck={false}
-          className="h-12 w-full rounded-md border border-border bg-surface px-3 font-ui text-[16px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          className="h-12 w-full rounded-md border border-border bg-surface px-3 font-ui text-[16px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
         />
 
         {result && !result.ok ? <ErrorNote error={result.error} /> : null}

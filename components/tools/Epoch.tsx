@@ -135,7 +135,7 @@ export function Epoch() {
           onChange={(e) => update({ input: e.target.value })}
           aria-label={state.direction === "from-epoch" ? "Epoch value" : "Date"}
           placeholder={state.direction === "from-epoch" ? "1700000000" : "2023-11-14T22:13:20Z"}
-          className="h-11 w-full rounded-md border border-border bg-surface px-3 font-ui text-[15px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          className="h-11 w-full rounded-md border border-border bg-surface px-3 font-ui text-[15px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
         />
 
         {result && !result.ok ? <ErrorNote error={result.error} /> : null}

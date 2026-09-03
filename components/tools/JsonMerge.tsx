@@ -108,7 +108,7 @@ export function JsonMerge() {
                 value={state.options.keyField}
                 onChange={(e) => setOption({ keyField: e.target.value })}
                 aria-label="Field that identifies an array item"
-                className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
               />
             </label>
           ) : null}

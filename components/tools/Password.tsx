@@ -91,7 +91,7 @@ export function Password() {
               value={state.custom}
               onChange={(e) => update({ custom: e.target.value })}
               aria-label="Custom characters"
-              className="h-9 w-28 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 w-28 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
           <label className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export function Password() {
               value={state.count}
               onChange={(e) => update({ count: Number(e.target.value) || 1 })}
               aria-label="How many to generate"
-              className="h-9 w-20 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 w-20 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
         </>

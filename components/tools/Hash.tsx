@@ -123,7 +123,7 @@ export function Hash() {
               onChange={(e) => update({ hmacKey: e.target.value })}
               aria-label="HMAC key (leave empty for a plain digest)"
               placeholder="optional"
-              className="h-9 w-40 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 w-40 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
         </>
@@ -168,7 +168,7 @@ export function Hash() {
               onChange={(e) => update({ expected: e.target.value })}
               aria-label="Expected digest"
               placeholder="Paste a digest to check against"
-              className="h-9 flex-1 rounded-md border border-border bg-surface px-2 font-ui text-[12.5px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 flex-1 rounded-md border border-border bg-surface px-2 font-ui text-[12.5px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
           {comparison !== null ? (

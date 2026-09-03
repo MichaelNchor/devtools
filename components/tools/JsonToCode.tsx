@@ -91,7 +91,7 @@ export function JsonToCode() {
               value={state.rootName}
               onChange={(e) => update({ rootName: e.target.value })}
               aria-label="Root type name"
-              className="h-9 w-32 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 w-32 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
           <Segmented

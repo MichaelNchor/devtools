@@ -187,7 +187,7 @@ export function Jwt() {
               onChange={(e) => update({ key: e.target.value })}
               aria-label="Shared secret, for verifying and for re-signing"
               placeholder="HS256/384/512 secret — verifies, and lets you re-sign edits"
-              className="h-9 min-w-0 flex-1 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 min-w-0 flex-1 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
 
@@ -299,7 +299,7 @@ export function Jwt() {
                         if (seconds !== null) void setClaim(claim, seconds);
                       }}
                       aria-label={`${claim} date and time`}
-                      className="h-8 rounded-md border border-border bg-surface px-2 font-ui text-[12.5px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                      className="h-8 rounded-md border border-border bg-surface px-2 font-ui text-[12.5px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
                     />
 
                     <span className="flex flex-wrap items-center gap-1">

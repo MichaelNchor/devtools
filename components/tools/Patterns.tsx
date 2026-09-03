@@ -62,7 +62,7 @@ export function Patterns() {
                 onChange={(e) => setQuery(e.target.value)}
                 aria-label="Filter patterns"
                 placeholder="sliding window, cycle, top k…"
-                className="h-9 w-56 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                className="h-9 w-56 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
               />
             </label>
           ) : null}

@@ -96,7 +96,7 @@ export function IpCalculator() {
                 value={state.splitPrefix}
                 onChange={(e) => update({ splitPrefix: Number(e.target.value) || 0 })}
                 aria-label="Split into subnets of this prefix length"
-                className="h-9 w-20 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                className="h-9 w-20 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
               />
             </label>
           ) : null}
@@ -109,7 +109,7 @@ export function IpCalculator() {
           onChange={(e) => update({ input: e.target.value })}
           aria-label={state.family === "v4" ? "IPv4 address and mask" : "IPv6 address and prefix"}
           placeholder={state.family === "v4" ? "192.168.1.10/24 or 192.168.1.10 255.255.255.0" : "2001:db8::1/64"}
-          className="h-11 w-full rounded-md border border-border bg-surface px-3 font-ui text-[15px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          className="h-11 w-full rounded-md border border-border bg-surface px-3 font-ui text-[15px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
         />
 
         {error ? <ErrorNote error={error} /> : null}

@@ -82,7 +82,7 @@ export function Guid() {
               value={state.count}
               onChange={(e) => update({ count: Number(e.target.value) || 1 })}
               aria-label="How many to generate"
-              className="h-9 w-20 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 w-20 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
           {state.version === "v5" ? (
@@ -102,7 +102,7 @@ export function Guid() {
                   value={state.name}
                   onChange={(e) => update({ name: e.target.value })}
                   aria-label="Name to hash"
-                  className="h-9 w-40 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                  className="h-9 w-40 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
                 />
               </label>
             </>

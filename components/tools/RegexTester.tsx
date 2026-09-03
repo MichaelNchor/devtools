@@ -136,7 +136,7 @@ export function RegexTester() {
             aria-label="Regular expression"
             placeholder="pattern"
             spellCheck={false}
-            className="h-11 flex-1 rounded-md border border-border bg-surface px-3 font-ui text-[14px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+            className="h-11 flex-1 rounded-md border border-border bg-surface px-3 font-ui text-[14px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
           />
           <span className="font-ui text-[15px] text-fg-muted">/{state.flags}</span>
         </div>

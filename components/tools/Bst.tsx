@@ -101,7 +101,7 @@ export function Bst() {
               inputMode="numeric"
               aria-label="Value to insert, remove, or find"
               placeholder="42"
-              className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="h-9 w-24 rounded-md border border-border bg-surface px-2 font-ui text-[13px] text-fg tabular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]"
             />
           </label>
           <Button size="sm" variant="primary" onClick={() => start("insert")}>
