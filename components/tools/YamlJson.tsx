@@ -15,6 +15,7 @@ import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel, EmptyOutput } from "@/components/ui/Panel";
+import { JsonViewer } from "@/components/ui/JsonViewer";
 
 interface State {
   input: string;
@@ -43,6 +44,12 @@ export function YamlJson() {
       ? yamlToJson(state.input, state.indent)
       : jsonToYaml(state.input, { indent: state.indent, flowStyle: state.flowStyle });
   }, [state.input, state.direction, state.indent, state.flowStyle]);
+
+  // Parsed once, so the JSON side can fold. Null whenever the output is YAML.
+  const jsonResult = useMemo(() => {
+    if (!result?.ok || state.direction !== "yaml-to-json") return null;
+    try { return JSON.parse(result.value) as unknown; } catch { return null; }
+  }, [result, state.direction]);
 
   const willDropDetail = state.direction === "yaml-to-json" && hasCommentsOrAnchors(state.input);
 
@@ -137,6 +144,9 @@ export function YamlJson() {
           >
             {result && !result.ok ? (
               <div className="p-3"><ErrorNote error={result.error} /></div>
+            ) : result?.ok && jsonResult !== null ? (
+              // A JSON result folds; YAML is not a tree this viewer can walk.
+              <JsonViewer value={jsonResult} className="h-full" />
             ) : result?.ok ? (
               <CodeArea value={result.value} readOnly ariaLabel="Converted output" className="h-full rounded-none border-0" />
             ) : (

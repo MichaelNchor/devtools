@@ -16,6 +16,8 @@ import { CopyButton } from "@/components/tool/CopyButton";
 import { Button } from "@/components/ui/Button";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel } from "@/components/ui/Panel";
+import { JsonViewer } from "@/components/ui/JsonViewer";
+import { Segmented } from "@/components/ui/Segmented";
 import { cx } from "@/lib/cx";
 
 interface State {
@@ -61,6 +63,17 @@ export function Jwt() {
   const [state, update, reset] = useToolState<State>(meta, DEFAULTS, isState);
   const [verified, setVerified] = useState<VerifyState>("not-verified");
   const [resign, setResign] = useState<ReSign>({ kind: "idle" });
+  // Folding and editing cannot share one control: a textarea has no tree to
+  // collapse. Reading is the default, since most visits are to read a token.
+  const [claimView, setClaimView] = useState<"read" | "edit">("read");
+
+  /** Whatever currently parses, so the folded view survives a half-typed edit. */
+  const parsedHeader = useMemo(() => {
+    try { return JSON.parse(state.headerText || "null") as unknown; } catch { return null; }
+  }, [state.headerText]);
+  const parsedPayload = useMemo(() => {
+    try { return JSON.parse(state.payloadText || "null") as unknown; } catch { return null; }
+  }, [state.payloadText]);
 
   const decoded = useMemo(
     () => (state.token.trim() ? decodeJwt(state.token) : null),
@@ -166,6 +179,17 @@ export function Jwt() {
         }
         update(patch);
       }}
+      options={
+        <Segmented
+          label="Claims view"
+          value={claimView}
+          onChange={setClaimView}
+          options={[
+            { value: "read", label: "Fold" },
+            { value: "edit", label: "Edit" },
+          ]}
+        />
+      }
       isEmpty={!state.token.trim() && !state.payloadText.trim()}
       emptyHint="Paste a token to decode it, or write claims on the right and give a secret to sign them. Editing either side updates the other."
       actions={
@@ -236,27 +260,35 @@ export function Jwt() {
               subtitle={alg ? `Algorithm ${alg}` : "Algorithm and type"}
               className="h-[21dvh] min-h-[8rem]"
             >
-              <CodeArea
-                value={state.headerText}
-                onChange={(headerText) => void editClaims({ headerText })}
-                ariaLabel="Header claims"
-                placeholder='{ "alg": "HS256", "typ": "JWT" }'
-                className="h-full rounded-none border-0"
-              />
+              {claimView === "read" && parsedHeader !== null ? (
+                <JsonViewer value={parsedHeader} className="h-full" />
+              ) : (
+                <CodeArea
+                  value={state.headerText}
+                  onChange={(headerText) => void editClaims({ headerText })}
+                  ariaLabel="Header claims"
+                  placeholder='{ "alg": "HS256", "typ": "JWT" }'
+                  className="h-full rounded-none border-0"
+                />
+              )}
             </Panel>
 
             <Panel
               title="Payload"
-              subtitle="Data and claims — edit to re-sign"
+              subtitle={claimView === "edit" ? "Editing re-signs the token" : "Data and claims"}
               className="h-[22dvh] min-h-[9rem]"
             >
-              <CodeArea
-                value={state.payloadText}
-                onChange={(payloadText) => void editClaims({ payloadText })}
-                ariaLabel="Payload claims"
-                placeholder='{ "sub": "1234567890" }'
-                className="h-full rounded-none border-0"
-              />
+              {claimView === "read" && parsedPayload !== null ? (
+                <JsonViewer value={parsedPayload} className="h-full" />
+              ) : (
+                <CodeArea
+                  value={state.payloadText}
+                  onChange={(payloadText) => void editClaims({ payloadText })}
+                  ariaLabel="Payload claims"
+                  placeholder='{ "sub": "1234567890" }'
+                  className="h-full rounded-none border-0"
+                />
+              )}
             </Panel>
           </div>
         </div>
