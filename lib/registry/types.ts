@@ -11,78 +11,30 @@ export const GROUP_LABELS: Record<ToolGroup, string> = {
   concepts: "Algorithms & Concepts",
 };
 
-/**
- * Icon tint per group, so a wall of sixteen cards is scannable by shape as
- * well as by reading. Safe under the Status Escape Rule because the group is
- * ALWAYS also written out beside these icons — in the dashboard heading, the
- * rail heading, and the palette row — so the colour is redundant encoding,
- * never the only carrier.
- *
- * Deliberately drawn from the brand hues (primary, accent, sky) and never the
- * status family (up, rose, warn), which would make a category look like a
- * verdict.
- */
+/** Ink wells. Group is written beside the icon, so colour is not the carrier. */
 export const GROUP_TONE: Record<ToolGroup, string> = {
-  security: "bg-accent-tint text-accent-strong",
-  data: "bg-primary-tint text-primary-strong",
-  network: "bg-sky-tint text-sky",
-  concepts: "bg-up-tint text-up",
+  security: "bg-surface-2 text-fg",
+  data: "bg-surface-2 text-fg",
+  network: "bg-surface-2 text-fg",
+  concepts: "bg-surface-2 text-fg",
 };
 
-/**
- * Solid fills, for small decorative marks. A tint at roughly 1.15:1 against
- * the canvas is invisible at three pixels wide, so chips and dots use these.
- */
 export const GROUP_DOT: Record<ToolGroup, string> = {
-  security: "bg-accent-strong",
-  data: "bg-primary-strong",
-  network: "bg-sky",
-  concepts: "bg-up",
+  security: "bg-fg",
+  data: "bg-fg",
+  network: "bg-fg",
+  concepts: "bg-fg",
 };
 
-/**
- * Per-tool icon colour. Purely decorative: it encodes nothing, so it cannot
- * violate the Status Escape Rule — group is carried by the heading beside the
- * cards, not by these. Sixteen icons in three colours read as a rigid grid;
- * spreading them over six hues is what makes the wall scannable.
- *
- * Every hue was measured against its own tint in both themes and clears
- * 4.5:1, including the status families, which are safe on a dashboard card
- * because there is no status being reported.
- */
-export const TOOL_TONE: Record<string, string> = {
-  // Security & Identity
-  guid: "bg-primary-tint text-primary-strong",
-  password: "bg-rose-tint text-rose",
-  hash: "bg-accent-tint text-accent-strong",
-  jwt: "bg-warn-tint text-warn",
-  // Data & Formatting
-  "json-compare": "bg-sky-tint text-sky",
-  "json-format": "bg-primary-tint text-primary-strong",
-  "json-to-code": "bg-accent-tint text-accent-strong",
-  base64: "bg-up-tint text-up",
-  epoch: "bg-warn-tint text-warn",
-  regex: "bg-rose-tint text-rose",
-  "yaml-json": "bg-sky-tint text-sky",
-  "sql-format": "bg-up-tint text-up",
-  // Networking & Backend
-  "ip-calculator": "bg-sky-tint text-sky",
-  "curl-convert": "bg-accent-tint text-accent-strong",
-  "http-inspector": "bg-primary-tint text-primary-strong",
-  cron: "bg-warn-tint text-warn",
-};
-
-/** Falls back to the group tone for any tool not listed above. */
-export function toneFor(slug: string, group: ToolGroup): string {
-  return TOOL_TONE[slug] ?? GROUP_TONE[group];
+export function toneFor(_slug: string, group: ToolGroup): string {
+  return GROUP_TONE[group];
 }
 
-/** The same hues without a fill, for icons sitting directly on a surface. */
 export const GROUP_TEXT: Record<ToolGroup, string> = {
-  security: "text-accent-strong",
-  data: "text-primary-strong",
-  network: "text-sky",
-  concepts: "text-up",
+  security: "text-fg-muted",
+  data: "text-fg-muted",
+  network: "text-fg-muted",
+  concepts: "text-fg-muted",
 };
 
 export interface ToolMeta {

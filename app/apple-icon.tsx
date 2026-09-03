@@ -19,8 +19,8 @@ export default function AppleIcon() {
           alignItems: "center",
           justifyContent: "center",
           // iOS masks to its own rounded shape, so this fills edge to edge.
-          background: "#236DC9",
-          color: "#FFFFFF",
+          background: "#141311",
+          color: "#F4EFE8",
           fontSize: 96,
           fontWeight: 700,
           letterSpacing: "-0.05em",

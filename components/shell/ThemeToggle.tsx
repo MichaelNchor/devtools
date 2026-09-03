@@ -15,8 +15,6 @@ function resolve(choice: Choice): boolean {
 function apply(choice: Choice) {
   const root = document.documentElement;
   root.classList.toggle("dark", resolve(choice));
-  // The same attribute the pre-paint script stamps. It is what lights the
-  // selected option, so it has to move with the choice.
   root.setAttribute("data-theme-choice", choice);
   try {
     if (choice === "system") localStorage.removeItem(KEYS.theme);
@@ -31,10 +29,6 @@ const OPTIONS: { value: Choice; label: string; Icon: typeof Sun }[] = [
 ];
 
 export function ThemeToggle() {
-  // Only aria-checked reads this. The VISUAL selected state is painted by CSS
-  // from data-theme-choice, which is already correct in the first paint — see
-  // the rule in globals.css. Driving the highlight from state here is what
-  // made the toggle flicker on every navigation.
   const [choice, setChoice] = useState<Choice | null>(null);
 
   useEffect(() => {
@@ -42,8 +36,6 @@ export function ThemeToggle() {
     setChoice(stamped === "light" || stamped === "dark" ? stamped : "system");
   }, []);
 
-  // On "system" the OS can change under us, and the page should follow without
-  // a reload. Only meaningful while no explicit choice is stored.
   useEffect(() => {
     if (choice !== "system") return;
     const media = matchMedia(SYSTEM_DARK);
@@ -56,7 +48,7 @@ export function ThemeToggle() {
     <div
       role="radiogroup"
       aria-label="Theme"
-      className="inline-flex items-center gap-0.5 rounded-lg bg-surface-2 p-1"
+      className="inline-flex items-center gap-0.5 rounded-full bg-inset p-1"
     >
       {OPTIONS.map(({ value, label, Icon }) => (
         <button
@@ -68,7 +60,7 @@ export function ThemeToggle() {
           title={label}
           data-theme-option={value}
           onClick={() => { setChoice(value); apply(value); }}
-          className="rounded-md p-1.5 text-fg-muted transition-colors duration-150 hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+          className="rounded-full p-1.5 text-fg-muted transition-colors duration-150 hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
         >
           <Icon size={14} aria-hidden />
         </button>

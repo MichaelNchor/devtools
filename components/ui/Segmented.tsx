@@ -31,7 +31,6 @@ export function Segmented<T extends string>({ value, options, onChange, label }:
     const target = options[next];
     if (!target) return;
     onChange(target.value);
-    // Selection follows focus in this pattern, so focus moves with it.
     groupRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[next]?.focus();
   }
 
@@ -41,12 +40,10 @@ export function Segmented<T extends string>({ value, options, onChange, label }:
       role="radiogroup"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className="inline-flex rounded-md bg-surface-2 p-0.5"
+      className="inline-flex rounded-full bg-inset p-1"
     >
       {options.map((option, index) => {
         const active = option.value === value;
-        // Exactly one tab stop. If `value` matches nothing, the first option
-        // holds it so the group can never become unreachable by keyboard.
         const tabbable = activeIndex === -1 ? index === 0 : active;
         return (
           <button
@@ -57,9 +54,9 @@ export function Segmented<T extends string>({ value, options, onChange, label }:
             tabIndex={tabbable ? 0 : -1}
             onClick={() => onChange(option.value)}
             className={cx(
-              "rounded-sm px-2.5 py-1 font-ui text-[12px] font-medium transition-colors",
+              "rounded-full px-3 py-1 font-ui text-[12px] font-medium transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
-              active ? "bg-surface text-fg shadow-xs" : "text-fg-muted hover:text-fg",
+              active ? "bg-primary text-on-primary" : "text-fg-muted hover:text-fg",
             )}
           >
             {option.label}

@@ -29,7 +29,7 @@ export function Toggle({ checked, onChange, label }: Props) {
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cx(
-        "group inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-md py-0.5",
+        "group inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full py-0.5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
       )}
     >

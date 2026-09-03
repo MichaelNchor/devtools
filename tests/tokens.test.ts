@@ -44,8 +44,10 @@ describe("theme tokens", () => {
     const light = blockFor(css, ":root");
     const bg = /--bg:\s*(#[0-9a-f]{6})/i.exec(light)?.[1]?.toUpperCase();
     const surface = /--surface:\s*(#[0-9a-f]{6})/i.exec(light)?.[1]?.toUpperCase();
-    expect(surface).toBe("#FFFFFF");
+    expect(surface).not.toBe("#FFFFFF");
+    expect(surface).not.toBe("#000000");
     expect(bg).not.toBe(surface);
     expect(bg).not.toBe("#000000");
+    expect(bg).not.toBe("#FFFFFF");
   });
 });

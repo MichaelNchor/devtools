@@ -15,9 +15,9 @@ export function FavouriteStar({ slug, name }: { slug: string; name: string }) {
       aria-label={pinned ? `Unpin ${name}` : `Pin ${name}`}
       onClick={() => toggle(slug)}
       className={cx(
-        "rounded-sm p-1 transition-colors",
+        "rounded-full p-1 transition-colors",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
-        pinned ? "text-warn-solid" : "text-fg-muted hover:text-fg",
+        pinned ? "text-fg" : "text-fg-muted hover:text-fg",
       )}
     >
       <Star size={15} fill={pinned ? "currentColor" : "none"} aria-hidden />

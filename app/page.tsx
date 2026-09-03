@@ -2,27 +2,23 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { Settings, Zap } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { allMetas, groupTools } from "@/lib/registry";
 import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { RECENTS_SHOWN } from "@/lib/workspace";
 import { ToolCard } from "@/components/shell/ToolCard";
 import { ToolTile } from "@/components/shell/ToolTile";
-import { GROUP_DOT, type ToolGroup, type ToolMeta } from "@/lib/registry/types";
+import { type ToolGroup, type ToolMeta } from "@/lib/registry/types";
 
-function Column({ label, tools, group }: {
+function Column({ label, tools }: {
   label: string;
   tools: ToolMeta[];
-  /** Absent for Recent and Favourites, which are not categories. */
   group?: ToolGroup | undefined;
 }) {
   if (tools.length === 0) return null;
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center gap-2 px-1">
-        {group ? (
-          <span aria-hidden className={`h-3 w-1 rounded-full ${GROUP_DOT[group]}`} />
-        ) : null}
         <h2 className="eyebrow">{label}</h2>
         <span className="font-ui text-[11px] text-fg-muted tabular">{tools.length}</span>
       </div>
@@ -33,7 +29,6 @@ function Column({ label, tools, group }: {
   );
 }
 
-/** A full-width horizontal row of compact tiles. */
 function Strip({ label, tools }: { label: string; tools: ToolMeta[] }) {
   if (tools.length === 0) return null;
   return (
@@ -60,57 +55,43 @@ export default function Dashboard() {
 
   const pinned = pick(favourites);
   const recent = pick(recents.slice(0, RECENTS_SHOWN).map((r) => r.slug));
-  // Picking up where you left off beats a generic entry point.
   const quickStart = recent[0]?.slug ?? "json-compare";
 
   return (
-    <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-7 px-5 py-6 lg:px-7 lg:py-7">
-      <section className="relative overflow-hidden rounded-xl border border-border bg-surface p-6 shadow-sm lg:p-9">
-        {/* A wash rather than a block of colour: it gives the card depth
-            without competing with the tool icons below it. */}
+    <main className="mx-auto flex w-full max-w-[1500px] flex-col gap-8 px-5 py-5 lg:px-7 lg:py-6">
+      <section className="relative overflow-hidden rounded-[1.75rem] bg-nav px-6 py-8 text-nav-fg lg:px-10 lg:py-12">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 w-2/3 bg-gradient-to-l from-primary-tint via-primary-tint/40 to-transparent"
+          className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-nav-fg/10"
         />
-        <div className="relative z-10 max-w-2xl">
-          <h1 className="font-ui text-[2rem] font-bold leading-[1.1] tracking-[-0.03em] text-fg lg:text-[2.75rem]">
-            Your essential
-            <br />
-            <span className="text-primary-strong">backend workspace.</span>
-          </h1>
-          <p className="mt-4 max-w-xl text-[14px] leading-relaxed text-fg-muted lg:text-[15px]">
-            Sixteen developer tools for formatting, encoding, hashing,
-            inspecting and comparing. Every one runs in this tab — instant, and
-            with nothing uploaded.
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 right-24 h-48 w-48 rounded-full bg-nav-fg/5"
+        />
+        <div className="relative z-10 max-w-xl">
+          <p className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-nav-fg-muted">
+            Local, in this tab
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <h1 className="mt-3 font-display text-[2.35rem] font-extrabold leading-[0.92] tracking-[-0.05em] lg:text-[3.4rem]">
+            Tools that
+            <br />
+            stay private.
+          </h1>
+          <div className="mt-7">
             <Link
               href={`/${quickStart}`}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 font-ui text-[13px] font-semibold text-on-primary shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+              className="inline-flex items-center gap-2 rounded-full bg-nav-fg px-5 py-2.5 font-ui text-[13px] font-semibold text-nav transition-transform duration-150 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-nav-fg focus-visible:ring-offset-2 focus-visible:ring-offset-nav"
             >
-              {recent.length > 0 ? "Back to " + recent[0]!.name : "Quick start"}
-              <Zap size={15} aria-hidden />
-            </Link>
-            <Link
-              href="/settings"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-5 py-2.5 font-ui text-[13px] font-semibold text-fg transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
-            >
-              <Settings size={15} aria-hidden />
-              Preferences
+              {recent.length > 0 ? "Back to " + recent[0]!.name : "Open a tool"}
+              <ArrowUpRight size={15} aria-hidden />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Recents and Favourites are absent, not empty, on a first visit.
-          They run ACROSS the page rather than down a column: these are the
-          few tools you actually return to, so they get the full width and are
-          read in one sweep instead of competing with a category. */}
       <Strip label="Recent" tools={recent} />
       <Strip label="Favourites" tools={pinned} />
 
-      {/* Three columns, so every category is visible at once rather than
-          stacked behind a scroll. */}
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {sections.map((section) => (
           <Column

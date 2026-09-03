@@ -9,7 +9,6 @@ import { WorkspaceProvider } from "./WorkspaceProvider";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
-  // Read here, not inside WorkspaceProvider — see the note in that file.
   const knownSlugs = useMemo(() => allMetas().map((m) => m.slug), []);
 
   useEffect(() => {
@@ -27,9 +26,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <WorkspaceProvider knownSlugs={knownSlugs}>
       <div className="flex min-h-dvh">
         <Rail />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <TopBar onOpenPalette={() => setPaletteOpen(true)} />
-          <div className="min-w-0 flex-1">{children}</div>
+        <div className="flex min-w-0 flex-1 flex-col p-3">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[var(--radius-sheet)] bg-surface shadow-sm">
+            <TopBar onOpenPalette={() => setPaletteOpen(true)} />
+            <div className="min-w-0 flex-1 overflow-auto">{children}</div>
+          </div>
         </div>
       </div>
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />

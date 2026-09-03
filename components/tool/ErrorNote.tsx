@@ -8,7 +8,7 @@ export function ErrorNote({ error }: { error: ToolError | null }) {
     : "";
 
   return (
-    <div role="alert" className="flex items-start gap-2 rounded-md bg-rose-tint px-3 py-2">
+    <div role="alert" className="flex items-start gap-2 rounded-2xl bg-rose-tint px-3 py-2">
       <AlertCircle size={14} className="mt-0.5 shrink-0 text-rose" aria-hidden />
       <p className="text-[12.5px] leading-snug text-rose">{error.message}{where}</p>
     </div>

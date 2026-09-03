@@ -12,7 +12,6 @@ import { useWorkspace } from "./WorkspaceProvider";
 import { KEYS, readJson, writeJson } from "@/lib/storage";
 import { cx } from "@/lib/cx";
 
-/** Everything that is not a tool. Reachable from the rail, or not at all. */
 const PRIMARY: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/", label: "Dashboard", icon: LayoutGrid },
   { href: "/settings", label: "Settings", icon: Settings },
@@ -26,31 +25,21 @@ function NavRow({
   icon: LucideIcon;
   active: boolean;
   collapsed: boolean;
-  /** Optional AND explicitly undefined-able: exactOptionalPropertyTypes is on,
-      so a caller forwarding its own optional prop cannot pass `?:` alone. */
   onNavigate?: (() => void) | undefined;
 }) {
   return (
-    <li className="relative">
-      {/* The rail's position marker is the ONE sanctioned edge indicator in
-          the system — cards and rows never get one. */}
-      {active ? (
-        <span
-          aria-hidden
-          className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary"
-        />
-      ) : null}
+    <li>
       <Link
         href={href}
         onClick={() => onNavigate?.()}
         aria-current={active ? "page" : undefined}
         title={collapsed ? label : undefined}
         className={cx(
-          "flex items-center gap-3 rounded-lg py-2 font-ui text-[13px] leading-none transition-colors duration-150",
+          "flex items-center gap-3 rounded-full py-2 font-ui text-[13px] leading-none transition-colors duration-150",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
-          collapsed ? "justify-center px-0" : "px-2.5",
+          collapsed ? "justify-center px-0" : "px-3",
           active
-            ? "bg-nav-hover font-medium text-nav-fg"
+            ? "bg-nav-fg font-medium text-nav"
             : "text-nav-fg-muted hover:bg-nav-hover hover:text-nav-fg",
         )}
       >
@@ -67,7 +56,6 @@ function RailLinks({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?:
   const metas = useMemo(() => allMetas(), []);
   const sections = useMemo(() => groupTools(metas), [metas]);
 
-  // Favourites is absent, not empty, when nothing is pinned.
   const pinned = favourites
     .map((slug) => metas.find((m) => m.slug === slug))
     .filter((m): m is NonNullable<typeof m> => m != null);
@@ -93,19 +81,15 @@ function RailLinks({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?:
         </ul>
       </nav>
 
-      {/* A hairline, not a gap: it says these are different KINDS of
-          destination, which spacing alone leaves ambiguous. */}
       <div className={cx("border-t border-nav-line", collapsed ? "mx-2" : "mx-3")} />
 
       <nav aria-label="Tools" className={cx("flex flex-col gap-6 py-4", collapsed ? "px-2" : "px-3")}>
         {groups.map((section) => (
           <div key={section.group}>
             {collapsed ? (
-              // No room for a label, so the groups are separated by a rule
-              // instead — the grouping still reads.
               <div className="mb-2 border-t border-nav-line first:border-0" />
             ) : (
-              <p className="px-2.5 pb-2 font-ui text-[10px] font-semibold uppercase tracking-[.16em] text-nav-fg-muted">
+              <p className="px-3 pb-2 font-display text-[10px] font-semibold uppercase tracking-[.12em] text-nav-fg-muted">
                 {section.label}
               </p>
             )}
@@ -134,17 +118,17 @@ function Wordmark({ collapsed }: { collapsed: boolean }) {
     <Link
       href="/"
       className={cx(
-        "flex items-center gap-2 rounded-md text-nav-fg transition-opacity hover:opacity-80",
+        "flex items-center gap-2.5 rounded-full text-nav-fg transition-opacity hover:opacity-80",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
         collapsed && "justify-center",
       )}
       aria-label="DevTools home"
     >
-      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-primary text-on-primary">
-        <Terminal size={13} aria-hidden />
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-nav-fg text-nav">
+        <Terminal size={14} aria-hidden />
       </span>
       {!collapsed ? (
-        <span className="font-ui text-[13px] font-bold tracking-tight">DevTools</span>
+        <span className="font-display text-[15px] font-extrabold tracking-[-0.04em]">DevTools</span>
       ) : null}
     </Link>
   );
@@ -165,9 +149,6 @@ export function Rail() {
     writeJson(KEYS.rail, next ? "collapsed" : "expanded");
   }
 
-  // Two flags, because one cannot animate both ways. `mounted` keeps the panel
-  // in the tree long enough to slide out; `shown` is what the transition reads
-  // and is set a frame later, so the browser has a closed state to move from.
   useEffect(() => {
     if (open) {
       setMounted(true);
@@ -189,8 +170,6 @@ export function Rail() {
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") { setOpen(false); return; }
       if (event.key !== "Tab" || !panelRef.current) return;
-      // Behind the drawer the page is inert, so letting focus escape strands
-      // the keyboard on controls nobody can see.
       const items = panelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
       if (!items.length) return;
       const first = items[0]!;
@@ -211,8 +190,8 @@ export function Rail() {
     <>
       <aside
         className={cx(
-          "sticky top-0 hidden h-dvh shrink-0 flex-col overflow-y-auto bg-nav lg:flex",
-          collapsed ? "w-[68px]" : "w-64",
+          "sticky top-3 ml-3 my-3 hidden h-[calc(100dvh-1.5rem)] shrink-0 flex-col overflow-y-auto rounded-[var(--radius-sheet)] bg-nav lg:flex",
+          collapsed ? "w-[76px]" : "w-64",
         )}
       >
         <div
@@ -227,7 +206,7 @@ export function Rail() {
             onClick={() => setRail(!collapsed)}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             className={cx(
-              "rounded-md p-1.5 text-nav-fg-muted transition-colors hover:bg-nav-hover hover:text-nav-fg",
+              "rounded-full p-1.5 text-nav-fg-muted transition-colors hover:bg-nav-hover hover:text-nav-fg",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-nav",
               !collapsed && "ml-auto",
             )}
@@ -242,7 +221,7 @@ export function Rail() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open navigation"
-        className="fixed bottom-5 left-5 z-40 rounded-full bg-nav p-3 text-nav-fg shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] lg:hidden"
+        className="fixed bottom-5 left-5 z-40 rounded-full bg-nav p-3.5 text-nav-fg shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] lg:hidden"
       >
         <Menu size={18} aria-hidden />
       </button>
@@ -259,8 +238,8 @@ export function Rail() {
             aria-modal="true"
             aria-label="Navigation"
             className={cx(
-              "absolute inset-y-0 left-0 w-[17rem] overflow-y-auto bg-nav transition-transform duration-200",
-              shown ? "translate-x-0" : "-translate-x-full",
+              "absolute inset-y-3 left-3 w-[17rem] overflow-y-auto rounded-[var(--radius-sheet)] bg-nav transition-transform duration-200",
+              shown ? "translate-x-0" : "-translate-x-[calc(100%+0.75rem)]",
             )}
           >
             <div className="flex items-center justify-between px-3 py-4">
@@ -269,7 +248,7 @@ export function Rail() {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close navigation"
-                className="rounded-md p-1.5 text-nav-fg-muted transition-colors hover:bg-nav-hover hover:text-nav-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                className="rounded-full p-1.5 text-nav-fg-muted transition-colors hover:bg-nav-hover hover:text-nav-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
               >
                 <X size={16} aria-hidden />
               </button>

@@ -13,8 +13,8 @@ function Section({ title, hint, children }: {
   title: string; hint: string; children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg bg-surface px-5 py-4 shadow-sm">
-      <h2 className="font-ui text-[14px] font-semibold text-fg">{title}</h2>
+    <section className="rounded-2xl border border-border bg-bg/40 px-5 py-4">
+      <h2 className="font-display text-[15px] font-semibold tracking-[-0.02em] text-fg">{title}</h2>
       <p className="mt-1 max-w-prose text-[12.5px] leading-relaxed text-fg-muted">{hint}</p>
       <div className="mt-3">{children}</div>
     </section>
@@ -39,7 +39,7 @@ function DangerButton({ label, confirmLabel, onConfirm }: {
 
   if (done) {
     return (
-      <p className="inline-flex items-center gap-1.5 rounded-md bg-up-tint px-3 py-1.5 text-[12.5px] text-up">
+      <p className="inline-flex items-center gap-1.5 rounded-full bg-up-tint px-3 py-1.5 text-[12.5px] text-up">
         <Check size={13} aria-hidden />
         {done}
       </p>
@@ -87,10 +87,9 @@ export default function Settings() {
   return (
     <main className="mx-auto flex max-w-[900px] flex-col gap-4 p-5 lg:p-8">
       <header>
-        <h1 className="font-ui text-[1.375rem] font-bold tracking-[-0.01em] text-fg">Settings</h1>
-        <p className="mt-1.5 max-w-prose text-[13px] leading-relaxed text-fg-muted">
-          Everything on this page acts on this browser only. Nothing here is sent
-          anywhere, and clearing your browser data clears all of it.
+        <h1 className="font-display text-[2rem] font-extrabold tracking-[-0.04em] text-fg">Settings</h1>
+        <p className="mt-2 max-w-prose text-[14px] leading-relaxed text-fg-muted">
+          This browser only. Nothing is sent anywhere.
         </p>
       </header>
 

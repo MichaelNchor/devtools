@@ -31,7 +31,7 @@ export function CodeSwitcher({
   const code = tab === "pseudocode" ? pseudocode.join("\n") : implementations[tab];
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-surface">
+    <div className="overflow-hidden rounded-2xl border border-border bg-bg/30">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border px-3 py-2">
         <div className="min-w-0">
           <p className="eyebrow">{title ?? "Code"}</p>
@@ -49,10 +49,10 @@ export function CodeSwitcher({
               aria-selected={tab === option.value}
               onClick={() => setTab(option.value)}
               className={cx(
-                "rounded-md px-2 py-1 font-ui text-[11.5px] font-medium transition-colors",
+                "rounded-full px-2.5 py-1 font-ui text-[11.5px] font-medium transition-colors",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
                 tab === option.value
-                  ? "bg-primary-tint text-primary-strong"
+                  ? "bg-primary text-on-primary"
                   : "text-fg-muted hover:text-fg",
               )}
             >
@@ -76,8 +76,8 @@ export function CodeSwitcher({
                 key={index}
                 aria-current={live ? "step" : undefined}
                 className={cx(
-                  "flex gap-2.5 rounded-sm px-2 py-[3px] font-ui text-[12px] transition-colors",
-                  live ? "bg-primary-tint text-primary-strong" : "text-fg-muted",
+                  "flex gap-2.5 rounded-xl px-2 py-[3px] font-mono text-[12px] transition-colors",
+                  live ? "bg-primary text-on-primary" : "text-fg-muted",
                 )}
               >
                 {/* The marker, not just the fill, says which line is live. */}
@@ -88,7 +88,7 @@ export function CodeSwitcher({
           })}
         </ol>
       ) : (
-        <pre className="overflow-x-auto px-3 py-2.5 font-ui text-[12px] leading-relaxed text-fg">
+        <pre className="overflow-x-auto px-3 py-2.5 font-mono text-[12px] leading-relaxed text-fg">
           {code}
         </pre>
       )}

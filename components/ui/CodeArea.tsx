@@ -25,8 +25,8 @@ export function CodeArea({ value, onChange, placeholder, readOnly, ariaLabel, cl
       autoCapitalize="off"
       data-gramm="false"
       className={cx(
-        "h-full w-full resize-none rounded-md border border-border bg-surface p-3",
-        "font-ui text-[13px] leading-[1.55] text-fg",
+        "h-full w-full resize-none rounded-xl border-0 bg-transparent p-3",
+        "font-mono text-[13px] leading-[1.55] text-fg",
         "placeholder:text-fg-muted",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
         readOnly && "bg-inset",

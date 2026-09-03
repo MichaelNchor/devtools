@@ -23,12 +23,20 @@ export default {
         "nav-line": "var(--nav-line)", "nav-hover": "var(--nav-hover)",
       },
       fontFamily: {
-        sans: ["var(--font-body)"],
-        ui: ["var(--font-ui)", "ui-monospace", "monospace"],
+        sans: ["var(--font-body)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "var(--font-body)", "system-ui", "sans-serif"],
+        ui: ["var(--font-ui)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: { xs: "var(--shadow-xs)", sm: "var(--shadow-sm)", md: "var(--shadow-md)", lg: "var(--shadow-lg)" },
-      borderRadius: { sm: "4px", md: "5px", lg: "6px", xl: "8px" },
+      borderRadius: {
+        sm: "8px",
+        md: "12px",
+        lg: "16px",
+        xl: "24px",
+        "2xl": "32px",
+        "3xl": "40px",
+      },
     },
   },
 } satisfies Config;
