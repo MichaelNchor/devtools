@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeftRight, Eraser, KeySquare } from "lucide-react";
+import { ArrowLeftRight, Eraser, X } from "lucide-react";
 import { JWT_META } from "@/lib/registry/metas";
 import {
-  decodeJwt, describeTimeClaims, verifyJwt, signJwtWithHeader, type VerifyState,
+  decodeJwt, describeTimeClaims, verifyJwt, signJwtWithHeader,
+  epochToLocalInput, localInputToEpoch, withTimeClaim, removeTimeClaim,
+  TIME_CLAIMS, TIME_PRESETS, type TimeClaim, type VerifyState,
 } from "@/lib/tools/jwt";
 import { JWT_EXAMPLES } from "@/lib/tools/examples";
 import { ToolShell } from "@/components/tool/ToolShell";
@@ -120,6 +122,19 @@ export function Jwt() {
     const signed = await signJwtWithHeader(header, payload, next.key);
     if (signed.ok) { update({ token: signed.value }); setResign({ kind: "signed" }); }
     else setResign({ kind: "failed", message: signed.error.message });
+  }
+
+  /** Writes a time claim into the payload, then re-signs if it can. */
+  async function setClaim(claim: TimeClaim, seconds: number) {
+    const next = withTimeClaim(state.payloadText, claim, seconds);
+    if (!next.ok) { setResign({ kind: "bad-json" }); return; }
+    await editClaims({ payloadText: next.value });
+  }
+
+  async function clearClaim(claim: TimeClaim) {
+    const next = removeTimeClaim(state.payloadText, claim);
+    if (!next.ok) { setResign({ kind: "bad-json" }); return; }
+    await editClaims({ payloadText: next.value });
   }
 
   /** Re-signs on demand, for when the secret arrives after the edits. */
@@ -257,18 +272,68 @@ export function Jwt() {
           </p>
         ) : null}
 
-        {claims.length > 0 ? (
-          <Panel title="Time claims" subtitle="Read from the payload as you edit it">
-            <div className="px-3 py-1">
-              {claims.map((claim) => {
-                const tone = CLAIM_STATE[claim.state]!;
+        {state.payloadText.trim() ? (
+          <Panel
+            title="Time claims"
+            subtitle="Pick a date and the claim is written back as epoch seconds"
+          >
+            <div className="flex flex-col">
+              {TIME_CLAIMS.map((claim) => {
+                const current = claims.find((c) => c.claim === claim);
+                const tone = current ? CLAIM_STATE[current.state]! : null;
                 return (
-                  <div key={claim.claim} className="flex flex-wrap items-baseline gap-3 border-b border-border py-1.5 last:border-0">
-                    <span className={`w-4 font-ui text-[12.5px] ${tone.tone}`} aria-hidden>{tone.glyph}</span>
-                    <span className="eyebrow w-10">{claim.claim}</span>
-                    <span className="font-ui text-[12.5px] text-fg tabular">{claim.at.toISOString()}</span>
-                    <span className="text-[12.5px] text-fg-muted">{claim.relative}</span>
-                    <span className={cx("text-[12.5px]", tone.tone)}>{tone.word}</span>
+                  <div
+                    key={claim}
+                    className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border px-3 py-2.5 last:border-0"
+                  >
+                    <span className={cx("w-4 font-ui text-[12.5px]", tone?.tone)} aria-hidden>
+                      {tone?.glyph ?? "·"}
+                    </span>
+                    <span className="eyebrow w-10">{claim}</span>
+
+                    <input
+                      type="datetime-local"
+                      value={current ? epochToLocalInput(current.at.getTime() / 1000) : ""}
+                      onChange={(e) => {
+                        const seconds = localInputToEpoch(e.target.value);
+                        if (seconds !== null) void setClaim(claim, seconds);
+                      }}
+                      aria-label={`${claim} date and time`}
+                      className="h-8 rounded-md border border-border bg-surface px-2 font-ui text-[12.5px] text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                    />
+
+                    <span className="flex flex-wrap items-center gap-1">
+                      {TIME_PRESETS.map((preset) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => void setClaim(claim, Math.floor(Date.now() / 1000) + preset.seconds)}
+                          className="rounded-md bg-surface-2 px-1.5 py-1 font-ui text-[11px] text-fg-muted transition-colors hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </span>
+
+                    {current ? (
+                      <>
+                        <span className="font-ui text-[11.5px] text-fg-muted tabular">
+                          {Math.floor(current.at.getTime() / 1000)}
+                        </span>
+                        <span className="text-[12px] text-fg-muted">{current.relative}</span>
+                        <span className={cx("text-[12px]", tone!.tone)}>{tone!.word}</span>
+                        <button
+                          type="button"
+                          onClick={() => void clearClaim(claim)}
+                          aria-label={`Remove the ${claim} claim`}
+                          className="ml-auto rounded-md p-1 text-fg-muted transition-colors hover:text-rose focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                        >
+                          <X size={13} aria-hidden />
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-[12px] text-fg-muted">not set</span>
+                    )}
                   </div>
                 );
               })}

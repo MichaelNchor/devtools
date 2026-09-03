@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   decodeJwt, describeTimeClaims, verifyJwt, signJwt, signJwtWithHeader, SIGNING_ALGORITHMS,
+  epochToLocalInput, localInputToEpoch, withTimeClaim, removeTimeClaim,
+  TIME_CLAIMS, TIME_PRESETS,
 } from "@/lib/tools/jwt";
 
 const b64url = (obj: unknown) =>
@@ -246,5 +248,67 @@ describe("signJwtWithHeader", () => {
 
   it("refuses a header that is not an object", async () => {
     expect((await signJwtWithHeader([] as unknown as Record<string, unknown>, { a: 1 }, "k")).ok).toBe(false);
+  });
+});
+
+describe("time claim editing", () => {
+  it("round-trips an epoch through the picker's format, to the minute", () => {
+    // Absolute strings depend on the machine's zone, so this asserts the
+    // round trip rather than a literal — the property that actually matters.
+    for (const seconds of [0, 1516239022, 1767225600, -86400]) {
+      const toMinute = Math.floor(seconds / 60) * 60;
+      expect(localInputToEpoch(epochToLocalInput(seconds))).toBe(toMinute);
+    }
+  });
+
+  it("rejects an unparseable picker value", () => {
+    expect(localInputToEpoch("")).toBeNull();
+    expect(localInputToEpoch("not a date")).toBeNull();
+  });
+
+  it("adds a claim that was not there", () => {
+    const out = withTimeClaim('{"sub":"a"}', "exp", 1516242622);
+    expect(out.ok && JSON.parse(out.value)).toEqual({ sub: "a", exp: 1516242622 });
+  });
+
+  it("replaces a claim that was", () => {
+    const out = withTimeClaim('{"exp":1,"sub":"a"}', "exp", 999);
+    expect(out.ok && JSON.parse(out.value)).toEqual({ exp: 999, sub: "a" });
+  });
+
+  it("leaves every other claim untouched", () => {
+    const out = withTimeClaim('{"sub":"a","admin":true,"roles":["x"]}', "iat", 5);
+    expect(out.ok && JSON.parse(out.value)).toEqual({
+      sub: "a", admin: true, roles: ["x"], iat: 5,
+    });
+  });
+
+  it("writes whole seconds, never milliseconds or a fraction", () => {
+    // A JWT time claim is NumericDate — seconds. Writing milliseconds here
+    // would produce a token that looks fine and expires in the year 50000.
+    const out = withTimeClaim('{}', "exp", 1516242622.9);
+    expect(out.ok && JSON.parse(out.value).exp).toBe(1516242622);
+  });
+
+  it("removes a claim", () => {
+    const out = removeTimeClaim('{"exp":1,"sub":"a"}', "exp");
+    expect(out.ok && JSON.parse(out.value)).toEqual({ sub: "a" });
+  });
+
+  it("reports invalid JSON rather than silently rewriting it", () => {
+    expect(withTimeClaim("{broken", "exp", 1).ok).toBe(false);
+    expect(removeTimeClaim("{broken", "exp").ok).toBe(false);
+  });
+
+  it("offers presets that land in the future for exp", () => {
+    const now = Math.floor(Date.now() / 1000);
+    for (const preset of TIME_PRESETS) {
+      if (preset.seconds > 0) expect(now + preset.seconds, preset.label).toBeGreaterThan(now);
+    }
+    expect(TIME_PRESETS.some((p) => p.seconds === 0)).toBe(true);
+  });
+
+  it("names the three registered time claims", () => {
+    expect(TIME_CLAIMS).toEqual(["iat", "nbf", "exp"]);
   });
 });

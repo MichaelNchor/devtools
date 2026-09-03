@@ -212,3 +212,78 @@ export async function verifyJwt(token: string, key: string): Promise<ToolResult<
     return ok("not-verified");
   }
 }
+
+/** The registered time claims, in the order they read on screen. */
+export const TIME_CLAIMS = ["iat", "nbf", "exp"] as const;
+export type TimeClaim = (typeof TIME_CLAIMS)[number];
+
+/** Offsets from now, for setting a claim without doing arithmetic. */
+export const TIME_PRESETS: { label: string; seconds: number }[] = [
+  { label: "Now", seconds: 0 },
+  { label: "+1h", seconds: 3600 },
+  { label: "+1d", seconds: 86_400 },
+  { label: "+7d", seconds: 604_800 },
+  { label: "+30d", seconds: 2_592_000 },
+];
+
+function pad(n: number): string {
+  return String(n).padStart(2, "0");
+}
+
+/**
+ * Epoch seconds to the value a datetime-local input expects.
+ *
+ * That control works in LOCAL time with no zone attached, so the components
+ * are read locally rather than from the ISO string, which is UTC and would be
+ * off by the machine's offset.
+ */
+export function epochToLocalInput(seconds: number): string {
+  const at = new Date(seconds * 1000);
+  if (Number.isNaN(at.getTime())) return "";
+  return `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())}`
+    + `T${pad(at.getHours())}:${pad(at.getMinutes())}`;
+}
+
+/** The reverse. Returns null for anything the browser could not parse. */
+export function localInputToEpoch(value: string): number | null {
+  if (!value.trim()) return null;
+  const at = new Date(value);
+  if (Number.isNaN(at.getTime())) return null;
+  return Math.floor(at.getTime() / 1000);
+}
+
+/**
+ * Sets a time claim in a payload, preserving every other claim.
+ *
+ * Written as whole seconds because a JWT time claim is a NumericDate. Passing
+ * milliseconds through would produce a token that looks correct and expires
+ * tens of thousands of years from now.
+ */
+export function withTimeClaim(
+  payloadText: string,
+  claim: TimeClaim,
+  seconds: number,
+): ToolResult<string> {
+  let payload: unknown;
+  try {
+    payload = JSON.parse(payloadText || "{}");
+  } catch {
+    return err("The payload is not valid JSON, so a claim cannot be set on it.");
+  }
+  if (!isObject(payload)) return err("The payload must be a JSON object.");
+
+  return ok(JSON.stringify({ ...payload, [claim]: Math.floor(seconds) }, null, 2));
+}
+
+export function removeTimeClaim(payloadText: string, claim: TimeClaim): ToolResult<string> {
+  let payload: unknown;
+  try {
+    payload = JSON.parse(payloadText || "{}");
+  } catch {
+    return err("The payload is not valid JSON, so a claim cannot be removed from it.");
+  }
+  if (!isObject(payload)) return err("The payload must be a JSON object.");
+
+  const { [claim]: _removed, ...rest } = payload;
+  return ok(JSON.stringify(rest, null, 2));
+}
