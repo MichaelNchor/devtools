@@ -8,17 +8,23 @@ import { useWorkspace } from "@/components/shell/WorkspaceProvider";
 import { RECENTS_SHOWN } from "@/lib/workspace";
 import { ToolCard } from "@/components/shell/ToolCard";
 import { ToolTile } from "@/components/shell/ToolTile";
-import { type ToolGroup, type ToolMeta } from "@/lib/registry/types";
+import { GROUP_DOT, type ToolGroup, type ToolMeta } from "@/lib/registry/types";
 
-function Column({ label, tools }: {
+function Column({ label, tools, group }: {
   label: string;
   tools: ToolMeta[];
+  /** Absent for Recent and Favourites, which are not categories. */
   group?: ToolGroup | undefined;
 }) {
   if (tools.length === 0) return null;
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-center gap-2 px-1">
+        {group ? (
+          // Ties a heading to the cards beneath it. Redundant with the label
+          // beside it, so it carries nothing on its own.
+          <span aria-hidden className={`h-3.5 w-1 rounded-full ${GROUP_DOT[group]}`} />
+        ) : null}
         <h2 className="eyebrow">{label}</h2>
         <span className="font-ui text-[11px] text-fg-muted tabular">{tools.length}</span>
       </div>

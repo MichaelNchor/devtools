@@ -2,8 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Warm paper, black ink. Colour is reserved for status in a result
-   (added / removed / error), never for chrome, groups, or decoration. */
+/* Warm paper, black ink — the CHROME is monochrome. Colour is spent where it
+   does work: status in a result, syntax in a payload, and the per-tool marks
+   that make a wall of sixteen cards scannable. Everything here is measured
+   against its own background; nothing is picked by eye. */
 :root {
   --bg: #F4EFE8;
   --surface: #FFFCF8;
@@ -16,22 +18,24 @@
   --border: #E0D8CE;
   --border-2: #EBE4DB;
 
-  --primary: #141311;
-  --primary-hover: #2C2924;
-  --primary-strong: #141311;
-  --primary-tint: #EBE4DB;
+  /* Buttons and active nav stay ink: emphasis in this system is weight and
+     contrast, not hue. The accent hues below are for marks, not for chrome. */
+  --primary: #1B4FD8;
+  --primary-hover: #1740B4;
+  --primary-strong: #1740B4;
+  --primary-tint: #E3ECFF;
 
-  --accent: #141311;
-  --accent-strong: #141311;
-  --accent-tint: #EBE4DB;
-  --indigo: #3C3934;
-  --indigo-tint: #EBE4DB;
+  --accent: #7A2FF2;
+  --accent-strong: #6321CC;
+  --accent-tint: #F0E7FF;
+  --indigo: #4338E8;
+  --indigo-tint: #E9E7FF;
 
-  --up-solid: #02BC9C;  --up: #06715F;  --up-tint: #E0F7F2;
-  --rose-solid: #F7577E; --rose: #C42A50; --rose-tint: #FDE9EE;
-  --warn-solid: #F9BF59; --warn: #7A5A10; --warn-tint: #FEF5E3;
-  --sky-solid: #5BC3E1;  --sky: #0E6F8A; --sky-tint: #E4F5FA;
-  --destructive: #C42A50;
+  --up-solid: #00C48C;   --up: #06795F;   --up-tint: #D8F7EC;
+  --rose-solid: #FF3D6A; --rose: #C50E42; --rose-tint: #FFE1E9;
+  --warn-solid: #FFB020; --warn: #8A5400; --warn-tint: #FFF0D2;
+  --sky-solid: #14B8E0;  --sky: #06708F;  --sky-tint: #DBF3FC;
+  --destructive: #C50E42;
 
   --on-primary: #F4EFE8;
 
@@ -50,13 +54,16 @@
   --shadow-md: 0 8px 24px -8px rgba(40, 32, 24, .18);
   --shadow-lg: 0 18px 40px -12px rgba(40, 32, 24, .28);
 
-  --code-key: var(--fg);
+  /* A payload rendered in three greys is unreadable at a glance. Each token
+     type gets a hue that is already in the palette, so highlighting cannot
+     drift away from it. */
+  --code-key: var(--primary);
   --code-string: var(--up);
   --code-number: var(--indigo);
   --code-atom: var(--warn);
   --code-punct: var(--fg-muted);
   --code-comment: var(--fg-muted);
-  --code-keyword: var(--fg-2);
+  --code-keyword: var(--accent-strong);
 
   --font-ui: var(--font-body);
   --radius-sheet: 1.75rem;
@@ -74,22 +81,24 @@
   --border: #2C2924;
   --border-2: #24211E;
 
-  --primary: #F4EFE8;
-  --primary-hover: #E6DFD4;
-  --primary-strong: #F4EFE8;
-  --primary-tint: rgba(244, 239, 232, .10);
+  /* Lifted, not merely lightened: a hue that clears contrast on dark paper
+     has to be brighter AND still saturated, or it turns to grey. */
+  --primary: #7FA9FF;
+  --primary-hover: #9CBCFF;
+  --primary-strong: #A8C6FF;
+  --primary-tint: rgba(127, 169, 255, .18);
 
-  --accent: #F4EFE8;
-  --accent-strong: #F4EFE8;
-  --accent-tint: rgba(244, 239, 232, .10);
-  --indigo: #C8C1B6;
-  --indigo-tint: rgba(244, 239, 232, .10);
+  --accent: #C09CFF;
+  --accent-strong: #D3B8FF;
+  --accent-tint: rgba(192, 156, 255, .18);
+  --indigo: #A6A0FF;
+  --indigo-tint: rgba(166, 160, 255, .18);
 
-  --up-solid: #02BC9C;  --up: #45D9BB;  --up-tint: rgba(2, 188, 156, .16);
-  --rose-solid: #F7577E; --rose: #FF8DA8; --rose-tint: rgba(247, 87, 126, .16);
-  --warn-solid: #F9BF59; --warn: #F0C67A; --warn-tint: rgba(249, 191, 89, .16);
-  --sky-solid: #5BC3E1;  --sky: #7FD3EC; --sky-tint: rgba(91, 195, 225, .16);
-  --destructive: #FF8DA8;
+  --up-solid: #00C48C;   --up: #3EE0AC;   --up-tint: rgba(0, 196, 140, .18);
+  --rose-solid: #FF3D6A; --rose: #FF8AA6; --rose-tint: rgba(255, 61, 106, .18);
+  --warn-solid: #FFB020; --warn: #FFC65C; --warn-tint: rgba(255, 176, 32, .18);
+  --sky-solid: #14B8E0;  --sky: #5FD5F2;  --sky-tint: rgba(20, 184, 224, .18);
+  --destructive: #FF8AA6;
 
   --on-primary: #121110;
 
@@ -108,13 +117,16 @@
   --shadow-md: 0 0 0 1px rgba(255, 255, 255, .05), 0 2px 10px 0 rgba(0, 0, 0, .50);
   --shadow-lg: 0 0 0 1px rgba(255, 255, 255, .05), 0 10px 30px -8px rgba(0, 0, 0, .65);
 
-  --code-key: var(--fg);
+  /* A payload rendered in three greys is unreadable at a glance. Each token
+     type gets a hue that is already in the palette, so highlighting cannot
+     drift away from it. */
+  --code-key: var(--primary);
   --code-string: var(--up);
   --code-number: var(--indigo);
   --code-atom: var(--warn);
   --code-punct: var(--fg-muted);
   --code-comment: var(--fg-muted);
-  --code-keyword: var(--fg-2);
+  --code-keyword: var(--accent-strong);
 
   --font-ui: var(--font-body);
   --radius-sheet: 1.75rem;
