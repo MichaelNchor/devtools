@@ -79,9 +79,9 @@ export default function Dashboard() {
             Local, in this tab
           </p>
           <h1 className="mt-3 font-display text-[2.35rem] font-extrabold leading-[0.92] tracking-[-0.05em] lg:text-[3.4rem]">
-            Tools that
+            DevTools that
             <br />
-            stay private.
+            keep you productive.
           </h1>
           <div className="mt-7">
             <Link
