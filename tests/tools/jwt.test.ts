@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  decodeJwt, describeTimeClaims, verifyJwt, signJwt, SIGNING_ALGORITHMS,
+  decodeJwt, describeTimeClaims, verifyJwt, signJwt, signJwtWithHeader, SIGNING_ALGORITHMS,
 } from "@/lib/tools/jwt";
 
 const b64url = (obj: unknown) =>
@@ -211,5 +211,40 @@ describe("signJwt", () => {
     // No RS or ES here: those need a private key, not a shared secret, and
     // listing them would promise something the tool cannot do.
     expect(SIGNING_ALGORITHMS).toEqual(["HS256", "HS384", "HS512"]);
+  });
+});
+
+describe("signJwtWithHeader", () => {
+  it("keeps other header fields, so a kid survives re-signing", async () => {
+    // Dropping a kid would produce a token that looks correct here and is
+    // rejected by whatever actually consumes it.
+    const signed = await signJwtWithHeader(
+      { alg: "HS256", typ: "JWT", kid: "key-2024" }, { sub: "a" }, "k",
+    );
+    expect(signed.ok).toBe(true);
+    if (!signed.ok) return;
+    const decoded = decodeJwt(signed.value);
+    expect(decoded.ok && decoded.value.header).toEqual({ alg: "HS256", typ: "JWT", kid: "key-2024" });
+  });
+
+  it("still verifies with the extra header field present", async () => {
+    const signed = await signJwtWithHeader({ alg: "HS256", kid: "x" }, { sub: "a" }, "k");
+    if (!signed.ok) return;
+    expect(await verifyJwt(signed.value, "k")).toMatchObject({ value: "valid" });
+  });
+
+  it("refuses an algorithm it cannot sign, naming it", async () => {
+    const out = await signJwtWithHeader({ alg: "RS256" }, { a: 1 }, "k");
+    expect(out.ok).toBe(false);
+    if (out.ok) return;
+    expect(out.error.message).toContain("RS256");
+  });
+
+  it("refuses alg none outright", async () => {
+    expect((await signJwtWithHeader({ alg: "none" }, { a: 1 }, "k")).ok).toBe(false);
+  });
+
+  it("refuses a header that is not an object", async () => {
+    expect((await signJwtWithHeader([] as unknown as Record<string, unknown>, { a: 1 }, "k")).ok).toBe(false);
   });
 });

@@ -125,25 +125,36 @@ function jsonToBase64Url(value: unknown): string {
   return bytesToBase64Url(new TextEncoder().encode(JSON.stringify(value)));
 }
 
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 /**
  * Signs a token. The signature covers "<header>.<payload>" exactly, which is
  * the same string verifyJwt checks — the two are deliberately symmetrical, and
  * a test signs then verifies to prove they agree.
+ *
+ * The whole header is passed in rather than just an algorithm, so a header
+ * edited by hand keeps its other fields. A `kid` silently dropped during
+ * re-signing would produce a token that looks right and is rejected upstream.
  */
-export async function signJwt(
-  algorithm: SigningAlgorithm,
+export async function signJwtWithHeader(
+  header: Record<string, unknown>,
   payload: Record<string, unknown>,
   secret: string,
 ): Promise<ToolResult<string>> {
   if (!secret) return err("Enter a secret. A token with no signature is not a signed token.");
-  if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
-    return err("The payload must be a JSON object.");
-  }
+  if (!isObject(header)) return err("The header must be a JSON object.");
+  if (!isObject(payload)) return err("The payload must be a JSON object.");
+
+  const algorithm = String(header.alg ?? "");
   const hash = HMAC_HASH[algorithm];
-  if (!hash) return err(`${algorithm} cannot be signed with a shared secret.`);
+  if (!hash) {
+    return err(`${algorithm || "That algorithm"} cannot be signed with a shared secret — only HS256, HS384 and HS512 can.`);
+  }
 
   try {
-    const signingInput = `${jsonToBase64Url({ alg: algorithm, typ: "JWT" })}.${jsonToBase64Url(payload)}`;
+    const signingInput = `${jsonToBase64Url(header)}.${jsonToBase64Url(payload)}`;
     const key = await globalThis.crypto.subtle.importKey(
       "raw", new TextEncoder().encode(secret),
       { name: "HMAC", hash }, false, ["sign"],
@@ -155,6 +166,15 @@ export async function signJwt(
   } catch (cause) {
     return err(cause instanceof Error ? cause.message : "That token could not be signed.");
   }
+}
+
+/** The common case: a standard header for the given algorithm. */
+export async function signJwt(
+  algorithm: SigningAlgorithm,
+  payload: Record<string, unknown>,
+  secret: string,
+): Promise<ToolResult<string>> {
+  return signJwtWithHeader({ alg: algorithm, typ: "JWT" }, payload, secret);
 }
 
 export async function verifyJwt(token: string, key: string): Promise<ToolResult<VerifyState>> {

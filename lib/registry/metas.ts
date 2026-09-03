@@ -135,8 +135,8 @@ export const HASH_META: ToolMeta = {
 export const JWT_META: ToolMeta = {
   slug: "jwt",
   name: "JWT Debugger",
-  tagline: "Create, decode, verify",
-  blurb: "Create a signed JSON Web Token, or decode one and check its signature and claims.",
+  tagline: "Decode, edit, re-sign",
+  blurb: "Decode a JSON Web Token and check its signature — and with the secret, edit the claims and it re-signs as you type.",
   group: "security",
   icon: KeySquare,
   aliases: ["jwt", "token", "jsonwebtoken", "bearer", "claims"],

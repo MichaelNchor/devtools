@@ -372,22 +372,23 @@ export const HASH_EXAMPLES: ToolExample[] = [
 
 export const JWT_EXAMPLES: ToolExample[] = [
   {
-    name: "Create a token",
-    blurb: "Compose claims and sign them, then open the result in the decoder to watch it verify.",
-    state: {
-      mode: "encode",
-      claims: '{\n  "sub": "1234567890",\n  "name": "Ada Lovelace",\n  "admin": false\n}',
-      key: "topsecret",
-      algorithm: "HS256",
-      token: "",
-    },
-  },
-  {
-    name: "Signed with 'secret'",
-    blurb: "A demo token whose secret is the word secret — type it in to watch verification pass.",
+    name: "Decode a token",
+    blurb: "A demo token signed with the word 'secret'. Type that into Secret to watch verification pass.",
     state: {
       token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFkYSBMb3ZlbGFjZSIsImlhdCI6MTUxNjIzOTAyMiwiZXhwIjoxNTE2MjQyNjIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
       key: "",
+      headerText: "",
+      payloadText: "",
+    },
+  },
+  {
+    name: "Edit and re-sign",
+    blurb: "The secret is already filled in, so editing the payload re-signs the token as you type.",
+    state: {
+      token: "",
+      key: "topsecret",
+      headerText: '{\n  "alg": "HS256",\n  "typ": "JWT"\n}',
+      payloadText: '{\n  "sub": "1234567890",\n  "name": "Ada Lovelace",\n  "admin": false\n}',
     },
   },
   {
@@ -396,6 +397,8 @@ export const JWT_EXAMPLES: ToolExample[] = [
     state: {
       token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZGEiLCJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MTUxNjI0MjYyMn0.7vJb0MvHXR3xVKZ1v9nZk9K5s0Xy2Q8Zx3wJ4nH5aQc",
       key: "",
+      headerText: "",
+      payloadText: "",
     },
   },
   {
@@ -404,6 +407,8 @@ export const JWT_EXAMPLES: ToolExample[] = [
     state: {
       token: "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJyb290In0.",
       key: "",
+      headerText: "",
+      payloadText: "",
     },
   },
 ];
