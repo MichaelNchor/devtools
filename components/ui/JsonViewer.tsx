@@ -41,9 +41,9 @@ export function JsonViewer({
   className,
 }: {
   value: unknown;
-  initialDepth?: number;
-  showPaths?: boolean;
-  className?: string;
+  initialDepth?: number | undefined;
+  showPaths?: boolean | undefined;
+  className?: string | undefined;
 }) {
   const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(
     () => new Set(initialDepth === undefined ? [] : pathsToDepth(value, initialDepth)),

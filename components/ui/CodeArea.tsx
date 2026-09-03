@@ -4,11 +4,11 @@ import { cx } from "@/lib/cx";
 
 interface Props {
   value: string;
-  onChange?: (value: string) => void;
-  placeholder?: string;
-  readOnly?: boolean;
+  onChange?: ((value: string) => void) | undefined;
+  placeholder?: string | undefined;
+  readOnly?: boolean | undefined;
   ariaLabel: string;
-  className?: string;
+  className?: string | undefined;
 }
 
 export function CodeArea({ value, onChange, placeholder, readOnly, ariaLabel, className }: Props) {

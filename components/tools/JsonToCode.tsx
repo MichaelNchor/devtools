@@ -16,6 +16,7 @@ import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel, EmptyOutput } from "@/components/ui/Panel";
+import { JsonPanel } from "@/components/ui/JsonPanel";
 
 interface State {
   input: string;
@@ -116,15 +117,15 @@ export function JsonToCode() {
       }
     >
       <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-        <Panel title="JSON sample" subtitle="Data to infer types from" className="h-[60dvh] min-h-[22rem]">
-          <CodeArea
+        <JsonPanel
+          title="JSON sample"
+          subtitle="Data to infer types from"
+          className="h-[60dvh] min-h-[22rem]"
           value={state.input}
           onChange={(input) => update({ input })}
           ariaLabel="JSON sample"
           placeholder="Paste a JSON sample to infer types from"
-            className="h-full rounded-none border-0"
-          />
-        </Panel>
+        />
 
         <Panel
           title="Generated code"

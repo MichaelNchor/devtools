@@ -15,6 +15,7 @@ import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel, EmptyOutput } from "@/components/ui/Panel";
+import { JsonPanel } from "@/components/ui/JsonPanel";
 import { JsonViewer } from "@/components/ui/JsonViewer";
 
 interface State {
@@ -122,19 +123,31 @@ export function YamlJson() {
         ) : null}
 
         <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-          <Panel
-            title={state.direction === "yaml-to-json" ? "YAML" : "JSON"}
-            subtitle="The document to convert"
-            className="h-[60dvh] min-h-[22rem]"
-          >
-            <CodeArea
+          {state.direction === "json-to-yaml" ? (
+            <JsonPanel
+              title="JSON"
+              subtitle="The document to convert"
+              className="h-[60dvh] min-h-[22rem]"
               value={state.input}
               onChange={(input) => update({ input })}
-              ariaLabel={state.direction === "yaml-to-json" ? "YAML input" : "JSON input"}
-              placeholder={state.direction === "yaml-to-json" ? "Paste YAML" : "Paste JSON"}
-              className="h-full rounded-none border-0"
+              ariaLabel="JSON input"
+              placeholder="Paste JSON"
             />
-          </Panel>
+          ) : (
+            <Panel
+              title="YAML"
+              subtitle="The document to convert"
+              className="h-[60dvh] min-h-[22rem]"
+            >
+              <CodeArea
+                value={state.input}
+                onChange={(input) => update({ input })}
+                ariaLabel="YAML input"
+                placeholder="Paste YAML"
+                className="h-full rounded-none border-0"
+              />
+            </Panel>
+          )}
 
           <Panel
             title={state.direction === "yaml-to-json" ? "JSON" : "YAML"}

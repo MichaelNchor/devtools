@@ -17,6 +17,7 @@ import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel, EmptyOutput } from "@/components/ui/Panel";
+import { JsonPanel } from "@/components/ui/JsonPanel";
 import { JsonCode } from "@/components/ui/JsonCode";
 import { JsonViewer } from "@/components/ui/JsonViewer";
 
@@ -130,15 +131,15 @@ export function JsonFormat() {
     >
       <div className="flex h-[calc(100dvh-15rem)] min-h-[26rem] flex-col gap-3">
         <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-2">
-          <Panel title="Raw input" subtitle="The JSON to format" className="min-h-0">
-            <CodeArea
-              value={state.input}
-              onChange={(input) => update({ input })}
-              ariaLabel="JSON input"
-              placeholder="Paste JSON to format"
-              className="h-full rounded-none border-0"
-            />
-          </Panel>
+          <JsonPanel
+            title="Raw input"
+            subtitle="The JSON to format"
+            className="min-h-0"
+            value={state.input}
+            onChange={(input) => update({ input })}
+            ariaLabel="JSON input"
+            placeholder="Paste JSON to format"
+          />
 
           <Panel
             title="Output"

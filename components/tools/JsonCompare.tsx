@@ -14,6 +14,7 @@ import { Toggle } from "@/components/ui/Toggle";
 import { Select } from "@/components/ui/Select";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel } from "@/components/ui/Panel";
+import { JsonPanel } from "@/components/ui/JsonPanel";
 import { Segmented } from "@/components/ui/Segmented";
 import { summarise } from "@/lib/tools/json-compare-summary";
 import { DiffSummary } from "./DiffSummary";
@@ -301,24 +302,24 @@ export function JsonCompare() {
     >
       <div className="flex h-[calc(100dvh-15rem)] min-h-[26rem] flex-col gap-3">
         <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-2">
-          <Panel title="Left" subtitle="The original" className="min-h-0">
-            <CodeArea
-              value={state.left}
-              onChange={(left) => update({ left })}
-              ariaLabel="Left JSON"
-              placeholder="Paste the original JSON"
-              className="h-full rounded-none border-0"
-            />
-          </Panel>
-          <Panel title="Right" subtitle="What to compare against" className="min-h-0">
-            <CodeArea
-              value={state.right}
-              onChange={(right) => update({ right })}
-              ariaLabel="Right JSON"
-              placeholder="Paste the JSON to compare against"
-              className="h-full rounded-none border-0"
-            />
-          </Panel>
+          <JsonPanel
+            title="Left"
+            subtitle="The original"
+            className="min-h-0"
+            value={state.left}
+            onChange={(left) => update({ left })}
+            ariaLabel="Left JSON"
+            placeholder="Paste the original JSON"
+          />
+          <JsonPanel
+            title="Right"
+            subtitle="What to compare against"
+            className="min-h-0"
+            value={state.right}
+            onChange={(right) => update({ right })}
+            ariaLabel="Right JSON"
+            placeholder="Paste the JSON to compare against"
+          />
         </div>
 
         {result && !result.ok ? <ErrorNote error={result.error} /> : null}

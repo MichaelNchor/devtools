@@ -17,6 +17,7 @@ import { Select } from "@/components/ui/Select";
 import { Segmented } from "@/components/ui/Segmented";
 import { CodeArea } from "@/components/ui/CodeArea";
 import { Panel, EmptyOutput } from "@/components/ui/Panel";
+import { JsonPanel } from "@/components/ui/JsonPanel";
 import { JsonViewer } from "@/components/ui/JsonViewer";
 
 interface State {
@@ -168,24 +169,24 @@ export function JsonMerge() {
         ) : null}
 
         <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-          <Panel title="Left" subtitle="The base document" className="h-[42dvh] min-h-[16rem]">
-            <CodeArea
-              value={state.left}
-              onChange={(left) => update({ left })}
-              ariaLabel="Left JSON"
-              placeholder="Paste the base JSON"
-              className="h-full rounded-none border-0"
-            />
-          </Panel>
-          <Panel title="Right" subtitle="Merged on top of the base" className="h-[42dvh] min-h-[16rem]">
-            <CodeArea
-              value={state.right}
-              onChange={(right) => update({ right })}
-              ariaLabel="Right JSON"
-              placeholder="Paste the JSON to merge in"
-              className="h-full rounded-none border-0"
-            />
-          </Panel>
+          <JsonPanel
+            title="Left"
+            subtitle="The base document"
+            className="h-[42dvh] min-h-[16rem]"
+            value={state.left}
+            onChange={(left) => update({ left })}
+            ariaLabel="Left JSON"
+            placeholder="Paste the base JSON"
+          />
+          <JsonPanel
+            title="Right"
+            subtitle="Merged on top of the base"
+            className="h-[42dvh] min-h-[16rem]"
+            value={state.right}
+            onChange={(right) => update({ right })}
+            ariaLabel="Right JSON"
+            placeholder="Paste the JSON to merge in"
+          />
         </div>
 
         {result?.ok && result.value.conflicts.length > 0 ? (
