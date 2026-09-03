@@ -172,7 +172,7 @@ export function JsonMerge() {
           <JsonPanel
             title="Left"
             subtitle="The base document"
-            className="h-[42dvh] min-h-[16rem]"
+            className="h-workspace-sm"
             value={state.left}
             onChange={(left) => update({ left })}
             ariaLabel="Left JSON"
@@ -181,7 +181,7 @@ export function JsonMerge() {
           <JsonPanel
             title="Right"
             subtitle="Merged on top of the base"
-            className="h-[42dvh] min-h-[16rem]"
+            className="h-workspace-sm"
             value={state.right}
             onChange={(right) => update({ right })}
             ariaLabel="Right JSON"

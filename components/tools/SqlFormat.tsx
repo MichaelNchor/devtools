@@ -114,7 +114,7 @@ export function SqlFormat() {
       }
     >
       <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-        <Panel title="Raw SQL" subtitle="The statement to format" className="h-[60dvh] min-h-[22rem]">
+        <Panel title="Raw SQL" subtitle="The statement to format" className="h-workspace">
           <CodeArea
             value={state.input}
             onChange={(input) => update({ input })}
@@ -127,7 +127,7 @@ export function SqlFormat() {
         <Panel
           title="Formatted"
           subtitle={SQL_DIALECTS.find((d) => d.value === state.options.dialect)?.label}
-          className="h-[60dvh] min-h-[22rem]"
+          className="h-workspace"
           actions={result?.ok ? <CopyButton text={result.value} label="Copy" /> : null}
         >
           {result && !result.ok ? (

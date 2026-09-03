@@ -144,7 +144,7 @@ export function Base64() {
         </>
       }
     >
-      <div className="flex h-[calc(100dvh-15rem)] min-h-[26rem] flex-col gap-3">
+      <div className="flex h-workspace flex-col gap-3">
         {fileName ? (
           <p className="text-[12px] text-fg-muted">
             Loaded <span className="font-ui text-fg">{fileName}</span>

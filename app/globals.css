@@ -169,6 +169,39 @@ body::after {
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * Two workspace heights, so a paste area is never sized by an arbitrary number
+ * picked per tool. Before this there were five different schemes, and the
+ * shortest was 11rem — a third of the tallest.
+ */
+
+/* For panes that ARE the tool: they fill what the header and options bar
+   leave behind. */
+.h-workspace {
+  height: calc(100dvh - 15rem);
+  min-height: 26rem;
+}
+
+/* The ceiling form, for a scrolling column that must line up with the pane
+   beside it rather than run past it. */
+.max-h-workspace {
+  max-height: calc(100dvh - 15rem);
+}
+
+/* For tools that carry results or guidance underneath the field, where a
+   full-height input would push everything else off screen. */
+.h-workspace-sm {
+  height: 52dvh;
+  min-height: 18rem;
+}
+
+/* Half of the tall one, less the gap, for a pane split into two stacked
+   fields — the JWT header and payload. */
+.h-workspace-half {
+  height: calc((100dvh - 15rem - 0.75rem) / 2);
+  min-height: 12.5rem;
+}
+
 .eyebrow {
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
   font-size: 11px;

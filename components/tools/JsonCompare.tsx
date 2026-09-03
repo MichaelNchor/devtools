@@ -300,7 +300,7 @@ export function JsonCompare() {
         </>
       }
     >
-      <div className="flex h-[calc(100dvh-15rem)] min-h-[26rem] flex-col gap-3">
+      <div className="flex h-workspace flex-col gap-3">
         <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-2">
           <JsonPanel
             title="Left"

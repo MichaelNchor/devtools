@@ -64,7 +64,7 @@ export function HttpInspector() {
       }
     >
       <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-        <Panel title="Raw message" subtitle="Request or response" className="h-[70dvh] min-h-[24rem]">
+        <Panel title="Raw message" subtitle="Request or response" className="h-workspace">
           <CodeArea
             value={state.input}
             onChange={(input) => update({ input })}
@@ -74,7 +74,7 @@ export function HttpInspector() {
           />
         </Panel>
 
-        <div className="flex max-h-[70dvh] min-h-0 flex-col gap-3 overflow-auto">
+        <div className="flex max-h-workspace min-h-0 flex-col gap-3 overflow-auto">
           {result && !result.ok ? <ErrorNote error={result.error} /> : null}
 
           {!analysis && !(result && !result.ok) ? (

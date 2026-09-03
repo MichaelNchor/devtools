@@ -127,7 +127,7 @@ export function YamlJson() {
             <JsonPanel
               title="JSON"
               subtitle="The document to convert"
-              className="h-[60dvh] min-h-[22rem]"
+              className="h-workspace"
               value={state.input}
               onChange={(input) => update({ input })}
               ariaLabel="JSON input"
@@ -137,7 +137,7 @@ export function YamlJson() {
             <Panel
               title="YAML"
               subtitle="The document to convert"
-              className="h-[60dvh] min-h-[22rem]"
+              className="h-workspace"
             >
               <CodeArea
                 value={state.input}
@@ -152,7 +152,7 @@ export function YamlJson() {
           <Panel
             title={state.direction === "yaml-to-json" ? "JSON" : "YAML"}
             subtitle="Converted result"
-            className="h-[60dvh] min-h-[22rem]"
+            className="h-workspace"
             actions={result?.ok ? <CopyButton text={result.value} label="Copy" /> : null}
           >
             {result && !result.ok ? (

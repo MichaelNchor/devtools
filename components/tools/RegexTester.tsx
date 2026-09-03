@@ -165,7 +165,7 @@ export function RegexTester() {
 
         <div className="grid gap-3 lg:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <Panel title="Test text" subtitle="What the pattern runs against" className="h-44">
+            <Panel title="Test text" subtitle="What the pattern runs against" className="h-workspace-sm">
               <CodeArea
                 value={state.text}
                 onChange={(text) => update({ text })}

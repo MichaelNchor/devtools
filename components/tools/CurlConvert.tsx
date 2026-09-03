@@ -80,7 +80,7 @@ export function CurlConvert() {
         ) : null}
 
         <div className="grid min-h-0 gap-3 lg:grid-cols-2">
-          <Panel title="curl command" subtitle="The command to convert" className="h-[60dvh] min-h-[22rem]">
+          <Panel title="curl command" subtitle="The command to convert" className="h-workspace">
             <CodeArea
               value={state.input}
               onChange={(input) => update({ input })}
@@ -93,7 +93,7 @@ export function CurlConvert() {
           <Panel
             title="Generated code"
             subtitle={CURL_TARGETS.find((t) => t.value === state.target)?.label}
-            className="h-[60dvh] min-h-[22rem]"
+            className="h-workspace"
             actions={code ? <CopyButton text={code} label="Copy" /> : null}
           >
             {/* The parse error already sits above both panes, so this side

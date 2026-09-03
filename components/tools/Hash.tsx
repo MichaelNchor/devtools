@@ -132,7 +132,7 @@ export function Hash() {
       <div className="flex flex-col gap-3">
         {error ? <ErrorNote error={error} /> : null}
 
-        <Panel title="Input" subtitle="Text, or a file you choose above" className="h-44">
+        <Panel title="Input" subtitle="Text, or a file you choose above" className="h-workspace-sm">
           <CodeArea
             value={state.input}
             onChange={(input) => { setFileName(null); update({ input }); }}

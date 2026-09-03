@@ -120,7 +120,7 @@ export function JsonToCode() {
         <JsonPanel
           title="JSON sample"
           subtitle="Data to infer types from"
-          className="h-[60dvh] min-h-[22rem]"
+          className="h-workspace"
           value={state.input}
           onChange={(input) => update({ input })}
           ariaLabel="JSON sample"
@@ -130,7 +130,7 @@ export function JsonToCode() {
         <Panel
           title="Generated code"
           subtitle={LANGUAGES.find((l) => l.value === state.language)?.label}
-          className="h-[60dvh] min-h-[22rem]"
+          className="h-workspace"
         actions={result?.ok ? <CopyButton text={result.value} label="Copy" /> : null}
         >
           {result && !result.ok ? (

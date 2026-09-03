@@ -243,7 +243,7 @@ export function Jwt() {
           <Panel
             title="Encoded"
             subtitle="The token"
-            className="h-[46dvh] min-h-[18rem]"
+            className="h-workspace"
           >
             <CodeArea
               value={state.token}
@@ -258,7 +258,7 @@ export function Jwt() {
             <Panel
               title="Header"
               subtitle={alg ? `Algorithm ${alg}` : "Algorithm and type"}
-              className="h-[21dvh] min-h-[8rem]"
+              className="h-workspace-half"
             >
               {claimView === "read" && parsedHeader !== null ? (
                 <JsonViewer value={parsedHeader} className="h-full" />
@@ -276,7 +276,7 @@ export function Jwt() {
             <Panel
               title="Payload"
               subtitle={claimView === "edit" ? "Editing re-signs the token" : "Data and claims"}
-              className="h-[22dvh] min-h-[9rem]"
+              className="h-workspace-half"
             >
               {claimView === "read" && parsedPayload !== null ? (
                 <JsonViewer value={parsedPayload} className="h-full" />

@@ -126,7 +126,7 @@ export function Password() {
           value={text}
           readOnly
           ariaLabel="Generated passwords"
-          className="h-[45dvh] min-h-[16rem]"
+          className="h-workspace-sm"
         />
       </div>
     </ToolShell>

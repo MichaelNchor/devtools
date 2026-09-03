@@ -125,7 +125,7 @@ export function Guid() {
           value={text}
           readOnly
           ariaLabel="Generated GUIDs"
-          className="h-[55dvh] min-h-[20rem]"
+          className="h-workspace"
         />
       </div>
     </ToolShell>
